@@ -1,0 +1,58 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SKY_ENGINE_BINDINGS2_DART_VALUE_H_
+#define SKY_ENGINE_BINDINGS2_DART_VALUE_H_
+
+#include "base/logging.h"
+#include "dart/runtime/include/dart_api.h"
+#include "sky/engine/bindings2/dart_persistent_value.h"
+#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/wtf/Noncopyable.h"
+#include "sky/engine/wtf/RefPtr.h"
+
+namespace blink {
+
+class DartValue : public RefCounted<DartValue> {
+  WTF_MAKE_NONCOPYABLE(DartValue);  
+ public:
+  static PassRefPtr<DartValue> Create(DartState* dart_state,
+                                      Dart_Handle value) {
+    return adoptRef(new DartValue(dart_state, value));
+  }
+
+  static PassRefPtr<DartValue> Create() {
+      return adoptRef(new DartValue());
+  }
+
+  ~DartValue();
+
+  DartState* dart_state() const { return dart_state_.get(); }
+  Dart_Handle dart_value() const { return dart_value_.value(); }
+  bool is_empty() const { return !dart_value(); }
+
+  bool is_null() const {
+    DCHECK(!is_empty());
+    return Dart_IsNull(dart_value());
+  }
+
+  bool is_function() const {
+    DCHECK(!is_empty());
+    return Dart_IsClosure(dart_value());
+  }
+
+  bool Equals(DartValue* other) const;
+  void Clear();
+
+ private:
+  DartValue();
+  DartValue(DartState* dart_state, Dart_Handle value);
+
+  RefPtr<DartState> dart_state_;
+  DartPersistentValue dart_value_;
+};
+
+} // namespace blink
+
+#endif // SKY_ENGINE_BINDINGS2_DART_VALUE_H_

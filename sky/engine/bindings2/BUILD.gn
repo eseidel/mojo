@@ -8,8 +8,12 @@ source_set("bindings2") {
     "dart_isolate_scope.h",
     "dart_master.cc",
     "dart_master.h",
+    "dart_persistent_value.cc",
+    "dart_persistent_value.h",
     "dart_state.cc",
     "dart_state.h",
+    "dart_value.cc",
+    "dart_value.h",
     "dart_wrappable.cc",
     "dart_wrappable.h",
   ]

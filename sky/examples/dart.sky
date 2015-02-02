@@ -1,0 +1,11 @@
+#!mojo mojo:sky_viewer
+<div>
+<script>
+
+main() {
+  String place = 'dart';
+  return "hello $place";
+}
+
+</script>
+</div>

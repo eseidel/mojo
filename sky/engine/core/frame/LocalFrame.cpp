@@ -34,9 +34,9 @@
 #include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/editing/Editor.h"
 #include "sky/engine/core/editing/FrameSelection.h"
+#include "sky/engine/core/editing/htmlediting.h"
 #include "sky/engine/core/editing/InputMethodController.h"
 #include "sky/engine/core/editing/SpellChecker.h"
-#include "sky/engine/core/editing/htmlediting.h"
 #include "sky/engine/core/events/Event.h"
 #include "sky/engine/core/fetch/ResourceFetcher.h"
 #include "sky/engine/core/frame/FrameConsole.h"
@@ -55,6 +55,7 @@
 #include "sky/engine/core/rendering/HitTestResult.h"
 #include "sky/engine/core/rendering/RenderLayer.h"
 #include "sky/engine/core/rendering/RenderView.h"
+#include "sky/engine/core/script/dart_controller.h"
 #include "sky/engine/platform/graphics/GraphicsContext.h"
 #include "sky/engine/platform/graphics/ImageBuffer.h"
 #include "sky/engine/platform/text/TextStream.h"
@@ -68,6 +69,7 @@ inline LocalFrame::LocalFrame(FrameLoaderClient* client, FrameHost* host)
     , m_deprecatedLoader(this)
     , m_mojoLoader(adoptPtr(new MojoLoader(*this)))
     , m_script(adoptPtr(new ScriptController(this)))
+    , m_dart(adoptPtr(new DartController()))
     , m_editor(Editor::create(*this))
     , m_spellChecker(SpellChecker::create(*this))
     , m_selection(FrameSelection::create(this))
@@ -126,6 +128,7 @@ void LocalFrame::detach()
     // Notify ScriptController that the frame is closing, since its cleanup ends up calling
     // back to FrameLoaderClient via WindowProxy.
     script().clearForClose();
+    dart().clearForClose();
     // After this, we must no longer talk to the client since this clears
     // its owning reference back to our owning LocalFrame.
     loaderClient()->detachedFromParent();

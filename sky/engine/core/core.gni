@@ -1172,6 +1172,8 @@ sky_core_files = [
   "rendering/TextRunConstructor.h",
   "rendering/TrailingFloatsRootInlineBox.h",
   "rendering/VerticalPositionCache.h",
+  "script/dart_controller.h",
+  "script/dart_controller.cc"
 ]
 
 core_idl_files = get_path_info([

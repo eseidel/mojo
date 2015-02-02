@@ -37,6 +37,7 @@
 namespace blink {
 
     class Color;
+    class DartController;
     class Document;
     class Editor;
     class Element;
@@ -93,6 +94,7 @@ namespace blink {
         InputMethodController& inputMethodController() const;
         FetchContext& fetchContext() const;
         ScriptController& script();
+        DartController& dart();
         SpellChecker& spellChecker() const;
         FrameConsole& console() const;
 
@@ -127,6 +129,7 @@ namespace blink {
         RefPtr<FrameView> m_view;
 
         OwnPtr<ScriptController> m_script;
+        OwnPtr<DartController> m_dart;
         const OwnPtr<Editor> m_editor;
         const OwnPtr<SpellChecker> m_spellChecker;
         const OwnPtr<FrameSelection> m_selection;
@@ -144,6 +147,11 @@ namespace blink {
     inline ScriptController& LocalFrame::script()
     {
         return *m_script;
+    }
+
+    inline DartController& LocalFrame::dart()
+    {
+        return *m_dart;
     }
 
     inline FrameSelection& LocalFrame::selection() const

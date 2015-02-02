@@ -6,8 +6,6 @@ source_set("bindings2") {
   sources = [
     "dart_isolate_scope.cc",
     "dart_isolate_scope.h",
-    "dart_master.cc",
-    "dart_master.h",
     "dart_persistent_value.cc",
     "dart_persistent_value.h",
     "dart_state.cc",

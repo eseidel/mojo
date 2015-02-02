@@ -5,11 +5,11 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/html/parser/HTMLScriptRunner.h"
 
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/Microtask.h"
 #include "sky/engine/core/frame/LocalFrame.h"
 #include "sky/engine/core/html/HTMLScriptElement.h"
+#include "sky/engine/core/script/dart_controller.h"
 
 namespace blink {
 
@@ -60,7 +60,7 @@ void HTMLScriptRunner::executeScript(PassRefPtr<HTMLScriptElement> element, Text
 
     contextDocument->pushCurrentScript(element);
     ASSERT(sourceDocument.module());
-    frame->script().executeModuleScript(*sourceDocument.module(), source, textPosition);
+    frame->dart().executeModuleScript(*sourceDocument.module(), source, textPosition);
     contextDocument->popCurrentScript();
 }
 

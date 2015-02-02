@@ -39,21 +39,22 @@
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8GCController.h"
 #include "sky/engine/bindings/core/v8/V8Initializer.h"
-#include "sky/engine/core/Init.h"
 #include "sky/engine/core/animation/AnimationClock.h"
 #include "sky/engine/core/dom/Microtask.h"
 #include "sky/engine/core/frame/Settings.h"
+#include "sky/engine/core/Init.h"
 #include "sky/engine/core/page/Page.h"
+#include "sky/engine/core/script/dart_controller.h"
+#include "sky/engine/platform/graphics/ImageDecodingStore.h"
 #include "sky/engine/platform/LayoutTestSupport.h"
 #include "sky/engine/platform/Logging.h"
-#include "sky/engine/platform/graphics/ImageDecodingStore.h"
 #include "sky/engine/public/platform/Platform.h"
 #include "sky/engine/wtf/Assertions.h"
 #include "sky/engine/wtf/CryptographicallyRandomNumber.h"
 #include "sky/engine/wtf/MainThread.h"
-#include "sky/engine/wtf/WTF.h"
 #include "sky/engine/wtf/text/AtomicString.h"
 #include "sky/engine/wtf/text/TextEncoding.h"
+#include "sky/engine/wtf/WTF.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -121,6 +122,8 @@ static bool s_webKitInitialized = false;
 void initialize(Platform* platform)
 {
     initializeWithoutV8(platform);
+
+    DartController::InitVM();
 
     V8Initializer::initializeMainThreadIfNeeded();
 

@@ -28,11 +28,12 @@
 
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
 #include "sky/engine/bindings/core/v8/ExceptionState.h"
-#include "sky/engine/bindings/core/v8/Nullable.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8BindingMacros.h"
+#include "sky/engine/bindings2/nullable.h"
 #include "sky/engine/core/events/EventListener.h"
+#include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/wtf/HashMap.h"
 #include "sky/engine/wtf/HashSet.h"
 #include "sky/engine/wtf/Vector.h"

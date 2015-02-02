@@ -9,7 +9,7 @@
 
 #include "core/testing/DummyPageHolder.h"
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/Nullable.h"
+#include "sky/engine/bindings2/nullable.h"
 #include "sky/engine/core/animation/AnimationClock.h"
 #include "sky/engine/core/animation/AnimationHelpers.h"
 #include "sky/engine/core/animation/AnimationNodeTiming.h"

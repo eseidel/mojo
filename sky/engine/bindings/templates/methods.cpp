@@ -272,7 +272,7 @@ if (exceptionState.hadException()) {
 {{union_type_method_call_and_set_return_value(method)}}
 {%- elif v8_set_return_value %}
 {% if method.is_explicit_nullable %}
-if (result.isNull())
+if (result.is_null())
     v8SetReturnValueNull(info);
 else
     {{v8_set_return_value}};

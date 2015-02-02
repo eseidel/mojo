@@ -16,6 +16,7 @@ source_set("bindings2") {
     "dart_value.h",
     "dart_wrappable.cc",
     "dart_wrappable.h",
+    "nullable.h",
   ]
   deps = [
     ":dart_controller",

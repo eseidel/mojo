@@ -12,6 +12,8 @@
 namespace blink {
 
 class DartIsolateScope {
+  WTF_MAKE_NONCOPYABLE(DartIsolateScope);
+
  public:
   explicit DartIsolateScope(Dart_Isolate isolate);
   ~DartIsolateScope();

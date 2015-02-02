@@ -19,8 +19,9 @@ source_set("bindings2") {
   ]
   deps = [
     ":dart_controller",
+    "//base",
     "//dart/runtime/bin:libdart_withcore",
-    "//base:base",
+    "//sky/engine/wtf",
   ]
 }
 

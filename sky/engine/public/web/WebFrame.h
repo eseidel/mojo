@@ -131,11 +131,6 @@ public:
     // Calls window.gc() if it is defined.
     virtual void collectGarbage() = 0;
 
-    // Executes script in the context of the current page and returns the value
-    // that the script evaluated to.
-    virtual v8::Handle<v8::Value> executeScriptAndReturnValue(
-        const WebScriptSource&) = 0;
-
     // Call the function with the given receiver and arguments, bypassing
     // canExecute().
     virtual v8::Handle<v8::Value> callFunctionEvenIfScriptDisabled(

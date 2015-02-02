@@ -71,14 +71,6 @@
 
 namespace blink {
 
-bool ScriptController::canAccessFromCurrentOrigin(LocalFrame *frame)
-{
-    if (!frame)
-        return false;
-    v8::Isolate* isolate = toIsolate(frame);
-    return !isolate->InContext() || BindingSecurity::shouldAllowAccessToFrame(isolate, frame);
-}
-
 ScriptController::ScriptController(LocalFrame* frame)
     : m_frame(frame)
     , m_sourceURL(0)
@@ -160,23 +152,6 @@ WindowProxy* ScriptController::windowProxy(DOMWrapperWorld& world)
     return m_windowProxy.get();
 }
 
-V8Extensions& ScriptController::registeredExtensions()
-{
-    DEFINE_STATIC_LOCAL(V8Extensions, extensions, ());
-    return extensions;
-}
-
-void ScriptController::registerExtensionIfNeeded(v8::Extension* extension)
-{
-    const V8Extensions& extensions = registeredExtensions();
-    for (size_t i = 0; i < extensions.size(); ++i) {
-        if (extensions[i] == extension)
-            return;
-    }
-    v8::RegisterExtension(extension);
-    registeredExtensions().append(extension);
-}
-
 void ScriptController::clearWindowProxy()
 {
     double start = currentTime();
@@ -214,21 +189,10 @@ void ScriptController::updateDocument()
         windowProxy(DOMWrapperWorld::mainWorld())->updateDocument();
 }
 
-void ScriptController::executeScriptInMainWorld(const String& script)
-{
-    v8::HandleScope handleScope(m_isolate);
-    evaluateScriptInMainWorld(ScriptSourceCode(script));
-}
-
 void ScriptController::executeScriptInMainWorld(const ScriptSourceCode& sourceCode)
 {
     v8::HandleScope handleScope(m_isolate);
     evaluateScriptInMainWorld(sourceCode);
-}
-
-v8::Local<v8::Value> ScriptController::executeScriptInMainWorldAndReturnValue(const ScriptSourceCode& sourceCode)
-{
-    return evaluateScriptInMainWorld(sourceCode);
 }
 
 v8::Local<v8::Value> ScriptController::evaluateScriptInMainWorld(const ScriptSourceCode& sourceCode)

@@ -42,18 +42,16 @@
 
 namespace blink {
 
+class AbstractModule;
 class DOMWrapperWorld;
-class ExecutionContext;
 class Event;
+class ExecutionContext;
 class KURL;
 class LocalFrame;
-class AbstractModule;
-class ScriptState;
 class ScriptSourceCode;
-class WindowProxy;
+class ScriptState;
 class Widget;
-
-typedef WTF::Vector<v8::Extension*> V8Extensions;
+class WindowProxy;
 
 class ScriptController {
 public:
@@ -64,18 +62,12 @@ public:
     WindowProxy* windowProxy(DOMWrapperWorld&);
     WindowProxy* existingWindowProxy(DOMWrapperWorld&);
 
-    // Evaluate JavaScript in the main world.
-    void executeScriptInMainWorld(const String&);
     void executeScriptInMainWorld(const ScriptSourceCode&);
-    v8::Local<v8::Value> executeScriptInMainWorldAndReturnValue(const ScriptSourceCode&);
     v8::Local<v8::Value> executeScriptAndReturnValue(v8::Handle<v8::Context>, const ScriptSourceCode&);
-
     void executeModuleScript(AbstractModule&, const String& source, const TextPosition& textPosition);
 
     v8::Local<v8::Value> callFunction(v8::Handle<v8::Function>, v8::Handle<v8::Value>, int argc, v8::Handle<v8::Value> argv[]);
     static v8::Local<v8::Value> callFunction(ExecutionContext*, v8::Handle<v8::Function>, v8::Handle<v8::Value> receiver, int argc, v8::Handle<v8::Value> info[], v8::Isolate*);
-
-    static bool canAccessFromCurrentOrigin(LocalFrame*);
 
     static void setCaptureCallStackForUncaughtExceptions(bool);
 
@@ -83,12 +75,6 @@ public:
     void updateDocument();
 
     void clearForClose();
-
-    // Registers a v8 extension to be available on webpages. Will only
-    // affect v8 contexts initialized after this call. Takes ownership of
-    // the v8::Extension object passed.
-    static void registerExtensionIfNeeded(v8::Extension*);
-    static V8Extensions& registeredExtensions();
 
     void setWorldDebugId(int debuggerId);
 

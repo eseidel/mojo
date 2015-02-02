@@ -70,8 +70,6 @@ public:
     virtual void executeScript(const WebScriptSource&) override;
     virtual void addMessageToConsole(const WebConsoleMessage&) override;
     virtual void collectGarbage() override;
-    virtual v8::Handle<v8::Value> executeScriptAndReturnValue(
-        const WebScriptSource&) override;
     virtual v8::Handle<v8::Value> callFunctionEvenIfScriptDisabled(
         v8::Handle<v8::Function>,
         v8::Handle<v8::Value>,

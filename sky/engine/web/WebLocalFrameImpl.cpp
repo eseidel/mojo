@@ -282,13 +282,6 @@ void WebLocalFrameImpl::collectGarbage()
     V8GCController::collectGarbage(v8::Isolate::GetCurrent());
 }
 
-v8::Handle<v8::Value> WebLocalFrameImpl::executeScriptAndReturnValue(const WebScriptSource& source)
-{
-    ASSERT(frame());
-    TextPosition position(OrdinalNumber::fromOneBasedInt(source.startLine), OrdinalNumber::first());
-    return frame()->script().executeScriptInMainWorldAndReturnValue(ScriptSourceCode(source.code, source.url, position));
-}
-
 v8::Handle<v8::Value> WebLocalFrameImpl::callFunctionEvenIfScriptDisabled(v8::Handle<v8::Function> function, v8::Handle<v8::Value> receiver, int argc, v8::Handle<v8::Value> argv[])
 {
     ASSERT(frame());

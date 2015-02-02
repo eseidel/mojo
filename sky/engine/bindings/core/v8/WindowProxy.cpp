@@ -202,27 +202,10 @@ void WindowProxy::createContext()
     if (globalTemplate.IsEmpty())
         return;
 
-    double contextCreationStartInSeconds = currentTime();
-
-    // Dynamically tell v8 about our extensions now.
-    const V8Extensions& extensions = ScriptController::registeredExtensions();
-    OwnPtr<const char*[]> extensionNames = adoptArrayPtr(new const char*[extensions.size()]);
-    int index = 0;
-    for (size_t i = 0; i < extensions.size(); ++i) {
-        extensionNames[index++] = extensions[i]->name();
-    }
-    v8::ExtensionConfiguration extensionConfiguration(index, extensionNames.get());
-
-    v8::Handle<v8::Context> context = v8::Context::New(m_isolate, &extensionConfiguration, globalTemplate, m_global.newLocal(m_isolate));
+    v8::Handle<v8::Context> context = v8::Context::New(m_isolate, nullptr, globalTemplate, m_global.newLocal(m_isolate));
     if (context.IsEmpty())
         return;
     m_scriptState = ScriptState::create(context, m_world);
-
-    double contextCreationDurationInMilliseconds = (currentTime() - contextCreationStartInSeconds) * 1000;
-    const char* histogramName = "WebCore.WindowProxy.createContext.MainWorld";
-    if (!m_world->isMainWorld())
-        histogramName = "WebCore.WindowProxy.createContext.IsolatedWorld";
-    blink::Platform::current()->histogramCustomCounts(histogramName, contextCreationDurationInMilliseconds, 0, 10000, 50);
 }
 
 static v8::Handle<v8::Object> toInnerGlobalObject(v8::Handle<v8::Context> context)

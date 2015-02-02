@@ -38,23 +38,4 @@
 
 namespace blink {
 
-#define TRY_TO_WRAP_WITH_INTERFACE(interfaceName) \
-    if (EventNames::interfaceName == desiredInterface) \
-        return wrap(static_cast<interfaceName*>(event), creationContext, isolate);
-
-v8::Handle<v8::Object> wrap(Event* event, v8::Handle<v8::Object> creationContext, v8::Isolate *isolate)
-{
-    ASSERT(event);
-
-    String desiredInterface = event->interfaceName();
-
-    // We need to check Event first to avoid infinite recursion.
-    if (EventNames::Event == desiredInterface)
-        return V8Event::createWrapper(event, creationContext, isolate);
-
-    EVENT_INTERFACES_FOR_EACH(TRY_TO_WRAP_WITH_INTERFACE);
-
-    return v8::Handle<v8::Object>();
-}
-
 } // namespace blink

@@ -31,7 +31,7 @@
 #define SKY_ENGINE_CORE_INSPECTOR_INJECTEDSCRIPTHOST_H_
 
 #include "sky/engine/bindings/core/v8/ScriptState.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/wtf/PassOwnPtr.h"
 #include "sky/engine/wtf/RefCounted.h"
 #include "sky/engine/wtf/Vector.h"
@@ -56,7 +56,7 @@ struct EventListenerInfo;
 // InjectedScriptHost must never implemment methods that have more power over the page than the
 // page already has itself (e.g. origin restriction bypasses).
 
-class InjectedScriptHost : public RefCounted<InjectedScriptHost>, public ScriptWrappable {
+class InjectedScriptHost : public RefCounted<InjectedScriptHost>, public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
     static PassRefPtr<InjectedScriptHost> create();

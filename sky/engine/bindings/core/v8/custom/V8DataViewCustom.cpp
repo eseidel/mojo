@@ -33,6 +33,4 @@
 
 namespace blink {
 
-const WrapperTypeInfo& DataView::s_wrapperTypeInfo = V8TypedArray<DataView>::wrapperTypeInfo;
-
 } // namespace blink

@@ -26,12 +26,12 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_WEBGLRENDERINGCONTEXT_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_WEBGLRENDERINGCONTEXT_H_
 
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/html/canvas/WebGLRenderingContextBase.h"
 
 namespace blink {
 
-class WebGLRenderingContext final : public WebGLRenderingContextBase, public ScriptWrappable {
+class WebGLRenderingContext final : public WebGLRenderingContextBase, public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
     static PassOwnPtr<WebGLRenderingContext> create(HTMLCanvasElement*, WebGLContextAttributes*);

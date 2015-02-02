@@ -22,7 +22,7 @@
 #define SKY_ENGINE_CORE_CSS_CSSSTYLEDECLARATION_H_
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/wtf/Forward.h"
 #include "sky/engine/wtf/Noncopyable.h"
 
@@ -34,7 +34,7 @@ class CSSValue;
 class ExceptionState;
 class MutableStylePropertySet;
 
-class CSSStyleDeclaration : public ScriptWrappable {
+class CSSStyleDeclaration : public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
     WTF_MAKE_NONCOPYABLE(CSSStyleDeclaration); WTF_MAKE_FAST_ALLOCATED;
 public:

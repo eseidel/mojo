@@ -125,21 +125,6 @@ PassRefPtr<ImageData> ImageData::create(Uint8ClampedArray* data, unsigned width,
     return adoptRef(new ImageData(IntSize(width, height), data));
 }
 
-v8::Handle<v8::Object> ImageData::wrap(v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    v8::Handle<v8::Object> wrapper = ScriptWrappable::wrap(creationContext, isolate);
-    if (!wrapper.IsEmpty()) {
-        // Create a V8 Uint8ClampedArray object.
-        v8::Handle<v8::Value> pixelArray = toV8(data(), creationContext, isolate);
-        // Set the "data" property of the ImageData object to
-        // the created v8 object, eliminating the C++ callback
-        // when accessing the "data" property.
-        if (!pixelArray.IsEmpty())
-            wrapper->ForceSet(v8AtomicString(isolate, "data"), pixelArray, v8::ReadOnly);
-    }
-    return wrapper;
-}
-
 ImageData::ImageData(const IntSize& size)
     : m_size(size)
     , m_data(Uint8ClampedArray::create(size.width() * size.height() * 4))

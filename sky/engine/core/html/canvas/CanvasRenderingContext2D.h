@@ -26,7 +26,7 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_CANVASRENDERINGCONTEXT2D_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_CANVASRENDERINGCONTEXT2D_H_
 
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/css/CSSFontSelectorClient.h"
 #include "sky/engine/core/html/canvas/Canvas2DContextAttributes.h"
 #include "sky/engine/core/html/canvas/CanvasPathMethods.h"
@@ -64,7 +64,7 @@ class TextMetrics;
 
 typedef HashMap<String, RefPtr<MutableStylePropertySet> > MutableStylePropertyMap;
 
-class CanvasRenderingContext2D final: public CanvasRenderingContext, public ScriptWrappable, public CanvasPathMethods {
+class CanvasRenderingContext2D final: public CanvasRenderingContext, public DartWrappable, public CanvasPathMethods {
     DEFINE_WRAPPERTYPEINFO();
 public:
     static PassOwnPtr<CanvasRenderingContext2D> create(HTMLCanvasElement* canvas, const Canvas2DContextAttributes* attrs)

@@ -2250,33 +2250,6 @@ bool Document::hasFocus() const
     return focusedFrame && focusedFrame == frame();
 }
 
-v8::Handle<v8::Object> Document::wrap(v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    ASSERT(!DOMDataStore::containsWrapperNonTemplate(this, isolate));
-
-    const WrapperTypeInfo* wrapperType = wrapperTypeInfo();
-
-    if (frame() && frame()->script().initializeMainWorld()) {
-        // initializeMainWorld may have created a wrapper for the object, retry from the start.
-        v8::Handle<v8::Object> wrapper = DOMDataStore::getWrapperNonTemplate(this, isolate);
-        if (!wrapper.IsEmpty())
-            return wrapper;
-    }
-
-    v8::Handle<v8::Object> wrapper = V8DOMWrapper::createWrapper(creationContext, wrapperType, toScriptWrappableBase(), isolate);
-    if (UNLIKELY(wrapper.IsEmpty()))
-        return wrapper;
-
-    wrapperType->installConditionallyEnabledProperties(wrapper, isolate);
-    V8DOMWrapper::associateObjectWithWrapperNonTemplate(this, wrapperType, wrapper, isolate);
-
-    DOMWrapperWorld& world = DOMWrapperWorld::current(isolate);
-    if (world.isMainWorld() && frame())
-        frame()->script().windowProxy(world)->updateDocumentWrapper(wrapper);
-
-    return wrapper;
-}
-
 } // namespace blink
 
 #ifndef NDEBUG

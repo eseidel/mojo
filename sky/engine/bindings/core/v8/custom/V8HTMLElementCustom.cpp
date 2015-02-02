@@ -35,10 +35,4 @@
 
 namespace blink {
 
-v8::Handle<v8::Object> wrap(HTMLElement* impl, v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    ASSERT(impl);
-    return createV8HTMLWrapper(impl, creationContext, isolate);
-}
-
 } // namespace blink

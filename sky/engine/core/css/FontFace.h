@@ -34,7 +34,7 @@
 #include "gen/sky/core/CSSPropertyNames.h"
 #include "sky/engine/bindings/core/v8/ScriptPromise.h"
 #include "sky/engine/bindings/core/v8/ScriptPromiseProperty.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/css/CSSValue.h"
 #include "sky/engine/core/dom/DOMException.h"
 #include "sky/engine/platform/fonts/FontTraits.h"
@@ -53,7 +53,7 @@ class FontFaceReadyPromiseResolver;
 class StylePropertySet;
 class StyleRuleFontFace;
 
-class FontFace : public RefCounted<FontFace>, public ScriptWrappable {
+class FontFace : public RefCounted<FontFace>, public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
     enum LoadStatus { Unloaded, Loading, Loaded, Error };

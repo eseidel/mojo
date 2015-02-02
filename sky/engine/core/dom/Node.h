@@ -479,8 +479,6 @@ public:
 
     unsigned lengthOfContents() const;
 
-    virtual v8::Handle<v8::Object> wrap(v8::Handle<v8::Object> creationContext, v8::Isolate*) override;
-
 private:
     enum NodeFlags {
         HasRareDataFlag = 1,

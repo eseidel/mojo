@@ -29,7 +29,7 @@
 #ifndef SKY_ENGINE_CORE_FRAME_LOCATION_H_
 #define SKY_ENGINE_CORE_FRAME_LOCATION_H_
 
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/frame/DOMWindowProperty.h"
 #include "sky/engine/wtf/PassRefPtr.h"
 #include "sky/engine/wtf/RefCounted.h"
@@ -42,7 +42,7 @@ class ExceptionState;
 class LocalFrame;
 class KURL;
 
-class Location final : public RefCounted<Location>, public ScriptWrappable, public DOMWindowProperty {
+class Location final : public RefCounted<Location>, public DartWrappable, public DOMWindowProperty {
     DEFINE_WRAPPERTYPEINFO();
 public:
     static PassRefPtr<Location> create(LocalFrame* frame)

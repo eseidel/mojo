@@ -124,7 +124,7 @@ public:
         // A minor DOM GC can handle only node wrappers in the main world.
         // Note that node->wrapper().IsEmpty() returns true for nodes that
         // do not have wrappers in the main world.
-        if (node->containsWrapper()) {
+        if (node->ContainsWrapper()) {
             const WrapperTypeInfo* type = toWrapperTypeInfo(*wrapper);
             ActiveDOMObject* activeDOMObject = type->toActiveDOMObject(*wrapper);
             if (activeDOMObject && activeDOMObject->hasPendingActivity())
@@ -145,7 +145,7 @@ public:
     {
         for (size_t i = 0; i < m_nodesInNewSpace.size(); i++) {
             Node* node = m_nodesInNewSpace[i];
-            ASSERT(node->containsWrapper());
+            ASSERT(node->ContainsWrapper());
             if (node->isV8CollectableDuringMinorGC()) { // This branch is just for performance.
                 gcTree(m_isolate, node);
                 node->clearV8CollectableDuringMinorGC();
@@ -160,7 +160,7 @@ private:
         // traversing at some point for a large DOM tree. That being said,
         // I could not observe the need even in pathological test cases.
         for (Node* node = rootNode; node; node = NodeTraversal::next(*node)) {
-            if (node->containsWrapper()) {
+            if (node->ContainsWrapper()) {
                 if (!node->isV8CollectableDuringMinorGC()) {
                     // This node is not in the new space of V8. This indicates that
                     // the minor GC cannot anyway judge reachability of this DOM tree.
@@ -212,10 +212,11 @@ private:
         // We report those wrappers to V8 as an object group.
         if (!partiallyDependentNodes.size())
             return;
-        Node* groupRoot = partiallyDependentNodes[0];
-        for (size_t i = 0; i < partiallyDependentNodes.size(); i++) {
-            partiallyDependentNodes[i]->markAsDependentGroup(groupRoot, isolate);
-        }
+        // FIXME(dart): ...
+        // Node* groupRoot = partiallyDependentNodes[0];
+        // for (size_t i = 0; i < partiallyDependentNodes.size(); i++) {
+        //     partiallyDependentNodes[i]->markAsDependentGroup(groupRoot, isolate);
+        // }
     }
 
     Vector<RawPtr<Node> > m_nodesInNewSpace;

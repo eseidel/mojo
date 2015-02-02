@@ -35,21 +35,4 @@
 
 namespace blink {
 
-v8::Handle<v8::Object> wrap(ImageData* impl, v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    ASSERT(impl);
-    v8::Handle<v8::Object> wrapper = V8ImageData::createWrapper(impl, creationContext, isolate);
-    if (!wrapper.IsEmpty()) {
-        // Create a V8 Uint8ClampedArray object.
-        v8::Handle<v8::Value> pixelArray = toV8(impl->data(), creationContext, isolate);
-        // Set the "data" property of the ImageData object to
-        // the created v8 object, eliminating the C++ callback
-        // when accessing the "data" property.
-        if (!pixelArray.IsEmpty())
-            wrapper->ForceSet(v8AtomicString(isolate, "data"), pixelArray, v8::ReadOnly);
-    }
-
-    return wrapper;
-}
-
 } // namespace blink

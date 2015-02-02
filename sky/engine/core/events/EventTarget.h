@@ -37,7 +37,7 @@
 #include "gen/sky/core/EventTargetInterfaces.h"
 #include "gen/sky/core/EventTargetNames.h"
 #include "gen/sky/core/EventTypeNames.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/events/EventListenerMap.h"
 #include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/wtf/text/AtomicString.h"
@@ -89,7 +89,7 @@ public:
 //
 // Optionally, add a FooEvent.idl class, but that's outside the scope of this
 // comment (and much more straightforward).
-class EventTarget : public ScriptWrappable {
+class EventTarget : public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
 #if !ENABLE(OILPAN)

@@ -49,27 +49,5 @@
 
 namespace blink {
 
-// These functions are custom to prevent a wrapper lookup of the return value which is always
-// part of the arguments.
-v8::Handle<v8::Object> wrap(Node* impl, v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    ASSERT(impl);
-    switch (impl->nodeType()) {
-    case Node::ELEMENT_NODE:
-        // For performance reasons, this is inlined from V8Element::wrap and must remain in sync.
-        if (impl->isHTMLElement())
-            return wrap(toHTMLElement(impl), creationContext, isolate);
-        return V8Element::createWrapper(toElement(impl), creationContext, isolate);
-    case Node::TEXT_NODE:
-        return wrap(toText(impl), creationContext, isolate);
-    case Node::DOCUMENT_NODE:
-        return wrap(toDocument(impl), creationContext, isolate);
-    case Node::DOCUMENT_FRAGMENT_NODE:
-        if (impl->isShadowRoot())
-            return wrap(toShadowRoot(impl), creationContext, isolate);
-        return wrap(toDocumentFragment(impl), creationContext, isolate);
-    }
-    ASSERT_NOT_REACHED();
-    return V8Node::createWrapper(impl, creationContext, isolate);
-}
+
 } // namespace blink

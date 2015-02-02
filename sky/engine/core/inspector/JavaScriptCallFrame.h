@@ -33,7 +33,7 @@
 
 #include "sky/engine/bindings/core/v8/ScopedPersistent.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/wtf/RefCounted.h"
 #include "sky/engine/wtf/text/WTFString.h"
 #include "v8/include/v8.h"
@@ -42,7 +42,7 @@ namespace blink {
 
 class ScriptValue;
 
-class JavaScriptCallFrame : public RefCounted<JavaScriptCallFrame>, public ScriptWrappable {
+class JavaScriptCallFrame : public RefCounted<JavaScriptCallFrame>, public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
     static PassRefPtr<JavaScriptCallFrame> create(v8::Handle<v8::Context> debuggerContext, v8::Handle<v8::Object> callFrame)

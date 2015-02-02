@@ -10,12 +10,21 @@
 
 namespace blink {
 class DartWrapperInfo;
+class ScriptWrappableBase;
 
-class DartWrappable {
+class DartWrappableBase {
+ public:
+  // TODO(abarth): Remove toScriptWrappableBase.
+  ScriptWrappableBase* toScriptWrappableBase() {
+    return nullptr;
+  }
+};
+
+class DartWrappable : public DartWrappableBase {
  public:
   DartWrappable() : wrapper_(nullptr) {}
 
-  virtual const DartWrapperInfo* GetDartWrapperInfo() const = 0;
+  virtual const DartWrapperInfo* GetDartWrapperInfo() const;
   virtual Dart_WeakPersistentHandle Wrap(Dart_Isolate isolate);
 
   void SetWrapper(Dart_WeakPersistentHandle wrapper) {
@@ -26,20 +35,13 @@ class DartWrappable {
     return !!wrapper_;
   }
 
-protected:
+ protected:
   virtual ~DartWrappable();
 
   Dart_WeakPersistentHandle wrapper_;
 };
 
-#define DEFINE_WRAPPERTYPEINFO() \
-public: \
-  const DartWrapperInfo* GetDartWrapperInfo() const override \
-  { \
-    return &wrapper_type_info_; \
-  } \
-private: \
-  static const DartWrapperInfo& wrapper_type_info_;
+#define DEFINE_WRAPPERTYPEINFO()
 
 } // namespace blink
 

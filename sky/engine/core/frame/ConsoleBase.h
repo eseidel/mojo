@@ -31,7 +31,7 @@
 #define SKY_ENGINE_CORE_FRAME_CONSOLEBASE_H_
 
 #include "sky/engine/bindings/core/v8/ScriptState.h"
-#include "sky/engine/bindings/core/v8/ScriptWrappable.h"
+#include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/frame/ConsoleTypes.h"
 #include "sky/engine/core/frame/DOMWindowProperty.h"
 #include "sky/engine/core/inspector/ConsoleAPITypes.h"
@@ -47,7 +47,7 @@ namespace blink {
 class ConsoleMessage;
 class ScriptArguments;
 
-class ConsoleBase : public RefCounted<ConsoleBase>, public ScriptWrappable {
+class ConsoleBase : public RefCounted<ConsoleBase>, public DartWrappable {
     DEFINE_WRAPPERTYPEINFO();
 public:
     void debug(ScriptState*, PassRefPtr<ScriptArguments>);

@@ -240,11 +240,6 @@ void DataView::setFloat64(unsigned byteOffset, double value, bool littleEndian, 
     setData<double>(byteOffset, value, littleEndian, exceptionState);
 }
 
-v8::Handle<v8::Object> DataView::wrap(v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    return V8TypedArray<DataView>::wrap(this, creationContext, isolate);
-}
-
 void DataView::neuter()
 {
     ArrayBufferView::neuter();

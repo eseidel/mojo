@@ -11,6 +11,10 @@ DartWrappable::~DartWrappable() {
   CHECK(!ContainsWrapper());
 }
 
+const DartWrapperInfo* DartWrappable::GetDartWrapperInfo() const {
+  return nullptr;
+}
+
 Dart_WeakPersistentHandle DartWrappable::Wrap(Dart_Isolate isolate) {
   return nullptr;
 }

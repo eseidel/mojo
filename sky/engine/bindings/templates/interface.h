@@ -47,7 +47,7 @@ public:
     static v8::Handle<v8::FunctionTemplate> domTemplate(v8::Isolate*);
     static {{cpp_class}}* toNative(v8::Handle<v8::Object> object)
     {
-        return fromInternalPointer(blink::toScriptWrappableBase(object));
+        return nullptr;
     }
     static {{cpp_class}}* toNativeWithTypeCheck(v8::Isolate*, v8::Handle<v8::Value>);
     static const WrapperTypeInfo wrapperTypeInfo;
@@ -142,7 +142,7 @@ public:
 
     static inline {{cpp_class}}* fromInternalPointer(ScriptWrappableBase* scriptWrappable)
     {
-        return scriptWrappable->toImpl<{{cpp_class}}>();
+        return nullptr;
     }
     {% if interface_name == 'Window' %}
     static bool namedSecurityCheckCustom(v8::Local<v8::Object> host, v8::Local<v8::Value> key, v8::AccessType, v8::Local<v8::Value> data);
@@ -203,11 +203,7 @@ inline v8::Handle<v8::Value> toV8({{cpp_class}}* impl, v8::Handle<v8::Object> cr
     if (!wrapper.IsEmpty())
         return wrapper;
 
-{% if is_script_wrappable %}
-    return impl->wrap(creationContext, isolate);
-{% else %}
-    return wrap(impl, creationContext, isolate);
-{% endif %}
+    return v8::Handle<v8::Value>();
 }
 
 template<typename CallbackInfo>

@@ -31,9 +31,4 @@ namespace blink {
 
 DEFINE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLElement);
 
-v8::Handle<v8::Object> HTMLElement::wrap(v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
-{
-    return createV8HTMLWrapper(this, creationContext, isolate);
-}
-
 } // namespace blink

@@ -224,30 +224,6 @@ private:
     v8::Persistent<v8::Object> m_wrapper;
 };
 
-// Defines 'wrapperTypeInfo' virtual method which returns the WrapperTypeInfo of
-// the instance. Also declares a static member of type WrapperTypeInfo, of which
-// the definition is given by the IDL code generator.
-//
-// Every DOM Class T must meet either of the following conditions:
-// - T.idl inherits from [NotScriptWrappable].
-// - T inherits from ScriptWrappable and has DEFINE_WRAPPERTYPEINFO().
-//
-// If a DOM class T does not inherit from ScriptWrappable, you have to write
-// [NotScriptWrappable] in the IDL file as an extended attribute in order to let
-// IDL code generator know that T does not inherit from ScriptWrappable. Note
-// that [NotScriptWrappable] is inheritable.
-//
-// All the derived classes of ScriptWrappable, regardless of directly or
-// indirectly, must write this macro in the class definition.
-#define DEFINE_WRAPPERTYPEINFO() \
-public: \
-    virtual const WrapperTypeInfo* wrapperTypeInfo() const override \
-    { \
-        return &s_wrapperTypeInfo; \
-    } \
-private: \
-    static const WrapperTypeInfo& s_wrapperTypeInfo
-
 } // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS_CORE_V8_SCRIPTWRAPPABLE_H_

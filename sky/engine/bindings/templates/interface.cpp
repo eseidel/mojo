@@ -996,7 +996,7 @@ v8::Handle<v8::Object> {{v8_class}}::findInstanceInPrototypeChain(v8::Handle<v8:
 {% block to_native_with_type_check %}
 {{cpp_class}}* {{v8_class}}::toNativeWithTypeCheck(v8::Isolate* isolate, v8::Handle<v8::Value> value)
 {
-    return hasInstance(value, isolate) ? fromInternalPointer(blink::toScriptWrappableBase(v8::Handle<v8::Object>::Cast(value))) : 0;
+    return nullptr;
 }
 
 {% endblock %}
@@ -1140,32 +1140,7 @@ v8::Handle<v8::Object> wrap({{cpp_class}}* impl, v8::Handle<v8::Object> creation
 {% if not has_custom_to_v8 %}
 v8::Handle<v8::Object> {{v8_class}}::createWrapper({{pass_cpp_type}} impl, v8::Handle<v8::Object> creationContext, v8::Isolate* isolate)
 {
-    ASSERT(impl);
-    ASSERT(!DOMDataStore::containsWrapper<{{v8_class}}>(impl.get(), isolate));
-    {% if is_script_wrappable %}
-    const WrapperTypeInfo* actualInfo = impl->wrapperTypeInfo();
-    // Might be a XXXConstructor::wrapperTypeInfo instead of an XXX::wrapperTypeInfo. These will both have
-    // the same object de-ref functions, though, so use that as the basis of the check.
-    RELEASE_ASSERT_WITH_SECURITY_IMPLICATION(actualInfo->derefObjectFunction == wrapperTypeInfo.derefObjectFunction);
-    {% endif %}
-
-    {% if is_document %}
-    if (LocalFrame* frame = impl->frame()) {
-        if (frame->script().initializeMainWorld()) {
-            // initializeMainWorld may have created a wrapper for the object, retry from the start.
-            v8::Handle<v8::Object> wrapper = DOMDataStore::getWrapper<{{v8_class}}>(impl.get(), isolate);
-            if (!wrapper.IsEmpty())
-                return wrapper;
-        }
-    }
-    {% endif %}
-    v8::Handle<v8::Object> wrapper = V8DOMWrapper::createWrapper(creationContext, &wrapperTypeInfo, toScriptWrappableBase(impl.get()), isolate);
-    if (UNLIKELY(wrapper.IsEmpty()))
-        return wrapper;
-
-    installConditionallyEnabledProperties(wrapper, isolate);
-    V8DOMWrapper::associateObjectWithWrapper<{{v8_class}}>(impl, &wrapperTypeInfo, wrapper, isolate);
-    return wrapper;
+    return v8::Handle<v8::Object>();
 }
 
 {% endif %}

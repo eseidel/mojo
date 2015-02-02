@@ -5,10 +5,10 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/script/dart_controller.h"
 
-#include "sky/engine/wtf/text/TextPosition.h"
-#include "sky/engine/core/app/AbstractModule.h"
-
 #include "base/logging.h"
+#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/core/app/AbstractModule.h"
+#include "sky/engine/wtf/text/TextPosition.h"
 
 namespace mojo {
 namespace dart {
@@ -57,28 +57,50 @@ void DartController::executeModuleScript(AbstractModule& module, const String& s
   LOG(INFO) << xyz;
 }
 
+
 static Dart_Isolate IsolateCreateCallback(const char* script_uri,
                                           const char* main,
                                           const char* package_root,
                                           void* callback_data,
                                           char** error) {
+  DartState* parent_dart_state = static_cast<DartState*>(callback_data);
+  DCHECK(parent_dart_state);
   // TODO(dart)
   return nullptr;
 }
+
 
 static void UnhandledExceptionCallback(Dart_Handle error) {
   // TODO(dart)
 }
 
+
 static void IsolateShutdownCallback(void* callback_data) {
+  DartState* dart_state = static_cast<DartState*>(callback_data);
+  DCHECK(dart_state);
   // TODO(dart)
 }
+
 
 static Dart_Isolate ServiceIsolateCreateCallback(void* callback_data,
                                                  char** error) {
   // TODO(dart)
   return nullptr;
 }
+
+
+static void GcPrologue() {
+  Dart_EnterScope();
+  DartState* dart_state = DartState::Current();
+  DCHECK(dart_state);
+  // TODO(dart)
+}
+
+
+static void GcEpilogue() {
+  Dart_ExitScope();
+}
+
 
 void DartController::InitVM() {
   bool result = Dart_SetVMFlags(0, NULL);
@@ -96,10 +118,15 @@ void DartController::InitVM() {
   char* error;
 
   // TODO(dart): What URI to use
+  DartState* dart_state = new DartState();
   Dart_Isolate isolate = Dart_CreateIsolate(
       "what:uri", "main", mojo::dart::snapshot_buffer, nullptr, &error);
-
-  CHECK(isolate);
+  if (!isolate) {
+    delete dart_state;
+    abort();
+  }
+  dart_state->set_isolate(isolate);
+  Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
 }
 
 } // namespace blink

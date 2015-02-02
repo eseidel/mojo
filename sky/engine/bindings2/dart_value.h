@@ -15,7 +15,7 @@
 namespace blink {
 
 class DartValue : public RefCounted<DartValue> {
-  WTF_MAKE_NONCOPYABLE(DartValue);  
+  WTF_MAKE_NONCOPYABLE(DartValue);
  public:
   static PassRefPtr<DartValue> Create(DartState* dart_state,
                                       Dart_Handle value) {
@@ -28,7 +28,7 @@ class DartValue : public RefCounted<DartValue> {
 
   ~DartValue();
 
-  DartState* dart_state() const { return dart_state_.get(); }
+  DartState* dart_state() const { return dart_state_; }
   Dart_Handle dart_value() const { return dart_value_.value(); }
   bool is_empty() const { return !dart_value(); }
 
@@ -49,7 +49,7 @@ class DartValue : public RefCounted<DartValue> {
   DartValue();
   DartValue(DartState* dart_state, Dart_Handle value);
 
-  RefPtr<DartState> dart_state_;
+  DartState* dart_state_;
   DartPersistentValue dart_value_;
 };
 

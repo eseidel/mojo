@@ -7,10 +7,15 @@
 
 namespace blink {
 
-DartState::DartState(Dart_Isolate isolate, intptr_t library_id)
-    : isolate_(isolate), library_id_(library_id) {
+DartState::DartState()
+    : isolate_(NULL) {
 }
 
 DartState::~DartState() {
 }
+
+DartState* DartState::Current() {
+  return static_cast<DartState*>(Dart_CurrentIsolateData());
 }
+
+}  // namespace blink

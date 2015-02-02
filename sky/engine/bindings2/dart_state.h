@@ -5,6 +5,7 @@
 #ifndef SKY_ENGINE_BINDINGS2_DART_STATE_H_
 #define SKY_ENGINE_BINDINGS2_DART_STATE_H_
 
+#include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/PassRefPtr.h"
@@ -12,25 +13,29 @@
 
 namespace blink {
 
-class DartState : public RefCounted<DartState> {
+// Contains the embedder's per isolate data.
+class DartState {
   WTF_MAKE_NONCOPYABLE(DartState);
  public:
-  static PassRefPtr<DartState> Create(Dart_Isolate isolate,
-                                      intptr_t library_id) {
-    return adoptRef(new DartState(isolate, library_id));
-  }
-
   ~DartState();
 
+  static DartState* Current();
+
   Dart_Isolate isolate() { return isolate_; }
-  intptr_t library_id() { return library_id_; }
 
  private:
-  explicit DartState(Dart_Isolate isolate, intptr_t library_id);
+  explicit DartState();
+
+  void set_isolate(Dart_Isolate isolate) {
+    CHECK(!isolate_);
+    isolate_ = isolate;
+  }
 
   Dart_Isolate isolate_;
-  intptr_t library_id_;
+
+  friend class DartController;
 };
-}
+
+} // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS2_DART_STATE_H_

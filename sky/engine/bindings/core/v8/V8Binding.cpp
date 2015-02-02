@@ -62,7 +62,7 @@ namespace blink {
 
 void setArityTypeError(ExceptionState& exceptionState, const char* valid, unsigned provided)
 {
-    exceptionState.throwTypeError(ExceptionMessages::invalidArity(valid, provided));
+    exceptionState.ThrowTypeError(ExceptionMessages::invalidArity(valid, provided));
 }
 
 v8::Local<v8::Value> createMinimumArityTypeErrorForMethod(const char* method, const char* type, unsigned expected, unsigned provided, v8::Isolate* isolate)
@@ -77,7 +77,7 @@ v8::Local<v8::Value> createMinimumArityTypeErrorForConstructor(const char* type,
 
 void setMinimumArityTypeError(ExceptionState& exceptionState, unsigned expected, unsigned provided)
 {
-    exceptionState.throwTypeError(ExceptionMessages::notEnoughArguments(expected, provided));
+    exceptionState.ThrowTypeError(ExceptionMessages::notEnoughArguments(expected, provided));
 }
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
@@ -115,12 +115,12 @@ const int64_t kJSMaxInteger = 0x20000000000000LL - 1; // 2^53 - 1, maximum uniqu
 static double enforceRange(double x, double minimum, double maximum, const char* typeName, ExceptionState& exceptionState)
 {
     if (std::isnan(x) || std::isinf(x)) {
-        exceptionState.throwTypeError("Value is" + String(std::isinf(x) ? " infinite and" : "") + " not of type '" + String(typeName) + "'.");
+        exceptionState.ThrowTypeError("Value is" + String(std::isinf(x) ? " infinite and" : "") + " not of type '" + String(typeName) + "'.");
         return 0;
     }
     x = trunc(x);
     if (x < minimum || x > maximum) {
-        exceptionState.throwTypeError("Value is outside the '" + String(typeName) + "' value range.");
+        exceptionState.ThrowTypeError("Value is outside the '" + String(typeName) + "' value range.");
         return 0;
     }
     return x;
@@ -167,7 +167,7 @@ static inline T toSmallerInt(v8::Handle<v8::Value> value, IntegerConversionConfi
         if (result >= LimitsTrait::minValue && result <= LimitsTrait::maxValue)
             return static_cast<T>(result);
         if (configuration == EnforceRange) {
-            exceptionState.throwTypeError("Value is outside the '" + String(typeName) + "' value range.");
+            exceptionState.ThrowTypeError("Value is outside the '" + String(typeName) + "' value range.");
             return 0;
         }
         result %= LimitsTrait::numberOfValues;
@@ -177,7 +177,7 @@ static inline T toSmallerInt(v8::Handle<v8::Value> value, IntegerConversionConfi
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type '" + String(typeName) + "'.");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type '" + String(typeName) + "'.");
         return 0;
     }
 
@@ -205,7 +205,7 @@ static inline T toSmallerUInt(v8::Handle<v8::Value> value, IntegerConversionConf
         if (result >= 0 && result <= LimitsTrait::maxValue)
             return static_cast<T>(result);
         if (configuration == EnforceRange) {
-            exceptionState.throwTypeError("Value is outside the '" + String(typeName) + "' value range.");
+            exceptionState.ThrowTypeError("Value is outside the '" + String(typeName) + "' value range.");
             return 0;
         }
         return static_cast<T>(result);
@@ -214,7 +214,7 @@ static inline T toSmallerUInt(v8::Handle<v8::Value> value, IntegerConversionConf
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type '" + String(typeName) + "'.");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type '" + String(typeName) + "'.");
         return 0;
     }
 
@@ -286,7 +286,7 @@ int32_t toInt32(v8::Handle<v8::Value> value, IntegerConversionConfiguration conf
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type 'long'.)");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type 'long'.)");
         return 0;
     }
 
@@ -323,7 +323,7 @@ uint32_t toUInt32(v8::Handle<v8::Value> value, IntegerConversionConfiguration co
         if (result >= 0)
             return result;
         if (configuration == EnforceRange) {
-            exceptionState.throwTypeError("Value is outside the 'unsigned long' value range.");
+            exceptionState.ThrowTypeError("Value is outside the 'unsigned long' value range.");
             return 0;
         }
         return result;
@@ -332,7 +332,7 @@ uint32_t toUInt32(v8::Handle<v8::Value> value, IntegerConversionConfiguration co
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type 'unsigned long'.)");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type 'unsigned long'.)");
         return 0;
     }
 
@@ -366,7 +366,7 @@ int64_t toInt64(v8::Handle<v8::Value> value, IntegerConversionConfiguration conf
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type 'long long'.)");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type 'long long'.)");
         return 0;
     }
 
@@ -403,7 +403,7 @@ uint64_t toUInt64(v8::Handle<v8::Value> value, IntegerConversionConfiguration co
         if (result >= 0)
             return result;
         if (configuration == EnforceRange) {
-            exceptionState.throwTypeError("Value is outside the 'unsigned long long' value range.");
+            exceptionState.ThrowTypeError("Value is outside the 'unsigned long long' value range.");
             return 0;
         }
         return result;
@@ -412,7 +412,7 @@ uint64_t toUInt64(v8::Handle<v8::Value> value, IntegerConversionConfiguration co
     // Can the value be converted to a number?
     TONATIVE_DEFAULT_EXCEPTIONSTATE(v8::Local<v8::Number>, numberObject, value->ToNumber(), exceptionState, 0);
     if (numberObject.IsEmpty()) {
-        exceptionState.throwTypeError("Not convertible to a number value (of type 'unsigned long long'.)");
+        exceptionState.ThrowTypeError("Not convertible to a number value (of type 'unsigned long long'.)");
         return 0;
     }
 
@@ -459,7 +459,7 @@ String toByteString(v8::Handle<v8::Value> value, ExceptionState& exceptionState)
 
     // 2. If the value of any element of x is greater than 255, then throw a TypeError.
     if (!x.containsOnlyLatin1()) {
-        exceptionState.throwTypeError("Value is not a valid ByteString.");
+        exceptionState.ThrowTypeError("Value is not a valid ByteString.");
         return String();
     }
 

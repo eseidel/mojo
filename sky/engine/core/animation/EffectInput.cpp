@@ -66,16 +66,16 @@ PassRefPtr<AnimationEffect> EffectInput::convert(Element* element, const Vector<
 
             // Keyframes with offsets outside the range [0.0, 1.0] are an error.
             if (std::isnan(offset)) {
-                exceptionState.throwDOMException(InvalidModificationError, "Non numeric offset provided");
+                exceptionState.ThrowDOMException(InvalidModificationError, "Non numeric offset provided");
             }
 
             if (offset < 0 || offset > 1) {
-                exceptionState.throwDOMException(InvalidModificationError, "Offsets provided outside the range [0, 1]");
+                exceptionState.ThrowDOMException(InvalidModificationError, "Offsets provided outside the range [0, 1]");
                 return nullptr;
             }
 
             if (offset < lastOffset) {
-                exceptionState.throwDOMException(InvalidModificationError, "Keyframes with specified offsets are not sorted");
+                exceptionState.ThrowDOMException(InvalidModificationError, "Keyframes with specified offsets are not sorted");
                 return nullptr;
             }
 
@@ -111,7 +111,7 @@ PassRefPtr<AnimationEffect> EffectInput::convert(Element* element, const Vector<
 
     RefPtr<StringKeyframeEffectModel> keyframeEffectModel = StringKeyframeEffectModel::create(keyframes);
     if (!keyframeEffectModel->isReplaceOnly()) {
-        exceptionState.throwDOMException(NotSupportedError, "Partial keyframes are not supported.");
+        exceptionState.ThrowDOMException(NotSupportedError, "Partial keyframes are not supported.");
         return nullptr;
     }
     keyframeEffectModel->forceConversionsToAnimatableValues(element);

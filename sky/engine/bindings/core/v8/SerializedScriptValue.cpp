@@ -32,7 +32,7 @@
 #include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
 
 #include "bindings/core/v8/V8ImageData.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/custom/V8ArrayBufferCustom.h"
 #include "sky/engine/bindings/core/v8/custom/V8ArrayBufferViewCustom.h"
@@ -2046,7 +2046,7 @@ PassOwnPtr<SerializedScriptValue::ArrayBufferContentsArray> SerializedScriptValu
 
     for (size_t i = 0; i < arrayBuffers.size(); i++) {
         if (arrayBuffers[i]->isNeutered()) {
-            exceptionState.throwDOMException(DataCloneError, "ArrayBuffer at index " + String::number(i) + " is already neutered.");
+            exceptionState.ThrowDOMException(DataCloneError, "ArrayBuffer at index " + String::number(i) + " is already neutered.");
             return nullptr;
         }
     }
@@ -2061,7 +2061,7 @@ PassOwnPtr<SerializedScriptValue::ArrayBufferContentsArray> SerializedScriptValu
 
         bool result = arrayBuffers[i]->transfer(contents->at(i));
         if (!result) {
-            exceptionState.throwDOMException(DataCloneError, "ArrayBuffer at index " + String::number(i) + " could not be transferred.");
+            exceptionState.ThrowDOMException(DataCloneError, "ArrayBuffer at index " + String::number(i) + " could not be transferred.");
             return nullptr;
         }
 
@@ -2082,7 +2082,8 @@ SerializedScriptValue::SerializedScriptValue(v8::Handle<v8::Value> value, ArrayB
         status = serializer.serialize(value);
         if (status == Serializer::JSException) {
             // If there was a JS exception thrown, re-throw it.
-            exceptionState.rethrowV8Exception(tryCatch.Exception());
+            // FIXME(dart):
+            // exceptionState.rethrowV8Exception(tryCatch.Exception());
             return;
         }
         errorMessage = serializer.errorMessage();
@@ -2090,7 +2091,7 @@ SerializedScriptValue::SerializedScriptValue(v8::Handle<v8::Value> value, ArrayB
     switch (status) {
     case Serializer::InputError:
     case Serializer::DataCloneError:
-        exceptionState.throwDOMException(DataCloneError, errorMessage);
+        exceptionState.ThrowDOMException(DataCloneError, errorMessage);
         return;
     case Serializer::Success:
         m_data = writer.takeWireString();

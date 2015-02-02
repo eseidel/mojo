@@ -34,7 +34,7 @@
 #include <algorithm>
 #include "base/bind.h"
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 #include "sky/engine/core/dom/ExecutionContext.h"
 #include "sky/engine/core/dom/Microtask.h"
@@ -77,7 +77,7 @@ MutationObserver::~MutationObserver()
 void MutationObserver::observe(Node* node, const Dictionary& optionsDictionary, ExceptionState& exceptionState)
 {
     if (!node) {
-        exceptionState.throwDOMException(NotFoundError, "The provided node was null.");
+        exceptionState.ThrowDOMException(NotFoundError, "The provided node was null.");
         return;
     }
 
@@ -118,21 +118,21 @@ void MutationObserver::observe(Node* node, const Dictionary& optionsDictionary, 
 
     if (!(options & Attributes)) {
         if (options & AttributeOldValue) {
-            exceptionState.throwTypeError("The options object may only set 'attributeOldValue' to true when 'attributes' is true or not present.");
+            exceptionState.ThrowTypeError("The options object may only set 'attributeOldValue' to true when 'attributes' is true or not present.");
             return;
         }
         if (options & AttributeFilter) {
-            exceptionState.throwTypeError("The options object may only set 'attributeFilter' when 'attributes' is true or not present.");
+            exceptionState.ThrowTypeError("The options object may only set 'attributeFilter' when 'attributes' is true or not present.");
             return;
         }
     }
     if (!((options & CharacterData) || !(options & CharacterDataOldValue))) {
-        exceptionState.throwTypeError("The options object may only set 'characterDataOldValue' to true when 'characterData' is true or not present.");
+        exceptionState.ThrowTypeError("The options object may only set 'characterDataOldValue' to true when 'characterData' is true or not present.");
         return;
     }
 
     if (!(options & (Attributes | CharacterData | ChildList))) {
-        exceptionState.throwTypeError("The options object must set at least one of 'attributes', 'characterData', or 'childList' to true.");
+        exceptionState.ThrowTypeError("The options object must set at least one of 'attributes', 'characterData', or 'childList' to true.");
         return;
     }
 

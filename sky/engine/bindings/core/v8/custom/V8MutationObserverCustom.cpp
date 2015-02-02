@@ -32,7 +32,7 @@
 #include "bindings/core/v8/V8MutationObserver.h"
 
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
 #include "sky/engine/bindings/core/v8/V8GCController.h"
@@ -44,17 +44,17 @@ namespace blink {
 
 void V8MutationObserver::constructorCustom(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ConstructionContext, "MutationObserver", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ConstructionContext, "MutationObserver");
     if (info.Length() < 1) {
-        exceptionState.throwTypeError(ExceptionMessages::notEnoughArguments(1, info.Length()));
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError(ExceptionMessages::notEnoughArguments(1, info.Length()));
+        exceptionState.ThrowIfNeeded();
         return;
     }
 
     v8::Local<v8::Value> arg = info[0];
     if (!arg->IsFunction()) {
-        exceptionState.throwTypeError("Callback argument must be a function");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("Callback argument must be a function");
+        exceptionState.ThrowIfNeeded();
         return;
     }
 

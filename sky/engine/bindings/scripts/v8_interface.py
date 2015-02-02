@@ -59,7 +59,7 @@ INTERFACE_H_INCLUDES = frozenset([
     'platform/heap/Handle.h',
 ])
 INTERFACE_CPP_INCLUDES = frozenset([
-    'bindings/core/v8/ExceptionState.h',
+    'sky/engine/bindings2/exception_state.h',
     'bindings/core/v8/V8DOMConfiguration.h',
     'bindings/core/v8/V8HiddenValue.h',
     'bindings/core/v8/V8ObjectConstructor.h',

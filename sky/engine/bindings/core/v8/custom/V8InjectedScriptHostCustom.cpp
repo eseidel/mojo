@@ -36,7 +36,7 @@
 #include "bindings/core/v8/V8Node.h"
 #include "bindings/core/v8/V8NodeList.h"
 #include "sky/engine/bindings/core/v8/BindingSecurity.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/bindings/core/v8/V8AbstractEventListener.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
@@ -72,7 +72,7 @@ ScriptValue InjectedScriptHost::nodeAsScriptValue(ScriptState* scriptState, Node
 {
     ScriptState::Scope scope(scriptState);
     v8::Isolate* isolate = scriptState->isolate();
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "nodeAsScriptValue", "InjectedScriptHost", scriptState->context()->Global(), isolate);
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "nodeAsScriptValue", "InjectedScriptHost");
     return ScriptValue(scriptState, toV8(node, scriptState->context()->Global(), isolate));
 }
 

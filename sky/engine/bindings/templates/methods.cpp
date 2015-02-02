@@ -5,7 +5,7 @@ static void {{method.name}}{{method.overload_index}}Method{{world_suffix}}(const
 {
     {# Local variables #}
     {% if method.has_exception_state %}
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "{{method.name}}", "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "{{method.name}}", "{{interface_name}}");
     {% endif %}
     {# Overloaded methods have length checked during overload resolution #}
     {% if method.number_of_required_arguments and not method.overload_index %}
@@ -176,7 +176,7 @@ if (!std::isnan({{argument.name}}NativeValue))
     {{argument.name}} = clampTo<{{argument.idl_type}}>({{argument.name}}NativeValue);
 {% elif argument.idl_type == 'SerializedScriptValue' %}
 {{argument.name}} = SerializedScriptValue::create(info[{{argument.index}}], 0, exceptionState, info.GetIsolate());
-if (exceptionState.hadException()) {
+if (exceptionState.had_exception()) {
     {{throw_from_exception_state(method)}};
     return;
 }
@@ -260,7 +260,7 @@ if (!{{method.cpp_value}})
 {% endif %}
 {# Post-call #}
 {% if method.is_raises_exception %}
-if (exceptionState.hadException()) {
+if (exceptionState.had_exception()) {
     {{throw_from_exception_state(method)}};
     return;
 }
@@ -322,7 +322,7 @@ v8SetReturnValueNull(info);
 {######################################}
 {% macro throw_type_error(method, error_message) %}
 {% if method.has_exception_state %}
-exceptionState.throwTypeError({{error_message}});
+exceptionState.ThrowTypeError({{error_message}});
 {{throw_from_exception_state(method)}};
 {% elif method.idl_type == 'Promise' %}
 v8SetReturnValue(info, ScriptPromise::rejectRaw(info.GetIsolate(), V8ThrowException::createTypeError({{type_error_message(method, error_message)}}, info.GetIsolate())));
@@ -347,7 +347,7 @@ ExceptionMessages::failedToExecute("{{method.name}}", "{{interface_name}}", {{er
 {% if method.idl_type == 'Promise' %}
 v8SetReturnValue(info, exceptionState.reject(ScriptState::current(info.GetIsolate())).v8Value())
 {%- else %}
-exceptionState.throwIfNeeded()
+exceptionState.ThrowIfNeeded()
 {%- endif %}
 {%- endmacro %}
 
@@ -382,7 +382,7 @@ we must ensure either ALL or NO methods in this overload return Promise #}
 {% macro overload_resolution_method(overloads, world_suffix) %}
 static void {{overloads.name}}Method{{world_suffix}}(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "{{overloads.name}}", "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "{{overloads.name}}", "{{interface_name}}");
     {# First resolve by length #}
     {# 2. Initialize argcount to be min(maxarg, n). #}
     switch (std::min({{overloads.maxarg}}, info.Length())) {
@@ -408,18 +408,18 @@ static void {{overloads.name}}Method{{world_suffix}}(const v8::FunctionCallbackI
         {% if overloads.valid_arities %}
         if (info.Length() >= {{overloads.minarg}}) {
             setArityTypeError(exceptionState, "{{overloads.valid_arities}}", info.Length());
-            exceptionState.throwIfNeeded();
+            exceptionState.ThrowIfNeeded();
             return;
         }
         {% endif %}
         {# Otherwise just report "not enough arguments" #}
-        exceptionState.throwTypeError(ExceptionMessages::notEnoughArguments({{overloads.minarg}}, info.Length()));
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError(ExceptionMessages::notEnoughArguments({{overloads.minarg}}, info.Length()));
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {# No match, throw error #}
-    exceptionState.throwTypeError("No function was found that matched the signature provided.");
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowTypeError("No function was found that matched the signature provided.");
+    exceptionState.ThrowIfNeeded();
 }
 {% endmacro %}
 
@@ -533,7 +533,7 @@ bool {{v8_class}}::PrivateScript::{{method.name}}Method({{method.argument_declar
         return false;
     }
     {{method.private_script_v8_value_to_local_cpp_value}};
-    RELEASE_ASSERT(!exceptionState.hadException());
+    RELEASE_ASSERT(!exceptionState.had_exception());
     *result = cppValue;
     {% endif %}
     return true;
@@ -560,7 +560,7 @@ static void {{name}}(const v8::FunctionCallbackInfo<v8::Value>& info)
     }
     {% endif %}
     {% if constructor.has_exception_state %}
-    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}");
     {% endif %}
     {# Overloaded constructors have length checked during overload resolution #}
     {% if constructor.number_of_required_arguments and not constructor.overload_index %}

@@ -53,25 +53,6 @@
 
 namespace blink {
 
-static LocalFrame* findFrame(v8::Local<v8::Object> host, v8::Local<v8::Value> data, v8::Isolate* isolate)
-{
-    const WrapperTypeInfo* type = WrapperTypeInfo::unwrap(data);
-
-    if (V8Window::wrapperTypeInfo.equals(type)) {
-        v8::Handle<v8::Object> windowWrapper = V8Window::findInstanceInPrototypeChain(host, isolate);
-        if (windowWrapper.IsEmpty())
-            return 0;
-        return V8Window::toNative(windowWrapper)->frame();
-    }
-
-    if (V8Location::wrapperTypeInfo.equals(type))
-        return V8Location::toNative(host)->frame();
-
-    // This function can handle only those types listed above.
-    ASSERT_NOT_REACHED();
-    return 0;
-}
-
 static void reportFatalErrorInMainThread(const char* location, const char* message)
 {
     int memoryUsageMB = blink::Platform::current()->actualMemoryUsageMB();
@@ -167,15 +148,6 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
 
 static void failedAccessCheckCallbackInMainThread(v8::Local<v8::Object> host, v8::AccessType type, v8::Local<v8::Value> data)
 {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    LocalFrame* target = findFrame(host, data, isolate);
-    if (!target)
-        return;
-
-    // FIXME: We should modify V8 to pass in more contextual information (context, property, and object).
-    ExceptionState exceptionState(ExceptionState::UnknownContext, 0, 0, isolate->GetCurrentContext()->Global(), isolate);
-    exceptionState.throwSecurityError("failedAccessCheckCallbackInMainThread", "failedAccessCheckCallbackInMainThread");
-    exceptionState.throwIfNeeded();
 }
 
 static void timerTraceProfilerInMainThread(const char* name, int status)

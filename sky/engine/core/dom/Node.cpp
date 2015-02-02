@@ -28,7 +28,7 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "gen/sky/core/HTMLNames.h"
 #include "sky/engine/bindings/core/v8/DOMDataStore.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptCallStackFactory.h"
 #include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
 #include "sky/engine/core/css/resolver/StyleResolver.h"
@@ -335,7 +335,7 @@ PassRefPtr<Node> Node::insertBefore(PassRefPtr<Node> newChild, Node* refChild, E
     if (isContainerNode())
         return toContainerNode(this)->insertBefore(newChild, refChild, exceptionState);
 
-    exceptionState.throwDOMException(HierarchyRequestError, "This node type does not support this method.");
+    exceptionState.ThrowDOMException(HierarchyRequestError, "This node type does not support this method.");
     return nullptr;
 }
 
@@ -344,7 +344,7 @@ PassRefPtr<Node> Node::replaceChild(PassRefPtr<Node> newChild, PassRefPtr<Node> 
     if (isContainerNode())
         return toContainerNode(this)->replaceChild(newChild, oldChild, exceptionState);
 
-    exceptionState.throwDOMException(HierarchyRequestError,  "This node type does not support this method.");
+    exceptionState.ThrowDOMException(HierarchyRequestError,  "This node type does not support this method.");
     return nullptr;
 }
 
@@ -353,7 +353,7 @@ PassRefPtr<Node> Node::removeChild(PassRefPtr<Node> oldChild, ExceptionState& ex
     if (isContainerNode())
         return toContainerNode(this)->removeChild(oldChild, exceptionState);
 
-    exceptionState.throwDOMException(NotFoundError, "This node type does not support this method.");
+    exceptionState.ThrowDOMException(NotFoundError, "This node type does not support this method.");
     return nullptr;
 }
 
@@ -362,7 +362,7 @@ PassRefPtr<Node> Node::appendChild(PassRefPtr<Node> newChild, ExceptionState& ex
     if (isContainerNode())
         return toContainerNode(this)->appendChild(newChild, exceptionState);
 
-    exceptionState.throwDOMException(HierarchyRequestError, "This node type does not support this method.");
+    exceptionState.ThrowDOMException(HierarchyRequestError, "This node type does not support this method.");
     return nullptr;
 }
 

@@ -29,7 +29,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/frame/Location.h"
 
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/core/dom/DOMURLUtilsReadOnly.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
@@ -133,7 +133,7 @@ void Location::setProtocol(LocalDOMWindow* callingWindow, LocalDOMWindow* entere
         return;
     KURL url = m_frame->document()->url();
     if (!url.setProtocol(protocol)) {
-        exceptionState.throwDOMException(SyntaxError, "'" + protocol + "' is an invalid protocol.");
+        exceptionState.ThrowDOMException(SyntaxError, "'" + protocol + "' is an invalid protocol.");
         return;
     }
     setLocation(url.string(), callingWindow, enteredWindow);

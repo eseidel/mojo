@@ -34,7 +34,7 @@
 #include "bindings/core/v8/V8Node.h"
 #include "sky/engine/bindings/core/v8/BindingSecurity.h"
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScheduledAction.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/bindings/core/v8/ScriptSourceCode.h"
@@ -70,7 +70,7 @@ static void windowSetTimeoutImpl(const v8::FunctionCallbackInfo<v8::Value>& info
 
     LocalDOMWindow* impl = V8Window::toNative(info.Holder());
     if (!impl->frame() || !impl->document()) {
-        exceptionState.throwDOMException(InvalidAccessError, "No script context is available in which to execute the script.");
+        exceptionState.ThrowDOMException(InvalidAccessError, "No script context is available in which to execute the script.");
         return;
     }
     ScriptState* scriptState = ScriptState::current(info.GetIsolate());
@@ -155,17 +155,17 @@ void V8Window::namedPropertyGetterCustom(v8::Local<v8::String> name, const v8::P
 
 void V8Window::setTimeoutMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "setTimeout", "Window", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "setTimeout", "Window");
     windowSetTimeoutImpl(info, true, exceptionState);
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowIfNeeded();
 }
 
 
 void V8Window::setIntervalMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "setInterval", "Window", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "setInterval", "Window");
     windowSetTimeoutImpl(info, false, exceptionState);
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowIfNeeded();
 }
 
 bool V8Window::namedSecurityCheckCustom(v8::Local<v8::Object> host, v8::Local<v8::Value> key, v8::AccessType type, v8::Local<v8::Value>)

@@ -44,7 +44,7 @@ const v8::PropertyCallbackInfo<v8::Value>& info
     {% endif %}
     {% if attribute.is_check_security_for_node or
           attribute.is_getter_raises_exception %}
-    ExceptionState exceptionState(ExceptionState::GetterContext, "{{attribute.name}}", "{{interface_name}}", holder, info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::GetterContext, "{{attribute.name}}", "{{interface_name}}");
     {% endif %}
     {% if attribute.is_explicit_nullable %}
     bool isNull = false;
@@ -58,13 +58,13 @@ const v8::PropertyCallbackInfo<v8::Value>& info
     {% endif %}
     {# Checks #}
     {% if attribute.is_getter_raises_exception %}
-    if (UNLIKELY(exceptionState.throwIfNeeded()))
+    if (UNLIKELY(exceptionState.ThrowIfNeeded()))
         return;
     {% endif %}
     {% if attribute.is_check_security_for_node %}
     if (!BindingSecurity::shouldAllowAccessToNode(info.GetIsolate(), {{attribute.cpp_value}}, exceptionState)) {
         v8SetReturnValueNull(info);
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {% endif %}
@@ -189,15 +189,15 @@ v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<void>& info
     v8::Handle<v8::Object> holder = info.Holder();
     {% endif %}
     {% if attribute.has_setter_exception_state %}
-    ExceptionState exceptionState(ExceptionState::SetterContext, "{{attribute.name}}", "{{interface_name}}", holder, info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::SetterContext, "{{attribute.name}}", "{{interface_name}}");
     {% endif %}
     {# Type checking #}
     {% if attribute.has_type_checking_interface %}
     {# Type checking for interface types (if interface not implemented, throw
        TypeError), per http://www.w3.org/TR/WebIDL/#es-interface #}
     if ({% if attribute.is_nullable %}!isUndefinedOrNull(v8Value) && {% endif %}!V8{{attribute.idl_type}}::hasInstance(v8Value, info.GetIsolate())) {
-        exceptionState.throwTypeError("The provided value is not of type '{{attribute.idl_type}}'.");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("The provided value is not of type '{{attribute.idl_type}}'.");
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {% endif %}
@@ -227,8 +227,8 @@ v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<void>& info
        http://heycam.github.io/webidl/#es-float
        http://heycam.github.io/webidl/#es-double #}
     if (!std::isfinite(cppValue)) {
-        exceptionState.throwTypeError("The provided {{attribute.idl_type}} value is non-finite.");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("The provided {{attribute.idl_type}} value is non-finite.");
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {% elif attribute.enum_validation_expression %}
@@ -256,7 +256,7 @@ v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<void>& info
     {{attribute.cpp_setter}};
     {# Post-set #}
     {% if attribute.is_setter_raises_exception %}
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowIfNeeded();
     {% endif %}
     {% if attribute.cached_attribute_validation_method %}
     V8HiddenValue::deleteHiddenValue(info.GetIsolate(), holder, v8AtomicString(info.GetIsolate(), "{{attribute.name}}")); // Invalidate the cached value.
@@ -321,7 +321,7 @@ bool {{v8_class}}::PrivateScript::{{attribute.name}}AttributeGetter(LocalFrame* 
         return false;
     }
     {{attribute.private_script_v8_value_to_local_cpp_value}};
-    RELEASE_ASSERT(!exceptionState.hadException());
+    RELEASE_ASSERT(!exceptionState.had_exception());
     *result = cppValue;
     return true;
 }

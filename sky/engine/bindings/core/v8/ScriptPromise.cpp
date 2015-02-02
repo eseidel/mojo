@@ -32,7 +32,7 @@
 #include "sky/engine/bindings/core/v8/ScriptPromise.h"
 
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8ThrowException.h"
 #include "sky/engine/core/dom/DOMException.h"

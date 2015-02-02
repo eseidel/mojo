@@ -34,7 +34,7 @@
 #include "sky/engine/bindings/core/v8/ArrayValue.h"
 #include "sky/engine/bindings/core/v8/DictionaryHelperForBindings.h"
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/custom/V8ArrayBufferViewCustom.h"
 #include "sky/engine/bindings/core/v8/custom/V8Uint8ArrayCustom.h"
@@ -527,7 +527,7 @@ bool DictionaryHelper::convert(const Dictionary& dictionary, Dictionary::Convers
         return true;
 
     value = IntegralTypeTraits<T>::toIntegral(v8Value, NormalConversion, context.exceptionState());
-    if (context.exceptionState().throwIfNeeded())
+    if (context.exceptionState().ThrowIfNeeded())
         return false;
 
     return true;
@@ -560,7 +560,7 @@ bool DictionaryHelper::convert(const Dictionary& dictionary, Dictionary::Convers
 
     T converted = IntegralTypeTraits<T>::toIntegral(v8Value, NormalConversion, context.exceptionState());
 
-    if (context.exceptionState().throwIfNeeded())
+    if (context.exceptionState().ThrowIfNeeded())
         return false;
 
     value = Nullable<T>(converted);

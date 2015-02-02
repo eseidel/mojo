@@ -34,7 +34,7 @@
 #include "gen/sky/core/CSSValueKeywords.h"
 #include "gen/sky/platform/FontFamilyNames.h"
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/css/BinaryDataFontFaceSource.h"
 #include "sky/engine/core/css/CSSFontFace.h"
@@ -220,7 +220,7 @@ void FontFace::setPropertyFromString(const Document* document, const String& s, 
 
     String message = "Failed to set '" + s + "' as a property value.";
     if (exceptionState)
-        exceptionState->throwDOMException(SyntaxError, message);
+        exceptionState->ThrowDOMException(SyntaxError, message);
     else
         setError(DOMException::create(SyntaxError, message));
 }

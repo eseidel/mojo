@@ -75,8 +75,8 @@
 #include <algorithm>
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
-#include "sky/engine/bindings/core/v8/ExceptionStatePlaceholder.h"
+#include "sky/engine/bindings2/exception_state.h"
+#include "sky/engine/bindings2/exception_state_placeholder.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/bindings/core/v8/ScriptSourceCode.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
@@ -164,7 +164,7 @@ static void frameContentAsPlainText(size_t maxChars, LocalFrame* frame, StringBu
     TrackExceptionState exceptionState;
     range->selectNodeContents(document->documentElement(), exceptionState);
 
-    if (!exceptionState.hadException()) {
+    if (!exceptionState.had_exception()) {
         // The text iterator will walk nodes giving us text. This is similar to
         // the plainText() function in core/editing/TextIterator.h, but we implement the maximum
         // size and also copy the results directly into a wstring, avoiding the

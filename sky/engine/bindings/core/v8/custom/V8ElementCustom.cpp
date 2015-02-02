@@ -35,7 +35,7 @@
 #include "bindings/core/v8/V8AnimationPlayer.h"
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8BindingMacros.h"
 #include "sky/engine/core/animation/ElementAnimation.h"
@@ -60,11 +60,11 @@ void animate1Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 // [RaisesException] AnimationPlayer animate(sequence<Dictionary> effect);
 void animate2Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element");
     Element* impl = V8Element::toNative(info.Holder());
     TONATIVE_VOID(Vector<Dictionary>, keyframes, toNativeArray<Dictionary>(info[0], 1, info.GetIsolate()));
     RefPtr<AnimationPlayer> result = ElementAnimation::animate(*impl, keyframes, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     v8SetReturnValueFast(info, WTF::getPtr(result.release()), impl);
 }
@@ -94,12 +94,12 @@ void animate4Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 // [RaisesException] AnimationPlayer animate(sequence<Dictionary> effect, double timing);
 void animate5Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element");
     Element* impl = V8Element::toNative(info.Holder());
     TONATIVE_VOID(Vector<Dictionary>, keyframes, toNativeArray<Dictionary>(info[0], 1, info.GetIsolate()));
     TONATIVE_VOID(double, duration, static_cast<double>(info[1]->NumberValue()));
     RefPtr<AnimationPlayer> result = ElementAnimation::animate(*impl, keyframes, duration, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     v8SetReturnValueFast(info, WTF::getPtr(result.release()), impl);
 }
@@ -107,17 +107,17 @@ void animate5Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 // [RaisesException] AnimationPlayer animate(sequence<Dictionary> effect, Dictionary timing);
 void animate6Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element");
     Element* impl = V8Element::toNative(info.Holder());
     TONATIVE_VOID(Vector<Dictionary>, keyframes, toNativeArray<Dictionary>(info[0], 1, info.GetIsolate()));
     TONATIVE_VOID(Dictionary, timingInput, Dictionary(info[1], info.GetIsolate()));
     if (!timingInput.isUndefinedOrNull() && !timingInput.isObject()) {
-        exceptionState.throwTypeError("parameter 2 ('timingInput') is not an object.");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("parameter 2 ('timingInput') is not an object.");
+        exceptionState.ThrowIfNeeded();
         return;
     }
     RefPtr<AnimationPlayer> result = ElementAnimation::animate(*impl, keyframes, timingInput, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     v8SetReturnValueFast(info, WTF::getPtr(result.release()), impl);
 }
@@ -125,7 +125,7 @@ void animate6Method(const v8::FunctionCallbackInfo<v8::Value>& info)
 void V8Element::animateMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
     v8::Isolate* isolate = info.GetIsolate();
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element", info.Holder(), isolate);
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "animate", "Element");
     // AnimationPlayer animate(
     //     (AnimationEffect or sequence<Dictionary>)? effect,
     //     optional (double or Dictionary) timing);
@@ -190,12 +190,12 @@ void V8Element::animateMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& i
         break;
     default:
         setArityTypeError(exceptionState, "[1]", info.Length());
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowIfNeeded();
         return;
         break;
     }
-    exceptionState.throwTypeError("No function was found that matched the signature provided.");
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowTypeError("No function was found that matched the signature provided.");
+    exceptionState.ThrowIfNeeded();
 }
 
 } // namespace blink

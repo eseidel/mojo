@@ -152,7 +152,7 @@ TEST_F(AnimationAnimationV8Test, MismatchedKeyframePropertyRaisesException)
 
     createAnimation(element.get(), jsKeyframes, 0, exceptionState);
 
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(NotSupportedError, exceptionState.code());
 }
 
@@ -172,7 +172,7 @@ TEST_F(AnimationAnimationV8Test, MissingOffsetZeroRaisesException)
 
     createAnimation(element.get(), jsKeyframes, 0, exceptionState);
 
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(NotSupportedError, exceptionState.code());
 }
 
@@ -192,7 +192,7 @@ TEST_F(AnimationAnimationV8Test, MissingOffsetOneRaisesException)
 
     createAnimation(element.get(), jsKeyframes, 0, exceptionState);
 
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(NotSupportedError, exceptionState.code());
 }
 
@@ -212,7 +212,7 @@ TEST_F(AnimationAnimationV8Test, MissingOffsetZeroAndOneRaisesException)
 
     createAnimation(element.get(), jsKeyframes, 0, exceptionState);
 
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(NotSupportedError, exceptionState.code());
 }
 

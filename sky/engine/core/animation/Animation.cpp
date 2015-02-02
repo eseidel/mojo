@@ -32,7 +32,7 @@
 #include "sky/engine/core/animation/Animation.h"
 
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/core/animation/ActiveAnimations.h"
 #include "sky/engine/core/animation/AnimationHelpers.h"
 #include "sky/engine/core/animation/AnimationPlayer.h"

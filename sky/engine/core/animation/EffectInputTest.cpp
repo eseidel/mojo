@@ -52,7 +52,7 @@ TEST_F(AnimationEffectInputTest, SortedOffsets)
     jsKeyframes.append(Dictionary(keyframe2, m_isolate));
 
     RefPtr<AnimationEffect> animationEffect = EffectInput::convert(element.get(), jsKeyframes, exceptionState);
-    EXPECT_FALSE(exceptionState.hadException());
+    EXPECT_FALSE(exceptionState.had_exception());
     const KeyframeEffectModelBase& keyframeEffect = *toKeyframeEffectModelBase(animationEffect.get());
     EXPECT_EQ(1.0, keyframeEffect.getFrames()[1]->offset());
 }
@@ -72,7 +72,7 @@ TEST_F(AnimationEffectInputTest, UnsortedOffsets)
     jsKeyframes.append(Dictionary(keyframe2, m_isolate));
 
     EffectInput::convert(element.get(), jsKeyframes, exceptionState);
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(InvalidModificationError, exceptionState.code());
 }
 
@@ -94,7 +94,7 @@ TEST_F(AnimationEffectInputTest, LooslySorted)
     jsKeyframes.append(Dictionary(keyframe3, m_isolate));
 
     RefPtr<AnimationEffect> animationEffect = EffectInput::convert(element.get(), jsKeyframes, exceptionState);
-    EXPECT_FALSE(exceptionState.hadException());
+    EXPECT_FALSE(exceptionState.had_exception());
     const KeyframeEffectModelBase& keyframeEffect = *toKeyframeEffectModelBase(animationEffect.get());
     EXPECT_EQ(1, keyframeEffect.getFrames()[2]->offset());
 }
@@ -121,7 +121,7 @@ TEST_F(AnimationEffectInputTest, OutOfOrderWithNullOffsets)
     jsKeyframes.append(Dictionary(keyframe4, m_isolate));
 
     EffectInput::convert(element.get(), jsKeyframes, exceptionState);
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
 }
 
 TEST_F(AnimationEffectInputTest, Invalid)
@@ -143,7 +143,7 @@ TEST_F(AnimationEffectInputTest, Invalid)
     jsKeyframes.append(Dictionary(keyframe3, m_isolate));
 
     EffectInput::convert(element.get(), jsKeyframes, exceptionState);
-    EXPECT_TRUE(exceptionState.hadException());
+    EXPECT_TRUE(exceptionState.had_exception());
     EXPECT_EQ(InvalidModificationError, exceptionState.code());
 }
 

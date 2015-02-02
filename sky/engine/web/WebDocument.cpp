@@ -32,7 +32,7 @@
 #include "sky/engine/public/web/WebDocument.h"
 
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/core/animation/AnimationTimeline.h"
@@ -116,7 +116,7 @@ WebElement WebDocument::createElement(const WebString& tagName)
 {
     TrackExceptionState exceptionState;
     WebElement element(unwrap<Document>()->createElement(tagName, exceptionState));
-    if (exceptionState.hadException())
+    if (exceptionState.had_exception())
         return WebElement();
     return element;
 }

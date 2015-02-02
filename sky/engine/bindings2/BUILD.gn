@@ -16,6 +16,10 @@ source_set("bindings2") {
     "dart_value.h",
     "dart_wrappable.cc",
     "dart_wrappable.h",
+    "exception_state.cc",
+    "exception_state.h",
+    "exception_state_placeholder.cc",
+    "exception_state_placeholder.h",
     "nullable.h",
   ]
   deps = [

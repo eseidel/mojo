@@ -32,7 +32,7 @@
 #include "bindings/core/v8/V8CSSStyleDeclaration.h"
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/core/css/CSSPrimitiveValue.h"
 #include "sky/engine/core/css/CSSPropertyMetadata.h"
@@ -221,10 +221,10 @@ void V8CSSStyleDeclaration::namedPropertySetterCustom(v8::Local<v8::String> name
         return;
 
     TOSTRING_VOID(V8StringResource<TreatNullAsNullString>, propertyValue, value);
-    ExceptionState exceptionState(ExceptionState::SetterContext, getPropertyName(static_cast<CSSPropertyID>(propInfo->propID)), "CSSStyleDeclaration", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::SetterContext, getPropertyName(static_cast<CSSPropertyID>(propInfo->propID)), "CSSStyleDeclaration");
     impl->setPropertyInternal(static_cast<CSSPropertyID>(propInfo->propID), propertyValue, exceptionState);
 
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
 
     v8SetReturnValue(info, value);

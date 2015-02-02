@@ -36,7 +36,7 @@
 #include "sky/engine/bindings/core/v8/CustomElementBinding.h"
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
 #include "sky/engine/bindings/core/v8/Dictionary.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8HiddenValue.h"
 #include "sky/engine/bindings/core/v8/V8PerContextData.h"
@@ -264,10 +264,10 @@ static void constructCustomElement(const v8::FunctionCallbackInfo<v8::Value>& in
     Document* document = V8Document::toNative(V8HiddenValue::getHiddenValue(info.GetIsolate(), info.Callee(), V8HiddenValue::customElementDocument(isolate)).As<v8::Object>());
     TOSTRING_VOID(V8StringResource<>, tagName, V8HiddenValue::getHiddenValue(isolate, info.Callee(), V8HiddenValue::customElementTagName(isolate)));
 
-    ExceptionState exceptionState(ExceptionState::ConstructionContext, "CustomElement", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ConstructionContext, "CustomElement");
     CustomElementProcessingStack::CallbackDeliveryScope deliveryScope;
     RefPtr<Element> element = document->createElement(tagName, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     v8SetReturnValueFast(info, element.release(), document);
 }

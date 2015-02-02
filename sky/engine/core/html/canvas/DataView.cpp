@@ -26,7 +26,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/html/canvas/DataView.h"
 
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/custom/V8DataViewCustom.h"
 #include "sky/engine/bindings/core/v8/custom/V8TypedArrayCustom.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
@@ -134,7 +134,7 @@ template<typename T>
 T DataView::getData(unsigned byteOffset, bool littleEndian, ExceptionState& exceptionState) const
 {
     if (beyondRange<T>(byteOffset)) {
-        exceptionState.throwDOMException(IndexSizeError, "The provided offset (" + String::number(byteOffset) + ") is outside the allowed range.");
+        exceptionState.ThrowDOMException(IndexSizeError, "The provided offset (" + String::number(byteOffset) + ") is outside the allowed range.");
         return 0;
     }
 
@@ -149,7 +149,7 @@ template<typename T>
 void DataView::setData(unsigned byteOffset, T value, bool littleEndian, ExceptionState& exceptionState)
 {
     if (beyondRange<T>(byteOffset)) {
-        exceptionState.throwDOMException(IndexSizeError, "The provided offset (" + String::number(byteOffset) + ") is outside the allowed range.");
+        exceptionState.ThrowDOMException(IndexSizeError, "The provided offset (" + String::number(byteOffset) + ") is outside the allowed range.");
         return;
     }
 

@@ -26,9 +26,9 @@ static void {{cpp_class}}ForceSetAttributeOnThis(v8::Local<v8::String> name, v8:
     {% if is_check_security %}
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     v8::String::Utf8Value attributeName(name);
-    ExceptionState exceptionState(ExceptionState::SetterContext, *attributeName, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::SetterContext, *attributeName, "{{interface_name}}");
     if (!BindingSecurity::shouldAllowAccessToFrame(info.GetIsolate(), impl->frame(), exceptionState)) {
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {% endif %}
@@ -72,14 +72,14 @@ static void indexedPropertyGetter(uint32_t index, const v8::PropertyCallbackInfo
 {
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     {% if getter.is_raises_exception %}
-    ExceptionState exceptionState(ExceptionState::IndexedGetterContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::IndexedGetterContext, "{{interface_name}}");
     {% endif %}
     {% set getter_name = getter.name or 'anonymousIndexedGetter' %}
     {% set getter_arguments = ['index', 'exceptionState']
            if getter.is_raises_exception else ['index'] %}
     {{getter.cpp_type}} result = impl->{{getter_name}}({{getter_arguments | join(', ')}});
     {% if getter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if ({{getter.is_null_expression}})
@@ -119,14 +119,14 @@ static void indexedPropertySetter(uint32_t index, v8::Local<v8::Value> v8Value, 
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     {{setter.v8_value_to_local_cpp_value}};
     {% if setter.has_exception_state %}
-    ExceptionState exceptionState(ExceptionState::IndexedSetterContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::IndexedSetterContext, "{{interface_name}}");
     {% endif %}
     {% if setter.has_type_checking_interface %}
     {# Type checking for interface types (if interface not implemented, throw
        TypeError), per http://www.w3.org/TR/WebIDL/#es-interface #}
     if (!isUndefinedOrNull(v8Value) && !V8{{setter.idl_type}}::hasInstance(v8Value, info.GetIsolate())) {
-        exceptionState.throwTypeError("The provided value is not of type '{{setter.idl_type}}'.");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("The provided value is not of type '{{setter.idl_type}}'.");
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {% endif %}
@@ -135,7 +135,7 @@ static void indexedPropertySetter(uint32_t index, v8::Local<v8::Value> v8Value, 
            if setter.is_raises_exception else ['index', 'propertyValue'] %}
     bool result = impl->{{setter_name}}({{setter_arguments | join(', ')}});
     {% if setter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if (!result)
@@ -174,14 +174,14 @@ static void indexedPropertyDeleter(uint32_t index, const v8::PropertyCallbackInf
 {
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     {% if deleter.is_raises_exception %}
-    ExceptionState exceptionState(ExceptionState::IndexedDeletionContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::IndexedDeletionContext, "{{interface_name}}");
     {% endif %}
     {% set deleter_name = deleter.name or 'anonymousIndexedDeleter' %}
     {% set deleter_arguments = ['index', 'exceptionState']
            if deleter.is_raises_exception else ['index'] %}
     DeleteResult result = impl->{{deleter_name}}({{deleter_arguments | join(', ')}});
     {% if deleter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if (result != DeleteUnknownProperty)
@@ -229,14 +229,14 @@ static void namedPropertyGetter(v8::Local<v8::String> name, const v8::PropertyCa
     AtomicString propertyName = toCoreAtomicString(name);
     {% if getter.is_raises_exception %}
     v8::String::Utf8Value namedProperty(name);
-    ExceptionState exceptionState(ExceptionState::GetterContext, *namedProperty, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::GetterContext, *namedProperty, "{{interface_name}}");
     {% endif %}
     {% if getter.union_arguments %}
     {{union_type_method_call_and_set_return_value(getter) | indent}}
     {% else %}
     {{getter.cpp_type}} result = {{getter.cpp_value}};
     {% if getter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if ({{getter.is_null_expression}})
@@ -287,7 +287,7 @@ static void namedPropertySetter(v8::Local<v8::String> name, v8::Local<v8::Value>
     {{setter.v8_value_to_local_cpp_value}};
     {% if setter.has_exception_state %}
     v8::String::Utf8Value namedProperty(name);
-    ExceptionState exceptionState(ExceptionState::SetterContext, *namedProperty, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::SetterContext, *namedProperty, "{{interface_name}}");
     {% endif %}
     {% set setter_name = setter.name or 'anonymousNamedSetter' %}
     {% set setter_arguments =
@@ -296,7 +296,7 @@ static void namedPropertySetter(v8::Local<v8::String> name, v8::Local<v8::Value>
            ['propertyName', 'propertyValue'] %}
     bool result = impl->{{setter_name}}({{setter_arguments | join(', ')}});
     {% if setter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if (!result)
@@ -338,9 +338,9 @@ static void namedPropertyQuery(v8::Local<v8::String> name, const v8::PropertyCal
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     AtomicString propertyName = toCoreAtomicString(name);
     v8::String::Utf8Value namedProperty(name);
-    ExceptionState exceptionState(ExceptionState::GetterContext, *namedProperty, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::GetterContext, *namedProperty, "{{interface_name}}");
     bool result = impl->namedPropertyQuery(propertyName, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     if (!result)
         return;
@@ -380,14 +380,14 @@ static void namedPropertyDeleter(v8::Local<v8::String> name, const v8::PropertyC
     AtomicString propertyName = toCoreAtomicString(name);
     {% if deleter.is_raises_exception %}
     v8::String::Utf8Value namedProperty(name);
-    ExceptionState exceptionState(ExceptionState::DeletionContext, *namedProperty, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::DeletionContext, *namedProperty, "{{interface_name}}");
     {% endif %}
     {% set deleter_name = deleter.name or 'anonymousNamedDeleter' %}
     {% set deleter_arguments = ['propertyName', 'exceptionState']
            if deleter.is_raises_exception else ['propertyName'] %}
     DeleteResult result = impl->{{deleter_name}}({{deleter_arguments | join(', ')}});
     {% if deleter.is_raises_exception %}
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% endif %}
     if (result != DeleteUnknownProperty)
@@ -425,9 +425,9 @@ static void namedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& i
 {
     {{cpp_class}}* impl = {{v8_class}}::toNative(info.Holder());
     Vector<String> names;
-    ExceptionState exceptionState(ExceptionState::EnumerationContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::EnumerationContext, "{{interface_name}}");
     impl->namedPropertyEnumerator(names, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     v8::Handle<v8::Array> v8names = v8::Array::New(info.GetIsolate(), names.size());
     for (size_t i = 0; i < names.size(); ++i)
@@ -468,9 +468,9 @@ static void {{cpp_class}}OriginSafeMethodSetter(v8::Local<v8::String> name, v8::
         return;
     {{cpp_class}}* impl = {{v8_class}}::toNative(holder);
     v8::String::Utf8Value attributeName(name);
-    ExceptionState exceptionState(ExceptionState::SetterContext, *attributeName, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::SetterContext, *attributeName, "{{interface_name}}");
     if (!BindingSecurity::shouldAllowAccessToFrame(info.GetIsolate(), impl->frame(), exceptionState)) {
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowIfNeeded();
         return;
     }
 
@@ -526,7 +526,7 @@ v8::Handle<v8::FunctionTemplate> {{v8_class}}Constructor::domTemplate(v8::Isolat
 {% if constructor_overloads %}
 static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}");
     {# 2. Initialize argcount to be min(maxarg, n). #}
     switch (std::min({{constructor_overloads.maxarg}}, info.Length())) {
     {# 3. Remove from S all entries whose type list is not of length argcount. #}
@@ -552,13 +552,13 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
         }
         {% endif %}
         {# Otherwise just report "not enough arguments" #}
-        exceptionState.throwTypeError(ExceptionMessages::notEnoughArguments({{constructor_overloads.minarg}}, info.Length()));
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError(ExceptionMessages::notEnoughArguments({{constructor_overloads.minarg}}, info.Length()));
+        exceptionState.ThrowIfNeeded();
         return;
     }
     {# No match, throw error #}
-    exceptionState.throwTypeError("No matching constructor signature.");
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowTypeError("No matching constructor signature.");
+    exceptionState.ThrowIfNeeded();
 }
 
 {% endif %}
@@ -570,10 +570,10 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
 {% if has_event_constructor %}
 static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ConstructionContext, "{{interface_name}}");
     if (info.Length() < 1) {
-        exceptionState.throwTypeError("An event name must be provided.");
-        exceptionState.throwIfNeeded();
+        exceptionState.ThrowTypeError("An event name must be provided.");
+        exceptionState.ThrowIfNeeded();
         return;
     }
 
@@ -585,7 +585,7 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
     if (info.Length() >= 2) {
         TONATIVE_VOID(Dictionary, options, Dictionary(info[1], info.GetIsolate()));
         if (!initialize{{cpp_class}}(eventInit, options, exceptionState, info)) {
-            exceptionState.throwIfNeeded();
+            exceptionState.ThrowIfNeeded();
             return;
         }
         {# Store attributes of type |any| on the wrapper to avoid leaking them
@@ -598,7 +598,7 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
     }
     {% if is_constructor_raises_exception %}
     RefPtr<{{cpp_class}}> event = {{cpp_class}}::create(type, eventInit, exceptionState);
-    if (exceptionState.throwIfNeeded())
+    if (exceptionState.ThrowIfNeeded())
         return;
     {% else %}
     RefPtr<{{cpp_class}}> event = {{cpp_class}}::create(type, eventInit);

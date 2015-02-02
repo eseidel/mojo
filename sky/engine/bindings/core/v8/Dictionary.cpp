@@ -34,7 +34,7 @@
 #include "bindings/core/v8/V8Window.h"
 #include "sky/engine/bindings/core/v8/ArrayValue.h"
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/custom/V8ArrayBufferViewCustom.h"
 #include "sky/engine/bindings/core/v8/custom/V8Uint8ArrayCustom.h"
@@ -281,7 +281,7 @@ Dictionary::ConversionContext& Dictionary::ConversionContext::setConversionType(
 
 void Dictionary::ConversionContext::throwTypeError(const String& detail)
 {
-    exceptionState().throwTypeError(detail);
+    exceptionState().ThrowTypeError(detail);
 }
 
 } // namespace blink

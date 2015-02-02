@@ -271,13 +271,13 @@ void FontFaceSet::add(FontFace* fontFace, ExceptionState& exceptionState)
     if (!inActiveDocumentContext())
         return;
     if (!fontFace) {
-        exceptionState.throwTypeError("The argument is not a FontFace.");
+        exceptionState.ThrowTypeError("The argument is not a FontFace.");
         return;
     }
     if (m_nonCSSConnectedFaces.contains(fontFace))
         return;
     if (isCSSConnectedFontFace(fontFace)) {
-        exceptionState.throwDOMException(InvalidModificationError, "Cannot add a CSS-connected FontFace.");
+        exceptionState.ThrowDOMException(InvalidModificationError, "Cannot add a CSS-connected FontFace.");
         return;
     }
     CSSFontSelector* fontSelector = document()->styleEngine()->fontSelector();
@@ -308,7 +308,7 @@ bool FontFaceSet::remove(FontFace* fontFace, ExceptionState& exceptionState)
     if (!inActiveDocumentContext())
         return false;
     if (!fontFace) {
-        exceptionState.throwTypeError("The argument is not a FontFace.");
+        exceptionState.ThrowTypeError("The argument is not a FontFace.");
         return false;
     }
     ListHashSet<RefPtr<FontFace> >::iterator it = m_nonCSSConnectedFaces.find(fontFace);
@@ -322,7 +322,7 @@ bool FontFaceSet::remove(FontFace* fontFace, ExceptionState& exceptionState)
         return true;
     }
     if (isCSSConnectedFontFace(fontFace))
-        exceptionState.throwDOMException(InvalidModificationError, "Cannot delete a CSS-connected FontFace.");
+        exceptionState.ThrowDOMException(InvalidModificationError, "Cannot delete a CSS-connected FontFace.");
     return false;
 }
 
@@ -331,7 +331,7 @@ bool FontFaceSet::has(FontFace* fontFace, ExceptionState& exceptionState) const
     if (!inActiveDocumentContext())
         return false;
     if (!fontFace) {
-        exceptionState.throwTypeError("The argument is not a FontFace.");
+        exceptionState.ThrowTypeError("The argument is not a FontFace.");
         return false;
     }
     return m_nonCSSConnectedFaces.contains(fontFace) || isCSSConnectedFontFace(fontFace);
@@ -462,7 +462,7 @@ bool FontFaceSet::check(const String& fontString, const String& text, ExceptionS
 
     Font font;
     if (!resolveFontStyle(fontString, font)) {
-        exceptionState.throwDOMException(SyntaxError, "Could not resolve '" + fontString + "' as a font.");
+        exceptionState.ThrowDOMException(SyntaxError, "Could not resolve '" + fontString + "' as a font.");
         return false;
     }
 

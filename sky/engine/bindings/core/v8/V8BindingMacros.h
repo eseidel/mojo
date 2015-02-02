@@ -90,7 +90,7 @@ namespace blink {
 
 #define TONATIVE_VOID_EXCEPTIONSTATE_INTERNAL(var, value, exceptionState) \
     var = (value);                                                        \
-    if (UNLIKELY(block.HasCaught() || exceptionState.throwIfNeeded()))    \
+    if (UNLIKELY(block.HasCaught() || exceptionState.ThrowIfNeeded()))    \
         return;                                                           \
 
 #define TONATIVE_VOID_EXCEPTIONSTATE(type, var, value, exceptionState)     \
@@ -107,7 +107,7 @@ namespace blink {
         v8::TryCatch block;                                                       \
         V8RethrowTryCatchScope rethrow(block);                                    \
         var = (value);                                                            \
-        if (UNLIKELY(block.HasCaught() || exceptionState.throwIfNeeded()))        \
+        if (UNLIKELY(block.HasCaught() || exceptionState.ThrowIfNeeded()))        \
             return retVal;                                                        \
     }
 
@@ -120,7 +120,7 @@ namespace blink {
         block.Reset();                                                                               \
         return;                                                                                      \
     }                                                                                                \
-    if (UNLIKELY(exceptionState.hadException())) {                                                   \
+    if (UNLIKELY(exceptionState.had_exception())) {                                                   \
         v8SetReturnValue(info, exceptionState.reject(scriptState).v8Value());                        \
         return;                                                                                      \
     }

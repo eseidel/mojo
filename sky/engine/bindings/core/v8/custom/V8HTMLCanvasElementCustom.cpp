@@ -35,7 +35,7 @@
 #include "bindings/core/v8/V8CanvasRenderingContext2D.h"
 #include "bindings/core/v8/V8Node.h"
 #include "bindings/core/v8/V8WebGLRenderingContext.h"
-#include "sky/engine/bindings/core/v8/ExceptionState.h"
+#include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/core/html/HTMLCanvasElement.h"
 #include "sky/engine/core/html/canvas/Canvas2DContextAttributes.h"
@@ -108,7 +108,7 @@ void V8HTMLCanvasElement::toDataURLMethodCustom(const v8::FunctionCallbackInfo<v
 {
     v8::Handle<v8::Object> holder = info.Holder();
     HTMLCanvasElement* canvas = V8HTMLCanvasElement::toNative(holder);
-    ExceptionState exceptionState(ExceptionState::ExecutionContext, "toDataURL", "HTMLCanvasElement", info.Holder(), info.GetIsolate());
+    ExceptionState exceptionState(ExceptionState::ExecutionContext, "toDataURL", "HTMLCanvasElement");
 
     TOSTRING_VOID(V8StringResource<>, type, info[0]);
     double quality;
@@ -119,7 +119,7 @@ void V8HTMLCanvasElement::toDataURLMethodCustom(const v8::FunctionCallbackInfo<v
     }
 
     String result = canvas->toDataURL(type, qualityPtr, exceptionState);
-    exceptionState.throwIfNeeded();
+    exceptionState.ThrowIfNeeded();
     v8SetReturnValueStringOrUndefined(info, result, info.GetIsolate());
 }
 

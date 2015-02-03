@@ -37,8 +37,6 @@ enum FontFaceSetLoadStatus { "loading", "loaded" };
 ] interface FontFaceSet : EventTarget {
 
     [RaisesException] boolean check(DOMString font, optional DOMString text = null);
-    [CallWith=ScriptState] Promise load(DOMString font, optional DOMString text = null);
-    [MeasureAs=FontFaceSetReady, CallWith=ScriptState] Promise ready();
 
     [RaisesException] void add(FontFace fontFace);
     void clear();

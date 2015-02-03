@@ -6,8 +6,8 @@ interface AbstractModule : EventTarget {
     readonly attribute Document document;
     readonly attribute DOMString url;
 
-    [CallWith=ScriptState]
-    Promise<any> import(DOMString url);
+    // [CallWith=ScriptState]
+    // Promise<any> import(DOMString url);
 
     // FIXME:
     // readonly attribute Element? currentScript;

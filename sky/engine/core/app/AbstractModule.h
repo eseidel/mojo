@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_CORE_APP_ABSTRACTMODULE_H_
 #define SKY_ENGINE_CORE_APP_ABSTRACTMODULE_H_
 
-#include "sky/engine/bindings/core/v8/ScriptPromiseResolver.h"
+#include "sky/engine/bindings2/dart_promise_resolver.h"
 #include "sky/engine/core/app/ModuleLoader.h"
 #include "sky/engine/core/dom/ContextLifecycleObserver.h"
 #include "sky/engine/core/dom/Document.h"
@@ -27,7 +27,7 @@ class AbstractModule : public RefCounted<AbstractModule>,
   Document* document() const { return document_.get(); }
   const String& url() const { return url_; }
 
-  ScriptPromise import(ScriptState*, const String& url);
+  PassRefPtr<DartPromise> import(DartState*, const String& url);
 
  protected:
   AbstractModule(ExecutionContext*, PassRefPtr<Document>, const String& url);
@@ -42,7 +42,7 @@ class AbstractModule : public RefCounted<AbstractModule>,
   RefPtr<Document> document_;
   String url_;
 
-  HashMap<OwnPtr<ModuleLoader>, RefPtr<ScriptPromiseResolver>> loaders_;
+  HashMap<OwnPtr<ModuleLoader>, RefPtr<DartPromiseResolver>> loaders_;
 };
 
 } // namespace blink

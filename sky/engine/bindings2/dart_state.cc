@@ -7,6 +7,12 @@
 
 namespace blink {
 
+DartState::Scope::Scope(DartState* dart_state) {
+}
+
+DartState::Scope::~Scope() {
+}
+
 DartState::DartState()
     : isolate_(NULL) {
 }

@@ -55,7 +55,4 @@ enum FontFaceLoadStatus {
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString featureSettings;
 
     readonly attribute FontFaceLoadStatus status;
-    [CallWith=ScriptState] readonly attribute Promise loaded;
-
-    [CallWith=ScriptState] Promise load();
 };

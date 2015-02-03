@@ -26,8 +26,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/css/FontFaceSet.h"
 
-#include "sky/engine/bindings/core/v8/ScriptPromiseResolver.h"
-#include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/css/CSSFontSelector.h"
 #include "sky/engine/core/css/CSSSegmentedFontFace.h"
 #include "sky/engine/core/css/FontFaceCache.h"
@@ -47,86 +45,6 @@ namespace blink {
 
 static const int defaultFontSize = 10;
 static const char defaultFontFamily[] = "sans-serif";
-
-class LoadFontPromiseResolver final : public FontFace::LoadFontCallback {
-public:
-    static PassRefPtr<LoadFontPromiseResolver> create(FontFaceArray faces, ScriptState* scriptState)
-    {
-        return adoptRef(new LoadFontPromiseResolver(faces, scriptState));
-    }
-
-    void loadFonts(ExecutionContext*);
-    ScriptPromise promise() { return m_resolver->promise(); }
-
-    virtual void notifyLoaded(FontFace*) override;
-    virtual void notifyError(FontFace*) override;
-
-private:
-    LoadFontPromiseResolver(FontFaceArray faces, ScriptState* scriptState)
-        : m_numLoading(faces.size())
-        , m_errorOccured(false)
-        , m_resolver(ScriptPromiseResolver::create(scriptState))
-    {
-        m_fontFaces.swap(faces);
-    }
-
-    Vector<RefPtr<FontFace> > m_fontFaces;
-    int m_numLoading;
-    bool m_errorOccured;
-    RefPtr<ScriptPromiseResolver> m_resolver;
-};
-
-void LoadFontPromiseResolver::loadFonts(ExecutionContext* context)
-{
-    if (!m_numLoading) {
-        m_resolver->resolve(m_fontFaces);
-        return;
-    }
-
-    for (size_t i = 0; i < m_fontFaces.size(); i++)
-        m_fontFaces[i]->loadWithCallback(this, context);
-}
-
-void LoadFontPromiseResolver::notifyLoaded(FontFace* fontFace)
-{
-    m_numLoading--;
-    if (m_numLoading || m_errorOccured)
-        return;
-
-    m_resolver->resolve(m_fontFaces);
-}
-
-void LoadFontPromiseResolver::notifyError(FontFace* fontFace)
-{
-    m_numLoading--;
-    if (!m_errorOccured) {
-        m_errorOccured = true;
-        m_resolver->reject(fontFace->error());
-    }
-}
-
-class FontsReadyPromiseResolver {
-public:
-    static PassOwnPtr<FontsReadyPromiseResolver> create(ScriptState* scriptState)
-    {
-        return adoptPtr(new FontsReadyPromiseResolver(scriptState));
-    }
-
-    void resolve(PassRefPtr<FontFaceSet> fontFaceSet)
-    {
-        m_resolver->resolve(fontFaceSet);
-    }
-
-    ScriptPromise promise() { return m_resolver->promise(); }
-
-private:
-    explicit FontsReadyPromiseResolver(ScriptState* scriptState)
-        : m_resolver(ScriptPromiseResolver::create(scriptState))
-    {
-    }
-
-    RefPtr<ScriptPromiseResolver> m_resolver;
-};
 
 FontFaceSet::FontFaceSet(Document& document)
     : ActiveDOMObject(&document)
@@ -184,7 +102,7 @@ void FontFaceSet::didLayout()
 {
     if (m_loadingFonts.isEmpty())
         m_histogram.record();
-    if (!m_loadingFonts.isEmpty() || (!hasLoadedFonts() && m_readyResolvers.isEmpty()))
+    if (!m_loadingFonts.isEmpty() || !hasLoadedFonts())
         return;
     handlePendingEventsAndPromisesSoon();
 }
@@ -252,17 +170,6 @@ void FontFaceSet::removeFromLoadingFonts(PassRefPtr<FontFace> fontFace)
     m_loadingFonts.remove(fontFace);
     if (m_loadingFonts.isEmpty())
         handlePendingEventsAndPromisesSoon();
-}
-
-ScriptPromise FontFaceSet::ready(ScriptState* scriptState)
-{
-    if (!inActiveDocumentContext())
-        return ScriptPromise();
-    OwnPtr<FontsReadyPromiseResolver> resolver = FontsReadyPromiseResolver::create(scriptState);
-    ScriptPromise promise = resolver->promise();
-    m_readyResolvers.append(resolver.release());
-    handlePendingEventsAndPromisesSoon();
-    return promise;
 }
 
 void FontFaceSet::add(FontFace* fontFace, ExceptionState& exceptionState)
@@ -389,7 +296,7 @@ void FontFaceSet::fireDoneEventIfPossible()
 {
     if (m_shouldFireLoadingEvent)
         return;
-    if (!m_loadingFonts.isEmpty() || (!hasLoadedFonts() && m_readyResolvers.isEmpty()))
+    if (!m_loadingFonts.isEmpty() || !hasLoadedFonts())
         return;
 
     // If the layout was invalidated in between when we thought layout
@@ -412,46 +319,12 @@ void FontFaceSet::fireDoneEventIfPossible()
         if (errorEvent)
             dispatchEvent(errorEvent);
     }
-
-    if (!m_readyResolvers.isEmpty()) {
-        Vector<OwnPtr<FontsReadyPromiseResolver> > resolvers;
-        m_readyResolvers.swap(resolvers);
-        for (size_t index = 0; index < resolvers.size(); ++index)
-            resolvers[index]->resolve(this);
-    }
 }
 
 static const String& nullToSpace(const String& s)
 {
     DEFINE_STATIC_LOCAL(String, space, (" "));
     return s.isNull() ? space : s;
-}
-
-ScriptPromise FontFaceSet::load(ScriptState* scriptState, const String& fontString, const String& text)
-{
-    if (!inActiveDocumentContext())
-        return ScriptPromise();
-
-    Font font;
-    if (!resolveFontStyle(fontString, font)) {
-        RefPtr<ScriptPromiseResolver> resolver = ScriptPromiseResolver::create(scriptState);
-        ScriptPromise promise = resolver->promise();
-        resolver->reject(DOMException::create(SyntaxError, "Could not resolve '" + fontString + "' as a font."));
-        return promise;
-    }
-
-    FontFaceCache* fontFaceCache = document()->styleEngine()->fontSelector()->fontFaceCache();
-    FontFaceArray faces;
-    for (const FontFamily* f = &font.fontDescription().family(); f; f = f->next()) {
-        CSSSegmentedFontFace* segmentedFontFace = fontFaceCache->get(font.fontDescription(), f->family());
-        if (segmentedFontFace)
-            segmentedFontFace->match(nullToSpace(text), faces);
-    }
-
-    RefPtr<LoadFontPromiseResolver> resolver = LoadFontPromiseResolver::create(faces, scriptState);
-    ScriptPromise promise = resolver->promise();
-    resolver->loadFonts(executionContext()); // After this, resolver->promise() may return null.
-    return promise;
 }
 
 bool FontFaceSet::check(const String& fontString, const String& text, ExceptionState& exceptionState)

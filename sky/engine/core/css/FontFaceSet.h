@@ -26,7 +26,6 @@
 #ifndef SKY_ENGINE_CORE_CSS_FONTFACESET_H_
 #define SKY_ENGINE_CORE_CSS_FONTFACESET_H_
 
-#include "sky/engine/bindings/core/v8/ScriptPromise.h"
 #include "sky/engine/core/css/FontFace.h"
 #include "sky/engine/core/css/FontFaceSetForEachCallback.h"
 #include "sky/engine/core/dom/ActiveDOMObject.h"
@@ -54,7 +53,6 @@ class ExceptionState;
 class Font;
 class FontFaceCache;
 class FontResource;
-class FontsReadyPromiseResolver;
 class ExecutionContext;
 
 class FontFaceSet final : public RefCountedSupplement<Document, FontFaceSet>, public ActiveDOMObject, public EventTargetWithInlineData {
@@ -65,8 +63,6 @@ public:
     virtual ~FontFaceSet();
 
     bool check(const String& font, const String& text, ExceptionState&);
-    ScriptPromise load(ScriptState*, const String& font, const String& text);
-    ScriptPromise ready(ScriptState*);
 
     void add(FontFace*, ExceptionState&);
     void clear();
@@ -136,7 +132,6 @@ private:
 
     HashSet<RefPtr<FontFace> > m_loadingFonts;
     bool m_shouldFireLoadingEvent;
-    Vector<OwnPtr<FontsReadyPromiseResolver> > m_readyResolvers;
     FontFaceArray m_loadedFonts;
     FontFaceArray m_failedFonts;
     ListHashSet<RefPtr<FontFace> > m_nonCSSConnectedFaces;

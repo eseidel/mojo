@@ -6,19 +6,19 @@
 #define SKY_ENGINE_BINDINGS2_DART_PROMISE_RESOLVER_H_
 
 #include "sky/engine/bindings2/dart_promise.h"
-#include "sky/engine/wtf/OwnPtr.h"
-#include "sky/engine/wtf/PassOwnPtr.h"
 
 namespace blink {
 
-class DartPromiseResolver {
+class DartPromiseResolver : public RefCounted<DartPromiseResolver> {
   WTF_MAKE_NONCOPYABLE(DartPromiseResolver);
  public:
-  static PassOwnPtr<DartPromiseResolver> Create(DartState* dart_state) {
-    return adoptPtr(new DartPromiseResolver(dart_state));
+  static PassRefPtr<DartPromiseResolver> Create(DartState* dart_state) {
+    return adoptRef(new DartPromiseResolver(dart_state));
   }
 
   ~DartPromiseResolver();
+
+  DartState* dart_state() { return dart_state_.get(); }
 
   PassRefPtr<DartPromise> GetPromise();
 

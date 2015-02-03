@@ -16,6 +16,12 @@ namespace blink {
 class DartState : public RefCounted<DartState> {
   WTF_MAKE_NONCOPYABLE(DartState);
  public:
+  class Scope {
+   public:
+    Scope(DartState* dart_state);
+    ~Scope();
+  };
+
   ~DartState();
 
   static DartState* Current();

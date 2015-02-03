@@ -308,13 +308,6 @@ void FontFace::setLoadStatus(LoadStatus status)
     ASSERT(m_status != Error || m_error);
 
     if (m_status == Loaded || m_status == Error) {
-        if (m_loadedProperty) {
-            if (m_status == Loaded)
-                m_loadedProperty->resolve(this);
-            else
-                m_loadedProperty->reject(m_error.get());
-        }
-
         Vector<RefPtr<LoadFontCallback> > callbacks;
         m_callbacks.swap(callbacks);
         for (size_t i = 0; i < callbacks.size(); ++i) {
@@ -331,24 +324,6 @@ void FontFace::setError(PassRefPtr<DOMException> error)
     if (!m_error)
         m_error = error ? error : DOMException::create(NetworkError);
     setLoadStatus(Error);
-}
-
-ScriptPromise FontFace::fontStatusPromise(ScriptState* scriptState)
-{
-    if (!m_loadedProperty) {
-        m_loadedProperty = adoptPtr(new LoadedProperty(scriptState->executionContext(), this, LoadedProperty::Loaded));
-        if (m_status == Loaded)
-            m_loadedProperty->resolve(this);
-        else if (m_status == Error)
-            m_loadedProperty->reject(m_error.get());
-    }
-    return m_loadedProperty->promise(scriptState->world());
-}
-
-ScriptPromise FontFace::load(ScriptState* scriptState)
-{
-    loadInternal(scriptState->executionContext());
-    return fontStatusPromise(scriptState);
 }
 
 void FontFace::loadWithCallback(PassRefPtr<LoadFontCallback> callback, ExecutionContext* context)

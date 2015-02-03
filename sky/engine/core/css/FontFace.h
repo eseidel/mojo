@@ -32,8 +32,6 @@
 #define SKY_ENGINE_CORE_CSS_FONTFACE_H_
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings/core/v8/ScriptPromise.h"
-#include "sky/engine/bindings/core/v8/ScriptPromiseProperty.h"
 #include "sky/engine/bindings2/dart_wrappable.h"
 #include "sky/engine/core/css/CSSValue.h"
 #include "sky/engine/core/dom/DOMException.h"
@@ -48,6 +46,7 @@ class CSSFontFace;
 class CSSValueList;
 class Document;
 class ExceptionState;
+class ExecutionContext;
 class FontFaceReadyPromiseResolver;
 class StylePropertySet;
 class StyleRuleFontFace;
@@ -82,9 +81,6 @@ public:
     void setFeatureSettings(ExecutionContext*, const String&, ExceptionState&);
 
     String status() const;
-    ScriptPromise loaded(ScriptState* scriptState) { return fontStatusPromise(scriptState); }
-
-    ScriptPromise load(ScriptState*);
 
     LoadStatus loadStatus() const { return m_status; }
     void setLoadStatus(LoadStatus);
@@ -114,9 +110,6 @@ private:
     bool setPropertyValue(PassRefPtr<CSSValue>, CSSPropertyID);
     bool setFamilyValue(CSSValueList*);
     void loadInternal(ExecutionContext*);
-    ScriptPromise fontStatusPromise(ScriptState*);
-
-    typedef ScriptPromiseProperty<RawPtr<FontFace>, RawPtr<FontFace>, RefPtr<DOMException> > LoadedProperty;
 
     AtomicString m_family;
     RefPtr<CSSValue> m_src;
@@ -129,7 +122,6 @@ private:
     LoadStatus m_status;
     RefPtr<DOMException> m_error;
 
-    OwnPtr<LoadedProperty> m_loadedProperty;
     OwnPtr<CSSFontFace> m_cssFontFace;
     Vector<RefPtr<LoadFontCallback> > m_callbacks;
 };

@@ -25,6 +25,8 @@ source_set("bindings2") {
     "exception_state_placeholder.cc",
     "exception_state_placeholder.h",
     "nullable.h",
+    "scheduled_action.cc",
+    "scheduled_action.h",
   ]
   deps = [
     ":dart_controller",

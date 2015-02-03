@@ -57,6 +57,7 @@
 #include "sky/engine/wtf/PassRefPtr.h"
 #include "sky/engine/wtf/WeakPtr.h"
 #include "sky/engine/wtf/text/TextEncoding.h"
+#include "sky/engine/wtf/text/TextPosition.h"
 
 namespace blink {
 

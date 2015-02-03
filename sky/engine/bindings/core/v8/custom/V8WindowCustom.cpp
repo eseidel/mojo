@@ -35,7 +35,7 @@
 #include "sky/engine/bindings/core/v8/BindingSecurity.h"
 #include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/ScheduledAction.h"
+#include "sky/engine/bindings2/scheduled_action.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/bindings/core/v8/ScriptSourceCode.h"
 #include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
@@ -63,76 +63,6 @@ namespace blink {
 // We should refactor this.
 static void windowSetTimeoutImpl(const v8::FunctionCallbackInfo<v8::Value>& info, bool singleShot, ExceptionState& exceptionState)
 {
-    int argumentCount = info.Length();
-
-    if (argumentCount < 1)
-        return;
-
-    LocalDOMWindow* impl = V8Window::toNative(info.Holder());
-    if (!impl->frame() || !impl->document()) {
-        exceptionState.ThrowDOMException(InvalidAccessError, "No script context is available in which to execute the script.");
-        return;
-    }
-    ScriptState* scriptState = ScriptState::current(info.GetIsolate());
-    v8::Handle<v8::Value> function = info[0];
-    String functionString;
-    if (!function->IsFunction()) {
-        if (function->IsString()) {
-            functionString = toCoreString(function.As<v8::String>());
-        } else {
-            v8::Handle<v8::String> v8String = function->ToString();
-
-            // Bail out if string conversion failed.
-            if (v8String.IsEmpty())
-                return;
-
-            functionString = toCoreString(v8String);
-        }
-
-        // Don't allow setting timeouts to run empty functions!
-        // (Bug 1009597)
-        if (!functionString.length())
-            return;
-    }
-
-    if (!BindingSecurity::shouldAllowAccessToFrame(info.GetIsolate(), impl->frame(), exceptionState))
-        return;
-
-    OwnPtr<ScheduledAction> action;
-    if (function->IsFunction()) {
-        int paramCount = argumentCount >= 2 ? argumentCount - 2 : 0;
-        OwnPtr<v8::Local<v8::Value>[]> params;
-        if (paramCount > 0) {
-            params = adoptArrayPtr(new v8::Local<v8::Value>[paramCount]);
-            for (int i = 0; i < paramCount; i++) {
-                // parameters must be globalized
-                params[i] = info[i+2];
-            }
-        }
-
-        // params is passed to action, and released in action's destructor
-        ASSERT(impl->frame());
-        action = adoptPtr(new ScheduledAction(scriptState, v8::Handle<v8::Function>::Cast(function), paramCount, params.get(), info.GetIsolate()));
-    } else {
-        ASSERT(impl->frame());
-        action = adoptPtr(new ScheduledAction(scriptState, functionString, KURL(), info.GetIsolate()));
-    }
-
-    int32_t timeout = argumentCount >= 2 ? info[1]->Int32Value() : 0;
-    int timerId;
-    if (singleShot)
-        timerId = DOMWindowTimers::setTimeout(*impl, action.release(), timeout);
-    else
-        timerId = DOMWindowTimers::setInterval(*impl, action.release(), timeout);
-
-    // Try to do the idle notification before the timeout expires to get better
-    // use of any idle time. Aim for the middle of the interval for simplicity.
-    if (timeout >= 0) {
-        double maximumFireInterval = static_cast<double>(timeout) / 1000 / 2;
-        V8GCForContextDispose::instanceTemplate().notifyIdleSooner(maximumFireInterval);
-    }
-
-    v8SetReturnValue(info, timerId);
 }
 
 // FIXME(fqian): returning string is cheating, and we should

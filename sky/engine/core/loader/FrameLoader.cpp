@@ -35,7 +35,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/loader/FrameLoader.h"
 
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/Element.h"
 #include "sky/engine/core/editing/Editor.h"

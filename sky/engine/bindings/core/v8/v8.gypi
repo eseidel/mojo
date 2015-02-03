@@ -31,8 +31,6 @@
             'RetainedDOMInfo.cpp',
             'RetainedDOMInfo.h',
             'RetainedObjectInfo.h',
-            'ScheduledAction.cpp',
-            'ScheduledAction.h',
             'ScopedPersistent.h',
             'ScriptCallStackFactory.cpp',
             'ScriptCallStackFactory.h',

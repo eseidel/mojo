@@ -23,6 +23,8 @@ public:
   void setTitle(const String& title) { title_ = title; }
   const String& title() { return title_; }
 
+  bool isApplication() const override { return true; }
+
 private:
   Application(ExecutionContext* context,
               PassRefPtr<Document> document,

@@ -1,10 +1,11 @@
 #!mojo mojo:sky_viewer
 <div>
+<import src="dart-library.sky" as="library" />
 <script>
 
 main() {
-  String place = 'dart';
-  return "hello $place";
+  String where = library.getPlace();
+  return "hello $where";
 }
 
 </script>

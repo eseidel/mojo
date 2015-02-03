@@ -35,6 +35,7 @@
 #include "sky/engine/platform/TraceEvent.h"
 #include "sky/engine/public/platform/WebThread.h"
 #include "sky/engine/wtf/OwnPtr.h"
+#include "sky/engine/wtf/Vector.h"
 
 namespace blink {
 
@@ -58,12 +59,22 @@ private:
 
 }
 
+// TODO(dart): Integrate this microtask queue with darts.
+typedef Vector<OwnPtr<WebThread::Task> > MicrotaskQueue;
+static MicrotaskQueue& microtaskQueue()
+{
+    DEFINE_STATIC_LOCAL(OwnPtr<MicrotaskQueue>, queue, (adoptPtr(new MicrotaskQueue())));
+    return *queue;
+}
+
 void Microtask::performCheckpoint()
 {
-    // TODO(dart):
-    // We need to kick off microtasks inside the DartVM.
-    // Previously, we skipped this when the recursion level was > 0 and when
-    // we were already performing a microtask checkpoint.
+    MicrotaskQueue local;
+    while(microtaskQueue().size() > 0) {
+        swap(microtaskQueue(), local);
+        for (size_t i = 0; i < local.size(); i++)
+            local[i]->run();
+    }
 }
 
 // static void microtaskFunctionCallback(void* data)
@@ -74,8 +85,7 @@ void Microtask::performCheckpoint()
 
 void Microtask::enqueueMicrotask(PassOwnPtr<WebThread::Task> callback)
 {
-    // TODO(dart):
-    // We need to figure out how to enqueue microtasks in V8.
+    microtaskQueue().append(callback);
 }
 
 void Microtask::enqueueMicrotask(const base::Closure& callback)

@@ -24,8 +24,8 @@ public:
 
   Application* application() const { return application_.get(); }
 
-  void setExports(DartState*, PassRefPtr<DartValue> exports);
-  DartValue* exports(DartState*) const;
+  void setExports(PassRefPtr<DartValue> exports);
+  DartValue* exports() const;
 
 private:
   Module(ExecutionContext* context,

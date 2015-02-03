@@ -8,7 +8,13 @@
 #include "base/logging.h"
 #include "sky/engine/bindings2/dart_state.h"
 #include "sky/engine/core/app/AbstractModule.h"
+#include "sky/engine/core/app/Module.h"
+#include "sky/engine/core/html/imports/HTMLImport.h"
 #include "sky/engine/wtf/text/TextPosition.h"
+#include "sky/engine/core/html/imports/HTMLImportChild.h"
+#include "sky/engine/core/dom/Element.h"
+#include "sky/engine/bindings2/dart_state.h"
+
 
 namespace mojo {
 namespace dart {
@@ -37,19 +43,36 @@ void DartController::executeModuleScript(AbstractModule& module, const String& s
       Dart_NewStringFromCString(source.utf8().data()),
       textPosition.m_line.zeroBasedInt(), textPosition.m_column.zeroBasedInt());
 
-  Dart_FinalizeLoading(true);
+  ASSERT(!Dart_IsError(library));
 
-  if (Dart_IsError(library)) {
-    LOG(INFO) << Dart_GetError(library);
-    abort();
+  Dart_FinalizeLoading(true);
+  DartState* dartState = DartState::Current();
+
+  if (HTMLImport* parent = module.document()->import()) {
+    for (HTMLImportChild* child = static_cast<HTMLImportChild*>(parent->firstChild());
+         child; child = static_cast<HTMLImportChild*>(child->next())) {
+      if (Element* link = child->link()) {
+          String name = link->getAttribute(HTMLNames::asAttr);
+
+        Module* childModule = child->module();
+        if (childModule && !childModule->exports()->is_empty()) {
+          Dart_Handle importResult = Dart_LibraryImportLibrary(library, childModule->exports()->dart_value(), Dart_NewStringFromCString(name.utf8().data()));
+          ASSERT(!Dart_IsError(importResult));
+        }
+      }
+    }
   }
 
+  if (!module.isApplication()) {
+    static_cast<Module*>(&module)->setExports(DartValue::Create(dartState, library));
+    return;
+  }
+
+  // TODO(dart): This will throw an API error if main() is absent. It would be
+  // better to test whether main() is present first, then attempt to invoke it
+  // so as to capture & report other errors.
   Dart_Handle invoke_result =
       Dart_Invoke(library, Dart_NewStringFromCString("main"), 0, nullptr);
-  if (Dart_IsError(invoke_result)) {
-    LOG(INFO) << Dart_GetError(invoke_result);
-    abort();
-  }
 
   Dart_Handle str = Dart_ToString(invoke_result);
   const char* xyz = "invalid";

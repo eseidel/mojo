@@ -5,8 +5,6 @@
 #ifndef SKY_ENGINE_CORE_APP_ABSTRACTMODULE_H_
 #define SKY_ENGINE_CORE_APP_ABSTRACTMODULE_H_
 
-#include "sky/engine/bindings2/dart_promise_resolver.h"
-#include "sky/engine/core/app/ModuleLoader.h"
 #include "sky/engine/core/dom/ContextLifecycleObserver.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/events/EventTarget.h"
@@ -17,8 +15,7 @@ class Application;
 
 class AbstractModule : public RefCounted<AbstractModule>,
                        public EventTargetWithInlineData,
-                       public ContextLifecycleObserver,
-                       public ModuleLoader::Client {
+                       public ContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   REFCOUNTED_EVENT_TARGET(AbstractModule);
  public:
@@ -27,7 +24,7 @@ class AbstractModule : public RefCounted<AbstractModule>,
   Document* document() const { return document_.get(); }
   const String& url() const { return url_; }
 
-  PassRefPtr<DartPromise> import(DartState*, const String& url);
+  virtual bool isApplication() const { return false; }
 
  protected:
   AbstractModule(ExecutionContext*, PassRefPtr<Document>, const String& url);
@@ -37,12 +34,8 @@ class AbstractModule : public RefCounted<AbstractModule>,
  private:
   ExecutionContext* executionContext() const override;
 
-  void OnModuleLoadComplete(ModuleLoader*, Module*) override;
-
   RefPtr<Document> document_;
   String url_;
-
-  HashMap<OwnPtr<ModuleLoader>, RefPtr<DartPromiseResolver>> loaders_;
 };
 
 } // namespace blink

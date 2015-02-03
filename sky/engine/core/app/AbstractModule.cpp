@@ -26,22 +26,4 @@ ExecutionContext* AbstractModule::executionContext() const {
   return ContextLifecycleObserver::executionContext();
 }
 
-PassRefPtr<DartPromise> AbstractModule::import(DartState* dart_state,
-                                               const String& url_string) {
-  KURL url = document()->completeURL(url_string);
-  RefPtr<DartPromiseResolver> resolver =
-      DartPromiseResolver::Create(dart_state);
-  OwnPtr<ModuleLoader> loader =
-      adoptPtr(new ModuleLoader(this, GetApplication(), url));
-  loaders_.set(loader.release(), resolver);
-  return resolver->GetPromise();
-}
-
-void AbstractModule::OnModuleLoadComplete(ModuleLoader* loader,
-                                          Module* module) {
-  RefPtr<DartPromiseResolver> resolver = loaders_.take(loader);
-  DartState::Scope scope(resolver->dart_state());
-  // TODO(abarth): Resolve the promise.
-}
-
 } // namespace blink

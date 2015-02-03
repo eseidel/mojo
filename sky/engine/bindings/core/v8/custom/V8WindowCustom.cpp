@@ -33,7 +33,7 @@
 
 #include "bindings/core/v8/V8Node.h"
 #include "sky/engine/bindings/core/v8/BindingSecurity.h"
-#include "sky/engine/bindings/core/v8/ExceptionMessages.h"
+#include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScheduledAction.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"

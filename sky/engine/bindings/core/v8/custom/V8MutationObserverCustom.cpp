@@ -31,7 +31,7 @@
 #include "sky/engine/config.h"
 #include "bindings/core/v8/V8MutationObserver.h"
 
-#include "sky/engine/bindings/core/v8/ExceptionMessages.h"
+#include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8DOMWrapper.h"

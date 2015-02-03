@@ -18,6 +18,8 @@ source_set("bindings2") {
     "dart_value.h",
     "dart_wrappable.cc",
     "dart_wrappable.h",
+    "exception_messages.cc",
+    "exception_messages.h",
     "exception_state.cc",
     "exception_state.h",
     "exception_state_placeholder.cc",

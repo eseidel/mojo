@@ -64,7 +64,7 @@
 #include "bindings/core/v8/V8WebGLTexture.h"
 #include "bindings/core/v8/V8WebGLUniformLocation.h"
 #include "bindings/core/v8/V8WebGLVertexArrayObjectOES.h"
-#include "sky/engine/bindings/core/v8/ExceptionMessages.h"
+#include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8HiddenValue.h"
 #include "sky/engine/bindings/core/v8/custom/V8ArrayBufferViewCustom.h"

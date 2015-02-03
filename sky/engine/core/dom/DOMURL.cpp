@@ -27,7 +27,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/dom/DOMURL.h"
 
-#include "sky/engine/bindings/core/v8/ExceptionMessages.h"
+#include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 #include "sky/engine/core/dom/ExecutionContext.h"

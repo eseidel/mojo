@@ -33,7 +33,7 @@
 #define SKY_ENGINE_BINDINGS_CORE_V8_V8BINDING_H_
 
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
-#include "sky/engine/bindings/core/v8/ExceptionMessages.h"
+#include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/bindings/core/v8/ScriptWrappable.h"
 #include "sky/engine/bindings/core/v8/V8BindingMacros.h"

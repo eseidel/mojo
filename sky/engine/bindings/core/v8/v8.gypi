@@ -28,8 +28,6 @@
             'DOMWrapperMap.h',
             'DOMWrapperWorld.cpp',
             'DOMWrapperWorld.h',
-            'ExceptionMessages.cpp',
-            'ExceptionMessages.h',
             'RetainedDOMInfo.cpp',
             'RetainedDOMInfo.h',
             'RetainedObjectInfo.h',

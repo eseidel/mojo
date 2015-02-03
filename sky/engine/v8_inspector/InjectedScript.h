@@ -33,7 +33,6 @@
 
 #include "gen/v8_inspector/InspectorTypeBuilder.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
-#include "sky/engine/core/inspector/ScriptArguments.h"
 #include "sky/engine/v8_inspector/InjectedScriptBase.h"
 #include "sky/engine/v8_inspector/InjectedScriptManager.h"
 #include "sky/engine/wtf/Forward.h"

@@ -62,7 +62,6 @@ class JavaScriptCallFrame;
 class JSONObject;
 class KURL;
 class MutationObserver;
-class ScriptArguments;
 class ScriptAsyncCallStack;
 class ScriptCallStack;
 class ScriptDebugServer;

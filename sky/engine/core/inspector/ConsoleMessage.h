@@ -17,7 +17,6 @@
 
 namespace blink {
 
-class ScriptArguments;
 class ScriptCallStack;
 class ScriptState;
 

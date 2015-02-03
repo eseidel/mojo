@@ -35,7 +35,6 @@
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/inspector/ConsoleMessage.h"
 #include "sky/engine/core/inspector/JavaScriptCallFrame.h"
-#include "sky/engine/core/inspector/ScriptArguments.h"
 #include "sky/engine/core/inspector/ScriptAsyncCallStack.h"
 #include "sky/engine/core/inspector/ScriptCallFrame.h"
 #include "sky/engine/core/inspector/ScriptCallStack.h"

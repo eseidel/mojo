@@ -10,6 +10,8 @@ source_set("bindings2") {
     "dart_persistent_value.h",
     "dart_promise.cc",
     "dart_promise.h",
+    "dart_promise_resolver.cc",
+    "dart_promise_resolver.h",
     "dart_state.cc",
     "dart_state.h",
     "dart_value.cc",

@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//sky/engine/bindings2/bindings.gni")
+import("//sky/engine/core/core.gni")
+
 source_set("bindings2") {
   sources = [
     "dart_converter.cc",
@@ -33,10 +36,11 @@ source_set("bindings2") {
     "scheduled_action.h",
   ]
   deps = [
-    ":dart_controller",
+    ":snapshot_cc",
     "//base",
     "//dart/runtime/bin:libdart_withcore",
     "//sky/engine/wtf",
+    ":interfaces_info_individual_core",
   ]
 }
 
@@ -96,7 +100,7 @@ action("generate_snapshot_file") {
   ]
 }
 
-source_set("dart_controller") {
+source_set("snapshot_cc") {
   sources = [
     "$target_gen_dir/snapshot.cc",
   ]
@@ -104,4 +108,47 @@ source_set("dart_controller") {
   deps = [
     ":generate_snapshot_file",
   ]
+}
+
+# Calls the compute_interfaces_info_individual script.
+#
+# Parameters:
+#   sources = list of IDL files to pass as inputs
+#   output_file = pickle file to write
+template("compute_interfaces_info_individual") {
+  action(target_name) {
+    script = "$bindings_scripts_dir/compute_interfaces_info_individual.py"
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
+
+    file_list = "$target_gen_dir/${target_name}_file_list.txt"
+    write_file(file_list, rebase_path(invoker.sources, root_build_dir))
+
+    # FIXME: We should list all python dependencies.
+    inputs = [ "$bindings_scripts_dir/utilities.py" ] + invoker.sources
+
+    outputs = [
+      file_list,
+      invoker.output_file,
+    ]
+
+    args = [
+      # TODO(eseidel): Remove component-dir, it is meaningless in sky.
+      "--component-dir",
+      "ignored",
+      "--idl-files-list",
+      rebase_path(file_list, root_build_dir),
+      "--interfaces-info-file",
+      rebase_path(invoker.output_file, root_build_dir),
+
+      # TODO(eseidel): only-if-changed is always true, remove
+      "--write-file-only-if-changed=1",
+    ]
+  }
+}
+
+compute_interfaces_info_individual("interfaces_info_individual_core") {
+  sources = core_idl_files
+  output_file = "$bindings_output_dir/InterfacesInfoIndividual.pickle"
 }

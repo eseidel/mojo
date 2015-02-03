@@ -125,7 +125,6 @@
 #include "sky/engine/platform/network/HTTPParsers.h"
 #include "sky/engine/platform/text/SegmentedString.h"
 #include "sky/engine/public/platform/Platform.h"
-#include "sky/engine/core/inspector/ScriptCallStack.h"
 #include "sky/engine/wtf/CurrentTime.h"
 #include "sky/engine/wtf/DateMath.h"
 #include "sky/engine/wtf/HashFunctions.h"
@@ -1403,7 +1402,6 @@ void Document::logExceptionToConsole(const String& errorMessage, int scriptId, c
 {
     RefPtr<ConsoleMessage> consoleMessage = ConsoleMessage::create(JSMessageSource, ErrorMessageLevel, errorMessage, sourceURL, lineNumber);
     consoleMessage->setScriptId(scriptId);
-    consoleMessage->setCallStack(callStack);
     addMessage(consoleMessage.release());
 }
 
@@ -2095,7 +2093,7 @@ void Document::addMessage(PassRefPtr<ConsoleMessage> consoleMessage)
     if (!m_frame)
         return;
 
-    if (!consoleMessage->scriptState() && consoleMessage->url().isNull() && !consoleMessage->lineNumber()) {
+    if (consoleMessage->url().isNull() && !consoleMessage->lineNumber()) {
         consoleMessage->setURL(url().string());
         if (parsing() && m_parser) {
             if (!m_parser->isWaitingForScripts() && !m_parser->isExecutingScript())

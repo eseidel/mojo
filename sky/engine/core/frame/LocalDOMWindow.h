@@ -40,7 +40,6 @@ namespace blink {
 
 class Application;
 class CSSStyleDeclaration;
-class Console;
 class DOMSelection;
 class DOMURL;
 class DOMWindowCSS;
@@ -144,7 +143,6 @@ public:
 
     double devicePixelRatio() const;
 
-    Console& console() const;
     FrameConsole* frameConsole() const;
 
     void printErrorMessage(const String&);
@@ -233,7 +231,6 @@ private:
     HashSet<DOMWindowProperty*> m_properties;
 
     mutable RefPtr<Screen> m_screen;
-    mutable RefPtr<Console> m_console;
     mutable RefPtr<Location> m_location;
 
     mutable RefPtr<DOMWindowCSS> m_css;

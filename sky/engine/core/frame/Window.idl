@@ -73,8 +73,6 @@
     //  90 is when rotated counter clockwise.
     [RuntimeEnabled=OrientationEvent, MeasureAs=WindowOrientation] readonly attribute long orientation;
 
-    [Replaceable] readonly attribute Console console;
-
     [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(RequestAnimationFrameCallback callback);
     void cancelAnimationFrame(long id);
 

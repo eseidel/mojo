@@ -32,8 +32,6 @@
             'RetainedDOMInfo.h',
             'RetainedObjectInfo.h',
             'ScopedPersistent.h',
-            'ScriptCallStackFactory.cpp',
-            'ScriptCallStackFactory.h',
             'ScriptController.cpp',
             'ScriptController.h',
             'ScriptFunctionCall.cpp',

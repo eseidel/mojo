@@ -29,7 +29,6 @@
 #include "gen/sky/core/HTMLNames.h"
 #include "sky/engine/bindings/core/v8/DOMDataStore.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/ScriptCallStackFactory.h"
 #include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
 #include "sky/engine/core/css/resolver/StyleResolver.h"
 #include "sky/engine/core/dom/Attr.h"
@@ -482,26 +481,6 @@ private:
     RefPtr<JSONValue> m_value;
 };
 
-void addJsStack(JSONArray* stackFrames)
-{
-    RefPtr<ScriptCallStack> stack = createScriptCallStack(10);
-    if (!stack)
-        return;
-    for (size_t i = 0; i < stack->size(); i++)
-        stackFrames->pushString(stack->at(i).functionName());
-}
-
-scoped_refptr<base::debug::ConvertableToTraceFormat> jsonObjectForStyleInvalidation(unsigned nodeCount, const Node* rootNode)
-{
-    RefPtr<JSONObject> value = JSONObject::create();
-    value->setNumber("node_count", nodeCount);
-    value->setString("root_node", rootNode->debugName());
-    RefPtr<JSONArray> stack;
-    addJsStack(stack.get());
-    value->setArray("js_stack", stack.release());
-    return make_scoped_refptr(new JSONTraceValue(value));
-}
-
 } // namespace
 
 unsigned Node::styledSubtreeSize() const
@@ -525,9 +504,8 @@ void Node::traceStyleChange(StyleChangeType changeType)
     if (nodeCount < kMinLoggedSize)
         return;
 
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("style.debug"),
-        "Node::setNeedsStyleRecalc", TRACE_EVENT_SCOPE_PROCESS,
-        "data", jsonObjectForStyleInvalidation(nodeCount, this)
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("style.debug"),
+        "Node::setNeedsStyleRecalc", TRACE_EVENT_SCOPE_PROCESS
     );
 }
 

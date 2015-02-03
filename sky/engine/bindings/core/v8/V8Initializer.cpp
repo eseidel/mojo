@@ -31,7 +31,6 @@
 #include "bindings/core/v8/V8Location.h"
 #include "bindings/core/v8/V8Window.h"
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
-#include "sky/engine/bindings/core/v8/ScriptCallStackFactory.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/bindings/core/v8/ScriptProfiler.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
@@ -46,7 +45,6 @@
 #include "sky/engine/platform/EventDispatchForbiddenScope.h"
 #include "sky/engine/platform/TraceEvent.h"
 #include "sky/engine/public/platform/Platform.h"
-#include "sky/engine/core/inspector/ScriptCallStack.h"
 #include "sky/engine/wtf/RefPtr.h"
 #include "sky/engine/wtf/text/WTFString.h"
 #include "v8/include/v8-debug.h"
@@ -104,20 +102,7 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
 
     String errorMessage = toCoreString(message->Get());
 
-    v8::Handle<v8::StackTrace> stackTrace = message->GetStackTrace();
-    RefPtr<ScriptCallStack> callStack = nullptr;
     int scriptId = message->GetScriptOrigin().ScriptID()->Value();
-    // Currently stack trace is only collected when inspector is open.
-    if (!stackTrace.IsEmpty() && stackTrace->GetFrameCount() > 0) {
-        callStack = createScriptCallStack(stackTrace, ScriptCallStack::maxCallStackSizeToCapture, isolate);
-        bool success = false;
-        int topScriptId = callStack->at(0).scriptId().toInt(&success);
-        if (success && topScriptId == scriptId)
-            scriptId = 0;
-    } else {
-        Vector<ScriptCallFrame> callFrames;
-        callStack = ScriptCallStack::create(callFrames);
-    }
 
     v8::Handle<v8::Value> resourceName = message->GetScriptOrigin().ResourceName();
     bool shouldUseDocumentURL = resourceName.IsEmpty() || !resourceName->IsString();
@@ -143,7 +128,7 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
         V8ErrorHandler::storeExceptionOnErrorEventWrapper(event.get(), data, scriptState->context()->Global(), isolate);
     }
 
-    enteredWindow->document()->reportException(event.release(), scriptId, callStack);
+    enteredWindow->document()->reportException(event.release(), scriptId, nullptr);
 }
 
 static void failedAccessCheckCallbackInMainThread(v8::Local<v8::Object> host, v8::AccessType type, v8::Local<v8::Value> data)

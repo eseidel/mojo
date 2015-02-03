@@ -37,7 +37,6 @@
 #include "bindings/core/v8/V8HTMLElement.h"
 #include "bindings/core/v8/V8Window.h"
 #include "sky/engine/bindings/core/v8/BindingSecurity.h"
-#include "sky/engine/bindings/core/v8/ScriptCallStackFactory.h"
 #include "sky/engine/bindings/core/v8/ScriptSourceCode.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
@@ -61,7 +60,6 @@
 #include "sky/engine/platform/TraceEvent.h"
 #include "sky/engine/platform/Widget.h"
 #include "sky/engine/public/platform/Platform.h"
-#include "sky/engine/core/inspector/ScriptCallStack.h"
 #include "sky/engine/wtf/CurrentTime.h"
 #include "sky/engine/wtf/StdLibExtras.h"
 #include "sky/engine/wtf/StringExtras.h"
@@ -164,7 +162,6 @@ void ScriptController::clearWindowProxy()
 
 void ScriptController::setCaptureCallStackForUncaughtExceptions(bool value)
 {
-    v8::V8::SetCaptureStackTraceForUncaughtExceptions(value, ScriptCallStack::maxCallStackSizeToCapture, stackTraceOptions);
 }
 
 void ScriptController::setWorldDebugId(int debuggerId)

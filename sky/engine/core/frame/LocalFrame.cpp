@@ -46,7 +46,6 @@
 #include "sky/engine/core/frame/LocalDOMWindow.h"
 #include "sky/engine/core/frame/NewEventHandler.h"
 #include "sky/engine/core/frame/Settings.h"
-#include "sky/engine/core/inspector/ConsoleMessageStorage.h"
 #include "sky/engine/core/loader/FrameLoaderClient.h"
 #include "sky/engine/core/loader/MojoLoader.h"
 #include "sky/engine/core/page/EventHandler.h"
@@ -172,9 +171,6 @@ FloatSize LocalFrame::resizePageRectsKeepingRatio(const FloatSize& originalSize,
 
 void LocalFrame::setDOMWindow(PassRefPtr<LocalDOMWindow> domWindow)
 {
-    if (m_domWindow) {
-        console().messageStorage()->frameWindowDiscarded(m_domWindow.get());
-    }
     if (domWindow)
         script().clearWindowProxy();
     Frame::setDOMWindow(domWindow);

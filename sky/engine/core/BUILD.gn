@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//sky/engine/bindings/scripts/scripts.gni")
 import("//sky/engine/build/scripts/scripts.gni")
 import("//sky/engine/core/core.gni")
 
@@ -126,6 +125,47 @@ source_set("core_generated") {
 }
 
 # core_event_interfaces --------------------------------------------------------
+
+# Calls generate_event_interfaces
+#
+# Parameters:
+#   sources = A list of IDL files to process.
+#   output_file = The .in file to write, relative to the sky_gen_dir.
+#   suffix = (Optional) String to be passed to script via --suffix
+template("generate_event_interfaces") {
+  action(target_name) {
+    # Write the file list to a unique temp file to avoid blowing out the
+    # command line length limit.
+    idl_files_list = "$target_gen_dir/${target_name}_file_list.tmp"
+    write_file(idl_files_list, rebase_path(invoker.sources, root_build_dir))
+
+    inputs = [
+               "//sky/engine/bindings/scripts/utilities.py",
+               idl_files_list,
+             ] + invoker.sources
+
+    output_file = "$root_gen_dir/sky/" + invoker.output_file
+    outputs = [
+      output_file,
+    ]
+
+    script = "//sky/engine/bindings/scripts/generate_event_interfaces.py"
+    args = [
+      "--event-idl-files-list",
+      rebase_path(idl_files_list, root_build_dir),
+      "--event-interfaces-file",
+      rebase_path(output_file, root_build_dir),
+      "--write-file-only-if-changed=1",  # Always true for Ninja.
+    ]
+
+    if (defined(invoker.suffix)) {
+      args += [
+        "--suffix",
+        invoker.suffix,
+      ]
+    }
+  }
+}
 
 generate_event_interfaces("core_event_interfaces") {
   sources = core_event_idl_files

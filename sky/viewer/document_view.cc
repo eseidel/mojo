@@ -34,8 +34,6 @@
 #include "sky/engine/public/web/WebScriptSource.h"
 #include "sky/engine/public/web/WebSettings.h"
 #include "sky/engine/public/web/WebView.h"
-#include "sky/engine/v8_inspector/inspector_backend_mojo.h"
-#include "sky/engine/v8_inspector/inspector_host.h"
 #include "sky/viewer/converters/input_event_types.h"
 #include "sky/viewer/converters/url_request_types.h"
 #include "sky/viewer/internals.h"
@@ -111,11 +109,9 @@ DocumentView::DocumentView(
       web_view_(nullptr),
       root_(nullptr),
       view_manager_client_factory_(shell_, this),
-      inspector_service_factory_(this),
       bitmap_rasterizer_(nullptr),
       weak_factory_(this) {
   exported_services_.AddService(&view_manager_client_factory_);
-  inspector_service_provider_impl_.AddService(&inspector_service_factory_);
 }
 
 DocumentView::~DocumentView() {
@@ -137,9 +133,6 @@ void DocumentView::OnEmbed(
   root_ = root;
   imported_services_ = exposed_services.Pass();
   navigator_host_.set_service_provider(imported_services_.get());
-
-  if (services.is_pending())
-    inspector_service_provider_impl_.Bind(services.Pass());
 
   Load(response_.Pass());
 

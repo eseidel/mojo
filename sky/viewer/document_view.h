@@ -22,7 +22,6 @@
 #include "sky/engine/public/platform/ServiceProvider.h"
 #include "sky/engine/public/web/WebFrameClient.h"
 #include "sky/engine/public/web/WebViewClient.h"
-#include "sky/viewer/services/inspector_impl.h"
 #include "ui/events/gestures/gesture_types.h"
 
 namespace mojo {
@@ -131,8 +130,6 @@ class DocumentView : public blink::ServiceProvider,
   blink::WebView* web_view_;
   mojo::View* root_;
   mojo::ViewManagerClientFactory view_manager_client_factory_;
-  InspectorServiceFactory inspector_service_factory_;
-  mojo::ServiceProviderImpl inspector_service_provider_impl_;
   scoped_ptr<LayerHost> layer_host_;
   scoped_refptr<Layer> root_layer_;
   RasterizerBitmap* bitmap_rasterizer_;  // Used for pixel tests.

@@ -93,7 +93,6 @@ source_set("web_headers") {
     "web/WebFrame.h",
     "web/WebFrameClient.h",
     "web/WebHitTestResult.h",
-    "web/WebLeakDetector.h",
     "web/WebLocalFrame.h",
     "web/WebNavigationPolicy.h",
     "web/WebNavigationType.h",

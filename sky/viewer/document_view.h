@@ -35,7 +35,6 @@ class InspectorBackendMojo;
 }
 
 namespace sky {
-class InspectorHostImpl;
 class Rasterizer;
 class RasterizerBitmap;
 class ScriptRunner;
@@ -142,7 +141,6 @@ class DocumentView : public blink::ServiceProvider,
   scoped_refptr<Layer> root_layer_;
   RasterizerBitmap* bitmap_rasterizer_;  // Used for pixel tests.
   scoped_ptr<ScriptRunner> script_runner_;
-  scoped_ptr<InspectorHostImpl> inspector_host_;
   scoped_ptr<inspector::InspectorBackendMojo> inspector_backend_;
   int debugger_id_;
 

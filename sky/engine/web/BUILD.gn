@@ -60,7 +60,6 @@ component("web") {
     "WebFrame.cpp",
     "WebHitTestResult.cpp",
     "Sky.cpp",
-    "WebLeakDetector.cpp",
     "WebLocalFrameImpl.cpp",
     "WebLocalFrameImpl.h",
     "WebNode.cpp",

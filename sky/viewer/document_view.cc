@@ -355,31 +355,8 @@ void DocumentView::OnViewInputEvent(
   }
 }
 
-class InspectorHostImpl : public inspector::InspectorHost {
- public:
-  InspectorHostImpl(blink::WebView* web_view, mojo::Shell* shell)
-      : web_view_(web_view), shell_(shell) {}
-
-  virtual ~InspectorHostImpl() {}
-
-  mojo::Shell* GetShell() override { return shell_; }
-  v8::Isolate* GetIsolate() override { return blink::mainThreadIsolate(); }
-  v8::Local<v8::Context> GetContext() override {
-    return web_view_->mainFrame()->mainWorldScriptContext();
-  }
-
- private:
-  blink::WebView* web_view_;
-  mojo::Shell* shell_;
-};
-
 void DocumentView::StartDebuggerInspectorBackend() {
-  if (!inspector_backend_) {
-    inspector_host_.reset(new InspectorHostImpl(web_view_, shell_));
-    inspector_backend_.reset(
-        new inspector::InspectorBackendMojo(inspector_host_.get()));
-  }
-  inspector_backend_->Connect();
+  // FIXME: Do we need this for dart?
 }
 
 }  // namespace sky

@@ -27,8 +27,6 @@
 #include "sky/engine/core/html/canvas/DataView.h"
 
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/custom/V8DataViewCustom.h"
-#include "sky/engine/bindings/core/v8/custom/V8TypedArrayCustom.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 #include "sky/engine/platform/CheckedInt.h"
 #include "sky/engine/wtf/CPU.h"

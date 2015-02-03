@@ -31,9 +31,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/events/ErrorEvent.h"
 
-#include "sky/engine/bindings/core/v8/V8Binding.h"
-#include "v8/include/v8.h"
-
 namespace blink {
 
 ErrorEventInit::ErrorEventInit()

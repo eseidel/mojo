@@ -30,13 +30,9 @@
 
 #include "gen/sky/core/HTMLElementFactory.h"
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
-#include "sky/engine/bindings/core/v8/CustomElementConstructorBuilder.h"
-#include "sky/engine/bindings/core/v8/DOMDataStore.h"
 #include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"
-#include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
-#include "sky/engine/bindings/core/v8/WindowProxy.h"
 #include "sky/engine/core/animation/AnimationTimeline.h"
 #include "sky/engine/core/animation/DocumentAnimations.h"
 #include "sky/engine/core/css/CSSFontSelector.h"

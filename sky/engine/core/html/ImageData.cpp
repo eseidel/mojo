@@ -31,7 +31,6 @@
 
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/custom/V8Uint8ClampedArrayCustom.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 
 namespace blink {

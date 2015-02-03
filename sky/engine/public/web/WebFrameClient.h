@@ -39,7 +39,6 @@
 #include "sky/engine/public/web/WebNavigationPolicy.h"
 #include "sky/engine/public/web/WebNavigationType.h"
 #include "sky/engine/public/web/WebTextDirection.h"
-#include "v8/include/v8.h"
 
 namespace mojo {
 class View;
@@ -195,16 +194,6 @@ public:
     // The specified request was satified from WebCore's memory cache.
     virtual void didLoadResourceFromMemoryCache(
         WebLocalFrame*, const WebURLRequest&, const WebURLResponse&) { }
-
-    // Script notifications ------------------------------------------------
-
-    // Notifies that a new script context has been created for this frame.
-    // This is similar to didClearWindowObject but only called once per
-    // frame context.
-    virtual void didCreateScriptContext(WebLocalFrame*, v8::Handle<v8::Context>) { }
-
-    // WebKit is about to release its reference to a v8 context for a frame.
-    virtual void willReleaseScriptContext(WebLocalFrame*, v8::Handle<v8::Context>) { }
 
 
     // Geometry notifications ----------------------------------------------

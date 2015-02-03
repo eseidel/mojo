@@ -41,12 +41,7 @@ v8::Handle<v8::Value> ScriptRunner::Call(v8::Handle<v8::Function> function,
                                          v8::Handle<v8::Value> receiver,
                                          int argc,
                                          v8::Handle<v8::Value> argv[]) {
-  gin::TryCatch try_catch;
-  v8::Handle<v8::Value> result = frame_->callFunctionEvenIfScriptDisabled(
-      function, receiver, argc, argv);
-  if (try_catch.HasCaught())
-    std::cout << try_catch.GetStackTrace();
-  return result;
+  return v8::Handle<v8::Value>();
 }
 
 gin::ContextHolder* ScriptRunner::GetContextHolder() {

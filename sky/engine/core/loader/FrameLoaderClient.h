@@ -37,7 +37,6 @@
 #include "sky/engine/platform/weborigin/Referrer.h"
 #include "sky/engine/wtf/Forward.h"
 #include "sky/engine/wtf/Vector.h"
-#include "v8/include/v8.h"
 
 namespace mojo {
 class View;
@@ -103,9 +102,6 @@ namespace blink {
 
 
         virtual void documentElementAvailable() = 0;
-
-        virtual void didCreateScriptContext(v8::Handle<v8::Context>) = 0;
-        virtual void willReleaseScriptContext(v8::Handle<v8::Context>) = 0;
 
         // Informs the embedder that a WebGL canvas inside this frame received a lost context
         // notification with the given GL_ARB_robustness guilt/innocence code (see Extensions3D.h).

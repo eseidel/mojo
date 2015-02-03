@@ -52,9 +52,6 @@ public:
 
     virtual void documentElementAvailable() override;
 
-    virtual void didCreateScriptContext(v8::Handle<v8::Context>) override;
-    virtual void willReleaseScriptContext(v8::Handle<v8::Context>) override;
-
     virtual void detachedFromParent() override;
     virtual void dispatchWillSendRequest(Document*, unsigned long identifier, ResourceRequest&, const ResourceResponse& redirectResponse) override;
     virtual void dispatchDidReceiveResponse(Document*, unsigned long identifier, const ResourceResponse&) override;

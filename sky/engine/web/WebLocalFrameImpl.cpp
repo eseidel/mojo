@@ -176,19 +176,6 @@ int WebFrame::instanceCount()
     return frameCount;
 }
 
-WebLocalFrame* WebLocalFrame::frameForCurrentContext()
-{
-    v8::Handle<v8::Context> context = v8::Isolate::GetCurrent()->GetCurrentContext();
-    if (context.IsEmpty())
-        return 0;
-    return frameForContext(context);
-}
-
-WebLocalFrame* WebLocalFrame::frameForContext(v8::Handle<v8::Context> context)
-{
-    return nullptr;
-}
-
 bool WebLocalFrameImpl::isWebLocalFrame() const
 {
     return true;
@@ -268,18 +255,6 @@ void WebLocalFrameImpl::addMessageToConsole(const WebConsoleMessage& message)
 void WebLocalFrameImpl::collectGarbage()
 {
     // TODO(dart): Implement.
-}
-
-v8::Handle<v8::Value> WebLocalFrameImpl::callFunctionEvenIfScriptDisabled(v8::Handle<v8::Function> function, v8::Handle<v8::Value> receiver, int argc, v8::Handle<v8::Value> argv[])
-{
-    ASSERT(frame());
-    // TODO(dart)
-    return v8::Handle<v8::Value>();
-}
-
-v8::Local<v8::Context> WebLocalFrameImpl::mainWorldScriptContext() const
-{
-    return v8::Local<v8::Context>();
 }
 
 void WebLocalFrameImpl::load(const WebURL& url, mojo::ScopedDataPipeConsumerHandle responseStream)

@@ -85,7 +85,6 @@ test("sky_unittests") {
     "//testing/gtest",
     "//third_party/zlib",
     "//url",
-    "//v8",
     ":web",
   ]
 

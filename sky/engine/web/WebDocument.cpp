@@ -45,7 +45,6 @@
 #include "sky/engine/public/web/WebElement.h"
 #include "sky/engine/web/WebLocalFrameImpl.h"
 #include "sky/engine/wtf/PassRefPtr.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 

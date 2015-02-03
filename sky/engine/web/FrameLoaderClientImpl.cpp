@@ -58,7 +58,6 @@
 #include "sky/engine/wtf/StringExtras.h"
 #include "sky/engine/wtf/text/CString.h"
 #include "sky/engine/wtf/text/WTFString.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -75,18 +74,6 @@ void FrameLoaderClientImpl::documentElementAvailable()
 {
     if (m_webFrame->client())
         m_webFrame->client()->didCreateDocumentElement(m_webFrame);
-}
-
-void FrameLoaderClientImpl::didCreateScriptContext(v8::Handle<v8::Context> context)
-{
-    if (m_webFrame->client())
-        m_webFrame->client()->didCreateScriptContext(m_webFrame, context);
-}
-
-void FrameLoaderClientImpl::willReleaseScriptContext(v8::Handle<v8::Context> context)
-{
-    if (m_webFrame->client())
-        m_webFrame->client()->willReleaseScriptContext(m_webFrame, context);
 }
 
 void FrameLoaderClientImpl::detachedFromParent()

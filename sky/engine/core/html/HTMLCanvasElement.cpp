@@ -56,7 +56,6 @@
 #include "sky/engine/platform/graphics/gpu/WebGLImageBufferSurface.h"
 #include "sky/engine/platform/transforms/AffineTransform.h"
 #include "sky/engine/public/platform/Platform.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -90,7 +89,6 @@ DEFINE_NODE_FACTORY(HTMLCanvasElement)
 HTMLCanvasElement::~HTMLCanvasElement()
 {
     resetDirtyRect();
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-m_externallyAllocatedMemory);
 #if !ENABLE(OILPAN)
     HashSet<RawPtr<CanvasObserver> >::iterator end = m_observers.end();
     for (HashSet<RawPtr<CanvasObserver> >::iterator it = m_observers.begin(); it != end; ++it)
@@ -533,7 +531,6 @@ void HTMLCanvasElement::updateExternallyAllocatedMemory() const
         externallyAllocatedMemory = std::numeric_limits<intptr_t>::max();
 
     // Subtracting two intptr_t that are known to be positive will never underflow.
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(externallyAllocatedMemory - m_externallyAllocatedMemory);
     m_externallyAllocatedMemory = externallyAllocatedMemory;
 }
 

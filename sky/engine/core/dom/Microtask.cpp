@@ -35,7 +35,6 @@
 #include "sky/engine/platform/TraceEvent.h"
 #include "sky/engine/public/platform/WebThread.h"
 #include "sky/engine/wtf/OwnPtr.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -67,16 +66,16 @@ void Microtask::performCheckpoint()
     // we were already performing a microtask checkpoint.
 }
 
-static void microtaskFunctionCallback(void* data)
-{
-    OwnPtr<WebThread::Task> task = adoptPtr(static_cast<WebThread::Task*>(data));
-    task->run();
-}
+// static void microtaskFunctionCallback(void* data)
+// {
+//     OwnPtr<WebThread::Task> task = adoptPtr(static_cast<WebThread::Task*>(data));
+//     task->run();
+// }
 
 void Microtask::enqueueMicrotask(PassOwnPtr<WebThread::Task> callback)
 {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    isolate->EnqueueMicrotask(&microtaskFunctionCallback, callback.leakPtr());
+    // TODO(dart):
+    // We need to figure out how to enqueue microtasks in V8.
 }
 
 void Microtask::enqueueMicrotask(const base::Closure& callback)

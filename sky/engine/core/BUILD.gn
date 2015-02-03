@@ -12,7 +12,6 @@ rel_sky_core_gen_dir = rebase_path(sky_core_output_dir, root_build_dir)
 source_set("libraries") {
   public_deps = [
     "//base",
-    "//gin",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//mojo/application",
     "//mojo/common",
@@ -34,7 +33,6 @@ source_set("libraries") {
     "//third_party/qcms",
     "//third_party/zlib",
     "//url",
-    "//v8",
   ]
 }
 
@@ -110,7 +108,6 @@ source_set("core_generated") {
   deps = [
     ":make_core_generated",
     ":prerequisites",
-    "//gin",
     "//skia",
     "//sky/engine/platform",
     "//sky/engine/wtf",
@@ -118,7 +115,6 @@ source_set("core_generated") {
     "//third_party/libpng",
     "//third_party/qcms",
     "//url",
-    "//v8",
   ]
 
   include_dirs = [ "$root_build_dir" ]

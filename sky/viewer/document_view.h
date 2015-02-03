@@ -87,9 +87,6 @@ class DocumentView : public blink::ServiceProvider,
       const blink::WebString& source_name,
       unsigned source_line,
       const blink::WebString& stack_trace) override;
-  void didCreateScriptContext(
-      blink::WebLocalFrame*,
-      v8::Handle<v8::Context>) override;
 
   // WebViewClient methods:
   blink::ServiceProvider* services() override;

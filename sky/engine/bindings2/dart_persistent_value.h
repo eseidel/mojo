@@ -18,6 +18,8 @@ class DartPersistentValue {
   ~DartPersistentValue();
 
   Dart_PersistentHandle value() const { return value_; }
+  bool is_empty() const { return !value_; }
+
   void Clear();
 
  private:

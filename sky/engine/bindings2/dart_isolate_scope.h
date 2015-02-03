@@ -11,6 +11,7 @@
 
 namespace blink {
 
+// DartIsolateScope is a helper class for entering and exiting a given isolate.
 class DartIsolateScope {
   WTF_MAKE_NONCOPYABLE(DartIsolateScope);
 

@@ -8,7 +8,7 @@
 namespace blink {
 
 ScheduledAction::ScheduledAction(DartState* dart_state, Dart_Handle action)
-    : action_(dart_state->isolate(), action) {
+    : action_(dart_state, action) {
 }
 
 ScheduledAction::~ScheduledAction() {

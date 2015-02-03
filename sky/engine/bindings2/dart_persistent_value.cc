@@ -6,16 +6,17 @@
 #include "sky/engine/bindings2/dart_persistent_value.h"
 
 #include "sky/engine/bindings2/dart_isolate_scope.h"
+#include "sky/engine/bindings2/dart_state.h"
 
 namespace blink {
 
 DartPersistentValue::DartPersistentValue()
-    : isolate_(nullptr), value_(nullptr) {
+    : value_(nullptr) {
 }
 
-DartPersistentValue::DartPersistentValue(Dart_Isolate isolate,
+DartPersistentValue::DartPersistentValue(DartState* dart_state,
                                          Dart_Handle value) {
-  isolate_ = isolate;
+  dart_state_ = dart_state->GetWeakPtr();
   value_ = Dart_NewPersistentHandle(value);
 }
 
@@ -24,11 +25,12 @@ DartPersistentValue::~DartPersistentValue() {
 }
 
 void DartPersistentValue::Clear() {
-  if (!value_)
+  if (!value_ || !dart_state_.get())
     return;
 
-  DartIsolateScope scope(isolate_);
+  DartIsolateScope scope(dart_state_->isolate());
   Dart_DeletePersistentHandle(value_);
+  dart_state_ = base::WeakPtr<DartState>();
   value_ = nullptr;
 }
 

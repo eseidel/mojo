@@ -14,6 +14,11 @@
 
 namespace blink {
 
+// DartValue is a convience wrapper around DartPersistentValue that lets clients
+// use RefPtr to keep track of the number of references to the underlying Dart
+// object. Be careful when retaining RefPtr<DartValue> in the heap because the
+// VM's garbage collector cannot break cycles that involve the C++ heap, which
+// can lead to memory leaks.
 class DartValue : public RefCounted<DartValue> {
   WTF_MAKE_NONCOPYABLE(DartValue);
  public:

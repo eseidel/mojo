@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@
 
 namespace blink {
 
+// DartStringCache maintains a mapping between WTF Strings and Dart strings.
+// When you create a Dart string from a WTF String, the underlying character
+// data is shared between the two systems.
 class DartStringCache {
  public:
   DartStringCache();

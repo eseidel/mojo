@@ -13,13 +13,10 @@ class DartWrapperInfo;
 class ScriptWrappableBase;
 
 class DartWrappableBase {
- public:
-  // TODO(abarth): Remove toScriptWrappableBase.
-  ScriptWrappableBase* toScriptWrappableBase() {
-    return nullptr;
-  }
 };
 
+// DartWrappable is a base class that you can inherit from in order to be
+// exposed to Dart code as an interface.
 class DartWrappable : public DartWrappableBase {
  public:
   DartWrappable() : wrapper_(nullptr) {}

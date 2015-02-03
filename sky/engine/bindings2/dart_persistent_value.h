@@ -5,16 +5,22 @@
 #ifndef SKY_ENGINE_BINDINGS2_DART_PERSISTENT_VALUE_H_
 #define SKY_ENGINE_BINDINGS2_DART_PERSISTENT_VALUE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/Noncopyable.h"
 
 namespace blink {
+class DartState;
 
+// DartPersistentValue is a bookkeeping class to help pair calls to
+// Dart_NewPersistentHandle with Dart_DeletePersistentHandle. Consider using
+// this class instead of holding a Dart_PersistentHandle directly so that you
+// don't leak the Dart_PersistentHandle.
 class DartPersistentValue {
   WTF_MAKE_NONCOPYABLE(DartPersistentValue);
  public:
   DartPersistentValue();
-  DartPersistentValue(Dart_Isolate isolate, Dart_Handle value);
+  DartPersistentValue(DartState* dart_state, Dart_Handle value);
   ~DartPersistentValue();
 
   Dart_PersistentHandle value() const { return value_; }
@@ -23,8 +29,7 @@ class DartPersistentValue {
   void Clear();
 
  private:
-  // TODO(abarth): This class should really be a DartIsolateDestructionObserver.
-  Dart_Isolate isolate_;
+  base::WeakPtr<DartState> dart_state_;
   Dart_PersistentHandle value_;
 };
 

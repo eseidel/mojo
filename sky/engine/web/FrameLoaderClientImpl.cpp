@@ -33,7 +33,6 @@
 #include "sky/engine/web/FrameLoaderClientImpl.h"
 
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/frame/FrameView.h"
 #include "sky/engine/core/frame/Settings.h"

@@ -74,15 +74,8 @@
 
 #include <algorithm>
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "sky/engine/bindings/core/v8/V8Binding.h"
-#include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"
-#include "sky/engine/bindings/core/v8/ScriptController.h"
-#include "sky/engine/bindings/core/v8/ScriptSourceCode.h"
-#include "sky/engine/bindings/core/v8/ScriptValue.h"
-#include "sky/engine/bindings/core/v8/V8GCController.h"
-#include "sky/engine/bindings/core/v8/V8PerIsolateData.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/Node.h"
 #include "sky/engine/core/dom/NodeTraversal.h"
@@ -193,7 +186,7 @@ WebLocalFrame* WebLocalFrame::frameForCurrentContext()
 
 WebLocalFrame* WebLocalFrame::frameForContext(v8::Handle<v8::Context> context)
 {
-    return WebLocalFrameImpl::fromFrame(toFrameIfNotDetached(context));
+    return nullptr;
 }
 
 bool WebLocalFrameImpl::isWebLocalFrame() const
@@ -274,9 +267,7 @@ void WebLocalFrameImpl::addMessageToConsole(const WebConsoleMessage& message)
 
 void WebLocalFrameImpl::collectGarbage()
 {
-    if (!frame())
-        return;
-    V8GCController::collectGarbage(v8::Isolate::GetCurrent());
+    // TODO(dart): Implement.
 }
 
 v8::Handle<v8::Value> WebLocalFrameImpl::callFunctionEvenIfScriptDisabled(v8::Handle<v8::Function> function, v8::Handle<v8::Value> receiver, int argc, v8::Handle<v8::Value> argv[])
@@ -288,7 +279,7 @@ v8::Handle<v8::Value> WebLocalFrameImpl::callFunctionEvenIfScriptDisabled(v8::Ha
 
 v8::Local<v8::Context> WebLocalFrameImpl::mainWorldScriptContext() const
 {
-    return toV8Context(frame(), DOMWrapperWorld::mainWorld());
+    return v8::Local<v8::Context>();
 }
 
 void WebLocalFrameImpl::load(const WebURL& url, mojo::ScopedDataPipeConsumerHandle responseStream)

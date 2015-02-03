@@ -33,7 +33,6 @@
 
 #include "sky/engine/config.h"
 
-#include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
 #include "sky/engine/core/dom/DocumentMarker.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 #include "sky/engine/core/dom/Node.h"

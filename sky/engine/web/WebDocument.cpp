@@ -32,8 +32,6 @@
 #include "sky/engine/public/web/WebDocument.h"
 
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/ScriptState.h"
-#include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/core/animation/AnimationTimeline.h"
 #include "sky/engine/core/css/StyleSheetContents.h"
 #include "sky/engine/core/dom/Document.h"

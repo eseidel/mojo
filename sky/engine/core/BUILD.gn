@@ -43,7 +43,6 @@ source_set("prerequisites") {
   deps = [
     ":libraries",
     ":make_core_generated",
-    "//sky/engine/bindings/core/v8:bindings_core_v8_generated",
     "//sky/engine/platform",
   ]
 
@@ -96,13 +95,7 @@ source_set("testing") {
 }
 
 source_set("core_generated") {
-  sources = bindings_core_v8_files
-
-  # These files include all the .cpp files generated from the .idl files
-  # in webcore_files.
-  sources += bindings_core_generated_aggregate_files
-
-  sources += [
+  sources = [
     # Generated from CSSTokenizer-in.cpp
     "$sky_core_output_dir/CSSTokenizer.cpp",
 
@@ -120,7 +113,6 @@ source_set("core_generated") {
     ":prerequisites",
     "//gin",
     "//skia",
-    "//sky/engine/bindings/core/v8:bindings_core_v8_generated",
     "//sky/engine/platform",
     "//sky/engine/wtf",
     "//third_party/iccjpeg",
@@ -133,7 +125,7 @@ source_set("core_generated") {
   include_dirs = [ "$root_build_dir" ]
 }
 
-# core_bindings_generated ------------------------------------------------------
+# core_event_interfaces --------------------------------------------------------
 
 generate_event_interfaces("core_event_interfaces") {
   sources = core_event_idl_files
@@ -301,12 +293,9 @@ process_in_files("make_core_generated_html_element_factory") {
     "$sky_core_output_dir/HTMLElementFactory.h",
     "$sky_core_output_dir/HTMLNames.cpp",
     "$sky_core_output_dir/HTMLNames.h",
-    "$sky_core_output_dir/V8HTMLElementWrapperFactory.cpp",
-    "$sky_core_output_dir/V8HTMLElementWrapperFactory.h",
   ]
   deps = [
     ":libraries",
-    "//sky/engine/bindings/core/v8:bindings_core_v8_generated",
   ]
 }
 

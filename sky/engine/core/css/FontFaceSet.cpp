@@ -254,37 +254,6 @@ bool FontFaceSet::isCSSConnectedFontFace(FontFace* fontFace) const
     return cssConnectedFontFaceList().contains(fontFace);
 }
 
-void FontFaceSet::forEach(PassOwnPtr<FontFaceSetForEachCallback> callback, const ScriptValue& thisArg) const
-{
-    forEachInternal(callback, &thisArg);
-}
-
-void FontFaceSet::forEach(PassOwnPtr<FontFaceSetForEachCallback> callback) const
-{
-    forEachInternal(callback, 0);
-}
-
-void FontFaceSet::forEachInternal(PassOwnPtr<FontFaceSetForEachCallback> callback, const ScriptValue* thisArg) const
-{
-    if (!inActiveDocumentContext())
-        return;
-    const ListHashSet<RefPtr<FontFace> >& cssConnectedFaces = cssConnectedFontFaceList();
-    Vector<RefPtr<FontFace> > fontFaces;
-    fontFaces.reserveInitialCapacity(cssConnectedFaces.size() + m_nonCSSConnectedFaces.size());
-    for (ListHashSet<RefPtr<FontFace> >::const_iterator it = cssConnectedFaces.begin(); it != cssConnectedFaces.end(); ++it)
-        fontFaces.append(*it);
-    for (ListHashSet<RefPtr<FontFace> >::const_iterator it = m_nonCSSConnectedFaces.begin(); it != m_nonCSSConnectedFaces.end(); ++it)
-        fontFaces.append(*it);
-
-    for (size_t i = 0; i < fontFaces.size(); ++i) {
-        FontFace* face = fontFaces[i].get();
-        if (thisArg)
-            callback->handleItem(*thisArg, face, face, const_cast<FontFaceSet*>(this));
-        else
-            callback->handleItem(face, face, const_cast<FontFaceSet*>(this));
-    }
-}
-
 unsigned long FontFaceSet::size() const
 {
     if (!inActiveDocumentContext())

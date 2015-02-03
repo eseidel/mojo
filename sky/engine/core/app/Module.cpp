@@ -29,14 +29,14 @@ Application* Module::GetApplication() {
   return application();
 }
 
-void Module::setExports(ScriptState*, const ScriptValue& exports) {
+void Module::setExports(DartState*, PassRefPtr<DartValue> exports) {
   exports_ = exports;
 }
 
-const ScriptValue& Module::exports(ScriptState* scriptState) const {
-  if (exports_.isEmpty())
-    exports_ = ScriptValue::createEmptyObject(scriptState);
-  return exports_;
+DartValue* Module::exports(DartState* dart_state) const {
+  if (exports_->is_empty())
+    exports_ = DartValue::Create();
+  return exports_.get();
 }
 
 } // namespace blink

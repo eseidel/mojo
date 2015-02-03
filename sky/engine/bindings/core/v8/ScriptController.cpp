@@ -249,8 +249,9 @@ void ScriptController::executeModuleScript(AbstractModule& module, const String&
                 if (!name.isEmpty()) {
                     scriptModule.formalDependencies.append(name);
                     v8::Handle<v8::Value> actual;
-                    if (Module* childModule = child->module())
-                        actual = childModule->exports(scriptState).v8Value();
+                    // TODO(abarth): Make this work for Dart.
+                    // if (Module* childModule = child->module())
+                    //     actual = childModule->exports(scriptState).v8Value();
                     if (actual.IsEmpty())
                         actual = v8::Undefined(m_isolate);
                     scriptModule.resolvedDependencies.append(actual);

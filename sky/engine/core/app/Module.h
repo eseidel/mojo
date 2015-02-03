@@ -24,8 +24,8 @@ public:
 
   Application* application() const { return application_.get(); }
 
-  void setExports(ScriptState*, const ScriptValue& exports);
-  const ScriptValue& exports(ScriptState*) const;
+  void setExports(DartState*, PassRefPtr<DartValue> exports);
+  DartValue* exports(DartState*) const;
 
 private:
   Module(ExecutionContext* context,
@@ -37,7 +37,7 @@ private:
   Application* GetApplication() override;
 
   RefPtr<Application> application_;
-  mutable ScriptValue exports_;
+  mutable RefPtr<DartValue> exports_;
 };
 
 } // namespace blink

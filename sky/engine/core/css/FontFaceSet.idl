@@ -41,7 +41,6 @@ enum FontFaceSetLoadStatus { "loading", "loaded" };
     [RaisesException] void add(FontFace fontFace);
     void clear();
     [RaisesException, ImplementedAs=remove] boolean delete(FontFace fontFace);
-    void forEach(FontFaceSetForEachCallback callback, optional any thisArg);
     [RaisesException] boolean has(FontFace fontFace);
 
     readonly attribute unsigned long size;

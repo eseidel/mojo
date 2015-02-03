@@ -26,9 +26,9 @@ public:
 
     mojo::View* contentView() const { return m_contentView; }
 
-    ScriptValue takeServicesHandle(ScriptState*);
-    ScriptValue takeExposedServicesHandle(ScriptState*);
-    void embedViewManagerClient(const ScriptValue& client);
+    PassRefPtr<DartValue> takeServicesHandle(ScriptState*);
+    PassRefPtr<DartValue> takeExposedServicesHandle(ScriptState*);
+    void embedViewManagerClient(DartValue* client);
 
 private:
     explicit HTMLIFrameElement(Document&);

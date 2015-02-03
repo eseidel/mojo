@@ -432,11 +432,10 @@ PassRefPtr<Element> Document::createElement(const AtomicString& name, ExceptionS
     return HTMLElementFactory::createHTMLElement(name, *this, false);
 }
 
-ScriptValue Document::registerElement(ScriptState* scriptState, const AtomicString& name, ExceptionState& exceptionState)
+PassRefPtr<DartValue> Document::registerElement(DartState*, const AtomicString& name, ExceptionState& exceptionState)
 {
-    CustomElementConstructorBuilder constructorBuilder(scriptState);
-    registrationContext().registerElement(this, &constructorBuilder, name, exceptionState);
-    return constructorBuilder.bindingsReturnValue();
+    // TODO(abarth): Add back custom elment registration.
+    return DartValue::Create();
 }
 
 CustomElementMicrotaskRunQueue* Document::customElementMicrotaskRunQueue()

@@ -27,7 +27,6 @@
 #define SKY_ENGINE_CORE_CSS_FONTFACESET_H_
 
 #include "sky/engine/core/css/FontFace.h"
-#include "sky/engine/core/css/FontFaceSetForEachCallback.h"
 #include "sky/engine/core/dom/ActiveDOMObject.h"
 #include "sky/engine/core/events/EventListener.h"
 #include "sky/engine/core/events/EventTarget.h"
@@ -67,8 +66,6 @@ public:
     void add(FontFace*, ExceptionState&);
     void clear();
     bool remove(FontFace*, ExceptionState&);
-    void forEach(PassOwnPtr<FontFaceSetForEachCallback>, const ScriptValue& thisArg) const;
-    void forEach(PassOwnPtr<FontFaceSetForEachCallback>) const;
     bool has(FontFace*, ExceptionState&) const;
 
     unsigned long size() const;
@@ -119,7 +116,6 @@ private:
     bool hasLoadedFonts() const { return !m_loadedFonts.isEmpty() || !m_failedFonts.isEmpty(); }
 
     bool inActiveDocumentContext() const;
-    void forEachInternal(PassOwnPtr<FontFaceSetForEachCallback>, const ScriptValue* thisArg) const;
     void addToLoadingFonts(PassRefPtr<FontFace>);
     void removeFromLoadingFonts(PassRefPtr<FontFace>);
     void fireLoadingEvent();

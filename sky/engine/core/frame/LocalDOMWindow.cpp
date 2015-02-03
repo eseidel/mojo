@@ -34,7 +34,6 @@
 #include "sky/engine/bindings2/exception_state_placeholder.h"
 #include "sky/engine/bindings/core/v8/ScriptCallStackFactory.h"
 #include "sky/engine/bindings/core/v8/ScriptController.h"
-#include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
 #include "sky/engine/core/app/Application.h"
 #include "sky/engine/core/css/CSSComputedStyleDeclaration.h"
 #include "sky/engine/core/css/DOMWindowCSS.h"

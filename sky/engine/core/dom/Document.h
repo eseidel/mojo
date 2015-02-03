@@ -28,8 +28,8 @@
 #ifndef SKY_ENGINE_CORE_DOM_DOCUMENT_H_
 #define SKY_ENGINE_CORE_DOM_DOCUMENT_H_
 
+#include "sky/engine/bindings2/dart_value.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"
-#include "sky/engine/bindings/core/v8/ScriptValue.h"
 #include "sky/engine/core/animation/AnimationClock.h"
 #include "sky/engine/core/animation/PendingAnimations.h"
 #include "sky/engine/core/dom/ContainerNode.h"
@@ -109,7 +109,6 @@ class ScriptRunner;
 class ScriptedAnimationController;
 class SegmentedString;
 class SelectorQueryCache;
-class SerializedScriptValue;
 class Settings;
 class StyleEngine;
 class StyleResolver;
@@ -453,7 +452,7 @@ public:
 
     IntSize initialViewportSize() const;
 
-    ScriptValue registerElement(ScriptState*, const AtomicString& name, ExceptionState&);
+    PassRefPtr<DartValue> registerElement(DartState*, const AtomicString& name, ExceptionState&);
     CustomElementRegistrationContext& registrationContext() { return *m_registrationContext; }
     CustomElementMicrotaskRunQueue* customElementMicrotaskRunQueue();
 

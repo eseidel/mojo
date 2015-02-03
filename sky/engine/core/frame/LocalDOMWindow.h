@@ -27,7 +27,6 @@
 #ifndef SKY_ENGINE_CORE_FRAME_LOCALDOMWINDOW_H_
 #define SKY_ENGINE_CORE_FRAME_LOCALDOMWINDOW_H_
 
-#include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
 #include "sky/engine/core/events/EventTarget.h"
 #include "sky/engine/core/frame/DOMWindowBase64.h"
 #include "sky/engine/core/frame/FrameDestructionObserver.h"
@@ -68,7 +67,6 @@ class RequestAnimationFrameCallback;
 class ScheduledAction;
 class Screen;
 class ScriptCallStack;
-class SerializedScriptValue;
 class StyleMedia;
 
 enum PageshowEventPersistence {

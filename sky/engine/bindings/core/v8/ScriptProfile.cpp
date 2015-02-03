@@ -29,7 +29,7 @@
  */
 
 #include "sky/engine/config.h"
-#include "sky/engine/core/inspector/ScriptProfile.h"
+#include "sky/engine/bindings/core/v8/ScriptProfile.h"
 
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/wtf/PassRefPtr.h"

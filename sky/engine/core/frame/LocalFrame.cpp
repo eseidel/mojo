@@ -31,7 +31,6 @@
 #include "sky/engine/core/frame/LocalFrame.h"
 
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/editing/Editor.h"
 #include "sky/engine/core/editing/FrameSelection.h"
 #include "sky/engine/core/editing/htmlediting.h"
@@ -67,7 +66,6 @@ inline LocalFrame::LocalFrame(FrameLoaderClient* client, FrameHost* host)
     : Frame(client, host)
     , m_deprecatedLoader(this)
     , m_mojoLoader(adoptPtr(new MojoLoader(*this)))
-    , m_script(adoptPtr(new ScriptController(this)))
     , m_dart(adoptPtr(new DartController()))
     , m_editor(Editor::create(*this))
     , m_spellChecker(SpellChecker::create(*this))
@@ -126,7 +124,6 @@ void LocalFrame::detach()
     // Finish all cleanup work that might require talking to the embedder.
     // Notify ScriptController that the frame is closing, since its cleanup ends up calling
     // back to FrameLoaderClient via WindowProxy.
-    script().clearForClose();
     dart().clearForClose();
     // After this, we must no longer talk to the client since this clears
     // its owning reference back to our owning LocalFrame.
@@ -171,8 +168,6 @@ FloatSize LocalFrame::resizePageRectsKeepingRatio(const FloatSize& originalSize,
 
 void LocalFrame::setDOMWindow(PassRefPtr<LocalDOMWindow> domWindow)
 {
-    if (domWindow)
-        script().clearWindowProxy();
     Frame::setDOMWindow(domWindow);
 }
 

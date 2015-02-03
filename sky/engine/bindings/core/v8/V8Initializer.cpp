@@ -108,7 +108,6 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
     bool shouldUseDocumentURL = resourceName.IsEmpty() || !resourceName->IsString();
     String resource = shouldUseDocumentURL ? enteredWindow->document()->url() : toCoreString(resourceName.As<v8::String>());
 
-    ScriptState* scriptState = ScriptState::current(isolate);
     RefPtr<ErrorEvent> event = ErrorEvent::create(errorMessage, resource, message->GetLineNumber(), message->GetStartColumn() + 1);
     if (V8DOMWrapper::isDOMWrapper(data)) {
         v8::Handle<v8::Object> obj = v8::Handle<v8::Object>::Cast(data);
@@ -118,14 +117,6 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
             if (exception && !exception->messageForConsole().isEmpty())
                 event->setUnsanitizedMessage("Uncaught " + exception->toStringForConsole());
         }
-    }
-
-    // This method might be called while we're creating a new context. In this case, we
-    // avoid storing the exception object, as we can't create a wrapper during context creation.
-    // FIXME: Can we even get here during initialization now that we bail out when GetEntered returns an empty handle?
-    LocalFrame* frame = enteredWindow->document()->frame();
-    if (frame && frame->script().existingWindowProxy(scriptState->world())) {
-        V8ErrorHandler::storeExceptionOnErrorEventWrapper(event.get(), data, scriptState->context()->Global(), isolate);
     }
 
     enteredWindow->document()->reportException(event.release(), scriptId, nullptr);

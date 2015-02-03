@@ -1103,15 +1103,6 @@ v8::Handle<v8::Object> wrap({{cpp_class}}* impl, v8::Handle<v8::Object> creation
         return wrap(to{{special_wrap_interface}}(impl), creationContext, isolate);
     {% endfor %}
     v8::Handle<v8::Object> wrapper = {{v8_class}}::createWrapper(impl, creationContext, isolate);
-    {% if is_document %}
-    if (wrapper.IsEmpty())
-        return wrapper;
-    DOMWrapperWorld& world = DOMWrapperWorld::current(isolate);
-    if (world.isMainWorld()) {
-        if (LocalFrame* frame = impl->frame())
-            frame->script().windowProxy(world)->updateDocumentWrapper(wrapper);
-    }
-    {% endif %}
     return wrapper;
 }
 

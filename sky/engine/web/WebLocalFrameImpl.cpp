@@ -243,9 +243,7 @@ WebDocument WebLocalFrameImpl::document() const
 void WebLocalFrameImpl::executeScript(const WebScriptSource& source)
 {
     ASSERT(frame());
-    TextPosition position(OrdinalNumber::fromOneBasedInt(source.startLine), OrdinalNumber::first());
-    v8::HandleScope handleScope(toIsolate(frame()));
-    frame()->script().executeScriptInMainWorld(ScriptSourceCode(source.code, source.url, position));
+    // TODO(dart)
 }
 
 void WebLocalFrameImpl::addMessageToConsole(const WebConsoleMessage& message)
@@ -284,7 +282,8 @@ void WebLocalFrameImpl::collectGarbage()
 v8::Handle<v8::Value> WebLocalFrameImpl::callFunctionEvenIfScriptDisabled(v8::Handle<v8::Function> function, v8::Handle<v8::Value> receiver, int argc, v8::Handle<v8::Value> argv[])
 {
     ASSERT(frame());
-    return frame()->script().callFunction(function, receiver, argc, argv);
+    // TODO(dart)
+    return v8::Handle<v8::Value>();
 }
 
 v8::Local<v8::Context> WebLocalFrameImpl::mainWorldScriptContext() const

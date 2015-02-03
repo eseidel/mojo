@@ -672,20 +672,12 @@ LocalFrame* toFrameIfNotDetached(v8::Handle<v8::Context> context)
 v8::Local<v8::Context> toV8Context(ExecutionContext* context, DOMWrapperWorld& world)
 {
     ASSERT(context);
-    if (LocalFrame* frame = toDocument(context)->frame())
-        return frame->script().windowProxy(world)->context();
     return v8::Local<v8::Context>();
 }
 
 v8::Local<v8::Context> toV8Context(LocalFrame* frame, DOMWrapperWorld& world)
 {
-    if (!frame)
-        return v8::Local<v8::Context>();
-    v8::Local<v8::Context> context = frame->script().windowProxy(world)->context();
-    if (context.IsEmpty())
-        return v8::Local<v8::Context>();
-    LocalFrame* attachedFrame= toFrameIfNotDetached(context);
-    return frame == attachedFrame ? context : v8::Local<v8::Context>();
+    return v8::Local<v8::Context>();
 }
 
 void crashIfV8IsDead()
@@ -755,7 +747,7 @@ v8::Isolate* toIsolate(ExecutionContext* context)
 v8::Isolate* toIsolate(LocalFrame* frame)
 {
     ASSERT(frame);
-    return frame->script().isolate();
+    return nullptr;
 }
 
 PassRefPtr<JSONValue> v8ToJSONValue(v8::Isolate* isolate, v8::Handle<v8::Value> value, int maxDepth)

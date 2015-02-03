@@ -80,10 +80,6 @@ void FrameLoaderClientImpl::documentElementAvailable()
 
 void FrameLoaderClientImpl::didCreateScriptContext(v8::Handle<v8::Context> context)
 {
-    // FIXME: We shouldn't need separate debugger ids in sky since
-    // we should have at most one DocumentView per process, no?
-    m_webFrame->frame()->script().setWorldDebugId(1);
-
     if (m_webFrame->client())
         m_webFrame->client()->didCreateScriptContext(m_webFrame, context);
 }

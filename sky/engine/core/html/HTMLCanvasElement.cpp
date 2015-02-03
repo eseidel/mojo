@@ -35,7 +35,6 @@
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
 #include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/ExceptionCode.h"
 #include "sky/engine/core/dom/Microtask.h"

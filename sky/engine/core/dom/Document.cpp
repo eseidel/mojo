@@ -35,7 +35,6 @@
 #include "sky/engine/bindings2/exception_messages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"
-#include "sky/engine/bindings/core/v8/ScriptController.h"
 #include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
 #include "sky/engine/bindings/core/v8/WindowProxy.h"
 #include "sky/engine/core/animation/AnimationTimeline.h"

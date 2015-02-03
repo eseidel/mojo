@@ -68,20 +68,7 @@ v8::Local<v8::Function> V8EventListener::getListenerFunction(ExecutionContext*)
 
 v8::Local<v8::Value> V8EventListener::callListenerFunction(v8::Handle<v8::Value> jsEvent, Event* event)
 {
-    v8::Local<v8::Function> handlerFunction = getListenerFunction(scriptState()->executionContext());
-    v8::Local<v8::Object> receiver = getReceiverObject(event);
-    if (handlerFunction.IsEmpty() || receiver.IsEmpty())
-        return v8::Local<v8::Value>();
-
-    if (!scriptState()->executionContext()->isDocument())
-        return v8::Local<v8::Value>();
-
-    LocalFrame* frame = toDocument(scriptState()->executionContext())->frame();
-    if (!frame)
-        return v8::Local<v8::Value>();
-
-    v8::Handle<v8::Value> parameters[1] = { jsEvent };
-    return frame->script().callFunction(handlerFunction, receiver, WTF_ARRAY_LENGTH(parameters), parameters);
+    return v8::Local<v8::Value>();
 }
 
 } // namespace blink

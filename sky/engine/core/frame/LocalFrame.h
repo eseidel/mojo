@@ -57,7 +57,6 @@ namespace blink {
     class Node;
     class Range;
     class RenderView;
-    class ScriptController;
     class SpellChecker;
     class TreeScope;
     class TreeScope;
@@ -93,7 +92,6 @@ namespace blink {
         FrameSelection& selection() const;
         InputMethodController& inputMethodController() const;
         FetchContext& fetchContext() const;
-        ScriptController& script();
         DartController& dart();
         SpellChecker& spellChecker() const;
         FrameConsole& console() const;
@@ -128,7 +126,6 @@ namespace blink {
 
         RefPtr<FrameView> m_view;
 
-        OwnPtr<ScriptController> m_script;
         OwnPtr<DartController> m_dart;
         const OwnPtr<Editor> m_editor;
         const OwnPtr<SpellChecker> m_spellChecker;
@@ -142,11 +139,6 @@ namespace blink {
     inline FrameView* LocalFrame::view() const
     {
         return m_view.get();
-    }
-
-    inline ScriptController& LocalFrame::script()
-    {
-        return *m_script;
     }
 
     inline DartController& LocalFrame::dart()

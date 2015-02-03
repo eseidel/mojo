@@ -8,10 +8,12 @@
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/Noncopyable.h"
+#include "sky/engine/wtf/OwnPtr.h"
 #include "sky/engine/wtf/PassRefPtr.h"
 #include "sky/engine/wtf/RefCounted.h"
 
 namespace blink {
+class DartStringCache;
 
 class DartState : public RefCounted<DartState> {
   WTF_MAKE_NONCOPYABLE(DartState);
@@ -27,6 +29,7 @@ class DartState : public RefCounted<DartState> {
   static DartState* Current();
 
   Dart_Isolate isolate() { return isolate_; }
+  DartStringCache& string_cache() { return *string_cache_; }
 
  private:
   explicit DartState();
@@ -37,6 +40,7 @@ class DartState : public RefCounted<DartState> {
   }
 
   Dart_Isolate isolate_;
+  OwnPtr<DartStringCache> string_cache_;
 
   friend class DartController;
 };

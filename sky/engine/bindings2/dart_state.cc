@@ -5,6 +5,9 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_state.h"
 
+#include "sky/engine/bindings2/dart_string_cache.h"
+#include "sky/engine/wtf/PassOwnPtr.h"
+
 namespace blink {
 
 DartState::Scope::Scope(DartState* dart_state) {
@@ -14,7 +17,8 @@ DartState::Scope::~Scope() {
 }
 
 DartState::DartState()
-    : isolate_(NULL) {
+    : isolate_(NULL),
+      string_cache_(adoptPtr(new DartStringCache)) {
 }
 
 DartState::~DartState() {

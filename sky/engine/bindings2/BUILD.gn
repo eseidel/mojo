@@ -14,6 +14,8 @@ source_set("bindings2") {
     "dart_promise_resolver.h",
     "dart_state.cc",
     "dart_state.h",
+    "dart_string_cache.cc",
+    "dart_string_cache.h",
     "dart_value.cc",
     "dart_value.h",
     "dart_wrappable.cc",

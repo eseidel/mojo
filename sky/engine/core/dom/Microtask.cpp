@@ -32,9 +32,9 @@
 #include "sky/engine/core/dom/Microtask.h"
 
 #include "base/bind.h"
-#include "sky/engine/bindings/core/v8/V8PerIsolateData.h"
 #include "sky/engine/platform/TraceEvent.h"
 #include "sky/engine/public/platform/WebThread.h"
+#include "sky/engine/wtf/OwnPtr.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -61,15 +61,10 @@ private:
 
 void Microtask::performCheckpoint()
 {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    V8PerIsolateData* isolateData = V8PerIsolateData::from(isolate);
-    ASSERT(isolateData);
-    if (isolateData->recursionLevel() || isolateData->performingMicrotaskCheckpoint())
-        return;
-    TRACE_EVENT0("v8", "v8.runMicrotasks");
-    isolateData->setPerformingMicrotaskCheckpoint(true);
-    isolate->RunMicrotasks();
-    isolateData->setPerformingMicrotaskCheckpoint(false);
+    // TODO(dart):
+    // We need to kick off microtasks inside the DartVM.
+    // Previously, we skipped this when the recursion level was > 0 and when
+    // we were already performing a microtask checkpoint.
 }
 
 static void microtaskFunctionCallback(void* data)

@@ -27,9 +27,7 @@
 
 #include "base/trace_event/trace_event_impl.h"
 #include "gen/sky/core/HTMLNames.h"
-#include "sky/engine/bindings/core/v8/DOMDataStore.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/V8DOMWrapper.h"
 #include "sky/engine/core/css/resolver/StyleResolver.h"
 #include "sky/engine/core/dom/Attr.h"
 #include "sky/engine/core/dom/Attribute.h"

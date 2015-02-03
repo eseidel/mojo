@@ -5,7 +5,6 @@
 #ifndef SKY_ENGINE_CORE_INSPECTOR_CONSOLEMESSAGE_H_
 #define SKY_ENGINE_CORE_INSPECTOR_CONSOLEMESSAGE_H_
 
-#include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/frame/ConsoleTypes.h"
 #include "sky/engine/core/inspector/ConsoleAPITypes.h"
 #include "sky/engine/core/inspector/ScriptCallStack.h"
@@ -16,9 +15,6 @@
 #include "sky/engine/wtf/text/WTFString.h"
 
 namespace blink {
-
-class ScriptCallStack;
-class ScriptState;
 
 class ConsoleMessage final: public RefCounted<ConsoleMessage> {
 public:

@@ -111,8 +111,6 @@ v8::Local<v8::Value> ScriptController::executeScriptAndReturnValue(v8::Handle<v8
     v8::Local<v8::Value> result;
     {
         V8CacheOptions v8CacheOptions(V8CacheOptionsOff);
-        if (m_frame->settings())
-            v8CacheOptions = m_frame->settings()->v8CacheOptions();
 
         // Isolate exceptions that occur when compiling and executing
         // the code. These exceptions should not interfere with

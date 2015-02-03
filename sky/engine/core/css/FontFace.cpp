@@ -34,7 +34,6 @@
 #include "gen/sky/core/CSSValueKeywords.h"
 #include "gen/sky/platform/FontFamilyNames.h"
 #include "sky/engine/bindings2/exception_state.h"
-#include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/css/BinaryDataFontFaceSource.h"
 #include "sky/engine/core/css/CSSFontFace.h"
 #include "sky/engine/core/css/CSSFontFaceSrcValue.h"

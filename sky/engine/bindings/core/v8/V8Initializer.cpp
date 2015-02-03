@@ -124,7 +124,7 @@ static void messageHandlerInMainThread(v8::Handle<v8::Message> message, v8::Hand
     String resource = shouldUseDocumentURL ? enteredWindow->document()->url() : toCoreString(resourceName.As<v8::String>());
 
     ScriptState* scriptState = ScriptState::current(isolate);
-    RefPtr<ErrorEvent> event = ErrorEvent::create(errorMessage, resource, message->GetLineNumber(), message->GetStartColumn() + 1, &scriptState->world());
+    RefPtr<ErrorEvent> event = ErrorEvent::create(errorMessage, resource, message->GetLineNumber(), message->GetStartColumn() + 1);
     if (V8DOMWrapper::isDOMWrapper(data)) {
         v8::Handle<v8::Object> obj = v8::Handle<v8::Object>::Cast(data);
         const WrapperTypeInfo* type = toWrapperTypeInfo(obj);

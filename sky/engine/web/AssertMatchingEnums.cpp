@@ -206,10 +206,6 @@ COMPILE_ASSERT_MATCHING_ENUM(WebConsoleMessage::LevelWarning, WarningMessageLeve
 COMPILE_ASSERT_MATCHING_ENUM(WebConsoleMessage::LevelError, ErrorMessageLevel);
 COMPILE_ASSERT_MATCHING_ENUM(WebConsoleMessage::LevelInfo, InfoMessageLevel);
 
-COMPILE_ASSERT_MATCHING_ENUM(WebSettings::V8CacheOptionsOff, V8CacheOptionsOff);
-COMPILE_ASSERT_MATCHING_ENUM(WebSettings::V8CacheOptionsParse, V8CacheOptionsParse);
-COMPILE_ASSERT_MATCHING_ENUM(WebSettings::V8CacheOptionsCode, V8CacheOptionsCode);
-
 COMPILE_ASSERT_MATCHING_ENUM(WebSettings::PointerTypeNone, PointerTypeNone);
 COMPILE_ASSERT_MATCHING_ENUM(WebSettings::PointerTypeCoarse, PointerTypeCoarse);
 COMPILE_ASSERT_MATCHING_ENUM(WebSettings::PointerTypeFine, PointerTypeFine);

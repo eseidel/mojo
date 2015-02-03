@@ -6,6 +6,7 @@
 #define SKY_ENGINE_BINDINGS2_DART_STATE_H_
 
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/OwnPtr.h"
@@ -15,7 +16,7 @@
 namespace blink {
 class DartStringCache;
 
-class DartState : public RefCounted<DartState> {
+class DartState {
   WTF_MAKE_NONCOPYABLE(DartState);
  public:
   class Scope {
@@ -27,6 +28,8 @@ class DartState : public RefCounted<DartState> {
   ~DartState();
 
   static DartState* Current();
+
+  base::WeakPtr<DartState> GetWeakPtr();
 
   Dart_Isolate isolate() { return isolate_; }
   DartStringCache& string_cache() { return *string_cache_; }
@@ -41,6 +44,8 @@ class DartState : public RefCounted<DartState> {
 
   Dart_Isolate isolate_;
   OwnPtr<DartStringCache> string_cache_;
+
+  base::WeakPtrFactory<DartState> weak_factory_;
 
   friend class DartController;
 };

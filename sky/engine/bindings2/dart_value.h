@@ -28,7 +28,6 @@ class DartValue : public RefCounted<DartValue> {
 
   ~DartValue();
 
-  DartState* dart_state() const { return dart_state_; }
   Dart_Handle dart_value() const { return dart_value_.value(); }
   bool is_empty() const { return !dart_value(); }
 
@@ -49,7 +48,6 @@ class DartValue : public RefCounted<DartValue> {
   DartValue();
   DartValue(DartState* dart_state, Dart_Handle value);
 
-  DartState* dart_state_;
   DartPersistentValue dart_value_;
 };
 

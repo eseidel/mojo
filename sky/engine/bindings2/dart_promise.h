@@ -37,7 +37,6 @@ class DartPromise : public RefCounted<DartPromise> {
   DartPromise();
   DartPromise(DartState* dart_state, Dart_Handle promise);
 
-  RefPtr<DartState> dart_state_;
   DartPersistentValue value_;
 };
 

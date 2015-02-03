@@ -18,7 +18,8 @@ DartState::Scope::~Scope() {
 
 DartState::DartState()
     : isolate_(NULL),
-      string_cache_(adoptPtr(new DartStringCache)) {
+      string_cache_(adoptPtr(new DartStringCache)),
+      weak_factory_(this) {
 }
 
 DartState::~DartState() {
@@ -26,6 +27,10 @@ DartState::~DartState() {
 
 DartState* DartState::Current() {
   return static_cast<DartState*>(Dart_CurrentIsolateData());
+}
+
+base::WeakPtr<DartState> DartState::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace blink

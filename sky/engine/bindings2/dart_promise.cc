@@ -13,8 +13,7 @@ DartPromise::DartPromise() {
 }
 
 DartPromise::DartPromise(DartState* dart_state, Dart_Handle promise)
-    : dart_state_(dart_state),
-      value_(dart_state->isolate(), promise) {
+    : value_(dart_state->isolate(), promise) {
   if (!promise || Dart_IsFuture(promise))
     return;
   DCHECK(false) << "DartPromise needs a promise.";

@@ -8,7 +8,7 @@
 namespace blink {
 
 DartPromiseResolver::DartPromiseResolver(DartState* dart_state)
-    : dart_state_(dart_state) {
+    : dart_state_(dart_state->GetWeakPtr()) {
 }
 
 DartPromiseResolver::~DartPromiseResolver() {

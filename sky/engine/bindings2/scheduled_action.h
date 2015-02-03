@@ -22,7 +22,6 @@ class ScheduledAction {
   void Execute(ExecutionContext*);
 
  private:
-  RefPtr<DartState> dart_state_;
   DartPersistentValue action_;
 };
 

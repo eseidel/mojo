@@ -11,8 +11,7 @@ DartValue::DartValue() {
 }
 
 DartValue::DartValue(DartState* dart_state, Dart_Handle value)
-    : dart_state_(dart_state),
-      dart_value_(dart_state->isolate(), value) {
+    : dart_value_(dart_state->isolate(), value) {
 }
 
 DartValue::~DartValue() {

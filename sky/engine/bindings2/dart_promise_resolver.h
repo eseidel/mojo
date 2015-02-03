@@ -25,7 +25,7 @@ class DartPromiseResolver : public RefCounted<DartPromiseResolver> {
  private:
   explicit DartPromiseResolver(DartState*);
 
-  RefPtr<DartState> dart_state_;
+  base::WeakPtr<DartState> dart_state_;
 };
 
 } // namespace blink

@@ -13,8 +13,7 @@
 
 namespace blink {
 
-// Contains the embedder's per isolate data.
-class DartState {
+class DartState : public RefCounted<DartState> {
   WTF_MAKE_NONCOPYABLE(DartState);
  public:
   ~DartState();

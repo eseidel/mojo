@@ -112,15 +112,12 @@ void DartController::InitVM() {
                            nullptr, nullptr, nullptr, nullptr, nullptr,
                            ServiceIsolateCreateCallback);
 
-
-  // TODO(dart): Need to setup GC callbacks
-
   char* error;
 
   // TODO(dart): What URI to use
   DartState* dart_state = new DartState();
   Dart_Isolate isolate = Dart_CreateIsolate(
-      "what:uri", "main", mojo::dart::snapshot_buffer, nullptr, &error);
+      "what:uri", "main", mojo::dart::snapshot_buffer, dart_state, &error);
   if (!isolate) {
     delete dart_state;
     abort();

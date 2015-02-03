@@ -2123,22 +2123,9 @@ void CanvasRenderingContext2D::drawFocusRing(const Path& path)
 
 void CanvasRenderingContext2D::addHitRegion(ExceptionState& exceptionState)
 {
-    addHitRegion(Dictionary(), exceptionState);
-}
-
-void CanvasRenderingContext2D::addHitRegion(const Dictionary& options, ExceptionState& exceptionState)
-{
     HitRegionOptions passOptions;
 
-    options.getWithUndefinedOrNullCheck("id", passOptions.id);
-    options.getWithUndefinedOrNullCheck("control", passOptions.control);
-    if (passOptions.id.isEmpty() && !passOptions.control) {
-        exceptionState.ThrowDOMException(NotSupportedError, "Both id and control are null.");
-        return;
-    }
-
     RefPtr<Path2D> path2d;
-    options.getWithUndefinedOrNullCheck("path", path2d);
     Path hitRegionPath = path2d ? path2d->path() : m_path;
 
     FloatRect clipBounds;
@@ -2162,12 +2149,8 @@ void CanvasRenderingContext2D::addHitRegion(const Dictionary& options, Exception
 
     passOptions.path = hitRegionPath;
 
-    String fillRuleString;
-    options.getWithUndefinedOrNullCheck("fillRule", fillRuleString);
-    if (fillRuleString.isEmpty() || fillRuleString != "evenodd")
-        passOptions.fillRule = RULE_NONZERO;
-    else
-        passOptions.fillRule = RULE_EVENODD;
+    // FIXME(Dictionary): Way to specify fillRule
+    passOptions.fillRule = RULE_NONZERO;
 
     addHitRegionInternal(passOptions, exceptionState);
 }

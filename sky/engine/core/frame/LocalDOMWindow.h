@@ -27,7 +27,6 @@
 #ifndef SKY_ENGINE_CORE_FRAME_LOCALDOMWINDOW_H_
 #define SKY_ENGINE_CORE_FRAME_LOCALDOMWINDOW_H_
 
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings/core/v8/SerializedScriptValue.h"
 #include "sky/engine/core/events/EventTarget.h"
 #include "sky/engine/core/frame/DOMWindowBase64.h"

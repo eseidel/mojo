@@ -7,7 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/core/animation/AnimationNodeTiming.h"
 #include "sky/engine/core/animation/AnimationTestHelper.h"
 #include "v8/include/v8.h"
@@ -20,22 +19,6 @@ protected:
         : m_isolate(v8::Isolate::GetCurrent())
         , m_scope(m_isolate)
     {
-    }
-
-    Timing applyTimingInputNumber(String timingProperty, double timingPropertyValue)
-    {
-        v8::Handle<v8::Object> timingInput = v8::Object::New(m_isolate);
-        setV8ObjectPropertyAsNumber(timingInput, timingProperty, timingPropertyValue);
-        Dictionary timingInputDictionary = Dictionary(v8::Handle<v8::Value>::Cast(timingInput), m_isolate);
-        return TimingInput::convert(timingInputDictionary);
-    }
-
-    Timing applyTimingInputString(String timingProperty, String timingPropertyValue)
-    {
-        v8::Handle<v8::Object> timingInput = v8::Object::New(m_isolate);
-        setV8ObjectPropertyAsString(timingInput, timingProperty, timingPropertyValue);
-        Dictionary timingInputDictionary = Dictionary(v8::Handle<v8::Value>::Cast(timingInput), m_isolate);
-        return TimingInput::convert(timingInputDictionary);
     }
 
     v8::Isolate* m_isolate;
@@ -159,24 +142,6 @@ TEST_F(AnimationTimingInputTest, TimingInputTimingFunction)
     EXPECT_EQ(*defaultTimingFunction, *applyTimingInputString("easing", "rubbish").timingFunction);
     EXPECT_EQ(*defaultTimingFunction, *applyTimingInputNumber("easing", 2).timingFunction);
     EXPECT_EQ(*defaultTimingFunction, *applyTimingInputString("easing", "initial").timingFunction);
-}
-
-TEST_F(AnimationTimingInputTest, TimingInputEmpty)
-{
-    Timing controlTiming;
-
-    v8::Handle<v8::Object> timingInput = v8::Object::New(m_isolate);
-    Dictionary timingInputDictionary = Dictionary(v8::Handle<v8::Value>::Cast(timingInput), m_isolate);
-    Timing updatedTiming = TimingInput::convert(timingInputDictionary);
-
-    EXPECT_EQ(controlTiming.startDelay, updatedTiming.startDelay);
-    EXPECT_EQ(controlTiming.fillMode, updatedTiming.fillMode);
-    EXPECT_EQ(controlTiming.iterationStart, updatedTiming.iterationStart);
-    EXPECT_EQ(controlTiming.iterationCount, updatedTiming.iterationCount);
-    EXPECT_TRUE(std::isnan(updatedTiming.iterationDuration));
-    EXPECT_EQ(controlTiming.playbackRate, updatedTiming.playbackRate);
-    EXPECT_EQ(controlTiming.direction, updatedTiming.direction);
-    EXPECT_EQ(*controlTiming.timingFunction, *updatedTiming.timingFunction);
 }
 
 } // namespace blink

@@ -211,10 +211,8 @@ def interface_context(interface):
     has_event_constructor = 'EventConstructor' in extended_attributes
     any_type_attributes = [attribute for attribute in interface.attributes
                            if attribute.idl_type.name == 'Any']
-    if has_event_constructor:
-        includes.add('bindings/core/v8/Dictionary.h')
-        if any_type_attributes:
-            includes.add('bindings/core/v8/SerializedScriptValue.h')
+    if has_event_constructor and any_type_attributes:
+        includes.add('bindings/core/v8/SerializedScriptValue.h')
 
     # [NamedConstructor]
     named_constructor = named_constructor_context(interface)
@@ -758,9 +756,7 @@ def resolution_tests_methods(effective_overloads):
     try:
         idl_type, method = next((idl_type, method)
                                 for idl_type, method in idl_types_methods
-                                if (idl_type.native_array_element_type or
-                                    idl_type.is_dictionary or
-                                    idl_type.name == 'Dictionary'))
+                                if idl_type.native_array_element_type)
         if idl_type.native_array_element_type:
             # (We test for Array instead of generic Object to type-check.)
             # FIXME: test for Object during resolution, then have type check for

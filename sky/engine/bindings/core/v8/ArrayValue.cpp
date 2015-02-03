@@ -26,7 +26,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings/core/v8/ArrayValue.h"
 
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 
 namespace blink {
@@ -49,24 +48,6 @@ bool ArrayValue::length(size_t& length) const
         return false;
 
     length = m_array->Length();
-    return true;
-}
-
-bool ArrayValue::get(size_t index, Dictionary& value) const
-{
-    if (isUndefinedOrNull())
-        return false;
-
-    if (index >= m_array->Length())
-        return false;
-
-    ASSERT(m_isolate);
-    ASSERT(m_isolate == v8::Isolate::GetCurrent());
-    v8::Local<v8::Value> indexedValue = m_array->Get(v8::Integer::NewFromUnsigned(m_isolate, index));
-    if (indexedValue.IsEmpty() || !indexedValue->IsObject())
-        return false;
-
-    value = Dictionary(indexedValue, m_isolate);
     return true;
 }
 

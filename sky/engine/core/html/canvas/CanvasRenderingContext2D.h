@@ -214,7 +214,6 @@ public:
     void drawFocusIfNeeded(Path2D*, Element*);
 
     void addHitRegion(ExceptionState&);
-    void addHitRegion(const Dictionary&, ExceptionState&);
     void removeHitRegion(const String& id);
     void clearHitRegions();
     HitRegion* hitRegionAtPoint(const LayoutPoint&);

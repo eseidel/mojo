@@ -29,7 +29,6 @@
 #include "gen/sky/core/CSSValueKeywords.h"
 #include "gen/sky/core/HTMLNames.h"
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/core/animation/AnimationTimeline.h"

@@ -32,7 +32,6 @@
 #include "gen/sky/platform/RuntimeEnabledFeatures.h"
 #include "sky/engine/bindings/core/v8/CustomElementConstructorBuilder.h"
 #include "sky/engine/bindings/core/v8/DOMDataStore.h"
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings/core/v8/ExceptionMessages.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"
@@ -435,12 +434,7 @@ PassRefPtr<Element> Document::createElement(const AtomicString& name, ExceptionS
 
 ScriptValue Document::registerElement(ScriptState* scriptState, const AtomicString& name, ExceptionState& exceptionState)
 {
-    return registerElement(scriptState, name, Dictionary(), exceptionState);
-}
-
-ScriptValue Document::registerElement(ScriptState* scriptState, const AtomicString& name, const Dictionary& options, ExceptionState& exceptionState)
-{
-    CustomElementConstructorBuilder constructorBuilder(scriptState, &options);
+    CustomElementConstructorBuilder constructorBuilder(scriptState);
     registrationContext().registerElement(this, &constructorBuilder, name, exceptionState);
     return constructorBuilder.bindingsReturnValue();
 }

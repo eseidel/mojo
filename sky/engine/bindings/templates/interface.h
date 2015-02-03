@@ -14,9 +14,6 @@
 
 namespace blink {
 
-{% if has_event_constructor %}
-class Dictionary;
-{% endif %}
 {% if named_constructor %}
 class {{v8_class}}Constructor {
 public:
@@ -271,7 +268,7 @@ inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, {{pass_cpp_ty
 }
 
 {% if has_event_constructor %}
-bool initialize{{cpp_class}}({{cpp_class}}Init&, const Dictionary&, ExceptionState&, const v8::FunctionCallbackInfo<v8::Value>& info, const String& = "");
+bool initialize{{cpp_class}}({{cpp_class}}Init&, ExceptionState&, const v8::FunctionCallbackInfo<v8::Value>& info, const String& = "");
 
 {% endif %}
 } // namespace blink

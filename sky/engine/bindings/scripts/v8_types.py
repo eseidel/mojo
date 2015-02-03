@@ -50,7 +50,6 @@ from v8_globals import includes
 
 NON_WRAPPER_TYPES = frozenset([
     'CompareHow',
-    'Dictionary',
     'EventHandler',
     'EventListener',
     'NodeFilter',
@@ -103,7 +102,6 @@ CPP_UNSIGNED_TYPES = set([
 CPP_SPECIAL_CONVERSION_RULES = {
     'CompareHow': 'Range::CompareHow',
     'Date': 'double',
-    'Dictionary': 'Dictionary',
     'EventHandler': 'EventListener*',
     'NodeFilter': 'RefPtr<NodeFilter>',
     'Promise': 'ScriptPromise',
@@ -285,7 +283,6 @@ def includes_for_cpp_class(class_name, relative_dir_posix):
 INCLUDES_FOR_TYPE = {
     'object': set(),
     'CompareHow': set(),
-    'Dictionary': set(['bindings/core/v8/Dictionary.h']),
     'EventHandler': set(['bindings/core/v8/V8AbstractEventListener.h',
                          'bindings/core/v8/V8EventListenerList.h']),
     'EventListener': set(['bindings/core/v8/BindingSecurity.h',
@@ -409,7 +406,6 @@ V8_VALUE_TO_CPP_VALUE = {
     'unsigned long long': 'toUInt64({arguments})',
     # Interface types
     'CompareHow': 'static_cast<Range::CompareHow>({v8_value}->Int32Value())',
-    'Dictionary': 'Dictionary({v8_value}, {isolate})',
     'EventTarget': 'V8DOMWrapper::isDOMWrapper({v8_value}) ? toWrapperTypeInfo(v8::Handle<v8::Object>::Cast({v8_value}))->toEventTarget(v8::Handle<v8::Object>::Cast({v8_value})) : 0',
     'NodeFilter': 'toNodeFilter({v8_value}, info.Holder(), ScriptState::current({isolate}))',
     'Promise': 'ScriptPromise::cast(ScriptState::current({isolate}), {v8_value})',
@@ -446,8 +442,6 @@ def v8_value_to_cpp_value(idl_type, extended_attributes, v8_value, index, isolat
         cpp_expression_format = (
             '{v8_value}->Is{idl_type}() ? '
             'V8{idl_type}::toNative(v8::Handle<v8::{idl_type}>::Cast({v8_value})) : 0')
-    elif idl_type.is_dictionary:
-        cpp_expression_format = 'V8{idl_type}::toNative({isolate}, {v8_value})'
     else:
         cpp_expression_format = (
             'V8{idl_type}::toNativeWithTypeCheck({isolate}, {v8_value})')
@@ -462,8 +456,7 @@ def v8_value_to_cpp_value_array_or_sequence(native_array_element_type, v8_value,
         index = 0  # special case, meaning "setter"
     else:
         index += 1  # human-readable index
-    if (native_array_element_type.is_interface_type and
-        native_array_element_type.name != 'Dictionary'):
+    if native_array_element_type.is_interface_type:
         this_cpp_type = None
         ref_ptr_type = 'RefPtr'
         expression_format = '(to{ref_ptr_type}NativeArray<{native_array_element_type}, V8{native_array_element_type}>({v8_value}, {index}, {isolate}))'
@@ -744,10 +737,7 @@ def cpp_type_has_null_value(idl_type):
     #   i.e. one for which String::isNull() returns true.
     # - Wrapper types (raw pointer or RefPtr/PassRefPtr) represent null as
     #   a null pointer.
-    # - Dictionary types represent null as a null pointer. They are garbage
-    #   collected so their type is raw pointer.
-    return (idl_type.is_string_type or idl_type.is_wrapper_type or
-            idl_type.is_dictionary)
+    return (idl_type.is_string_type or idl_type.is_wrapper_type)
 
 IdlTypeBase.cpp_type_has_null_value = property(cpp_type_has_null_value)
 

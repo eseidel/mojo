@@ -38,7 +38,7 @@ import os
 import cPickle as pickle
 import sys
 
-from code_generator_v8 import CodeGeneratorDictionaryImpl, CodeGeneratorV8
+from code_generator_v8 import CodeGeneratorV8
 from idl_reader import IdlReader
 from utilities import read_idl_files_list_from_file, write_file
 
@@ -126,16 +126,6 @@ class IdlCompilerV8(IdlCompiler):
         self.compile_and_write(idl_filename)
 
 
-class IdlCompilerDictionaryImpl(IdlCompiler):
-    def __init__(self, *args, **kwargs):
-        IdlCompiler.__init__(self, *args, **kwargs)
-        self.code_generator = CodeGeneratorDictionaryImpl(
-            self.interfaces_info, self.cache_directory, self.output_directory)
-
-    def compile_file(self, idl_filename):
-        self.compile_and_write(idl_filename)
-
-
 def generate_bindings(options, input_filename):
     idl_compiler = IdlCompilerV8(
         options.output_directory,
@@ -145,27 +135,10 @@ def generate_bindings(options, input_filename):
     idl_compiler.compile_file(input_filename)
 
 
-def generate_dictionary_impl(options, input_filename):
-    idl_compiler = IdlCompilerDictionaryImpl(
-        options.output_directory,
-        cache_directory=options.cache_directory,
-        interfaces_info_filename=options.interfaces_info_file,
-        only_if_changed=options.write_file_only_if_changed)
-
-    idl_filenames = read_idl_files_list_from_file(input_filename)
-    for idl_filename in idl_filenames:
-        idl_compiler.compile_file(idl_filename)
-
-
 def main():
     options, input_filename = parse_options()
-    if options.generate_dictionary_impl:
-        # |input_filename| should be a file which contains a list of IDL
-        # dictionary paths.
-        generate_dictionary_impl(options, input_filename)
-    else:
-        # |input_filename| should be a path of an IDL file.
-        generate_bindings(options, input_filename)
+    # |input_filename| should be a path of an IDL file.
+    generate_bindings(options, input_filename)
 
 
 if __name__ == '__main__':

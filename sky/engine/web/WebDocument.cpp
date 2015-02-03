@@ -31,7 +31,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/public/web/WebDocument.h"
 
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/bindings/core/v8/ScriptValue.h"

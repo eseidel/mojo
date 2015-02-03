@@ -103,11 +103,9 @@ OwnPtr<{{argument.idl_type}}> {{argument.name}} = nullptr;
 {######################################}
 {% macro generate_argument(method, argument, world_suffix) %}
 {% if argument.is_optional and not argument.has_default and
-      argument.idl_type != 'Dictionary' and
       not argument.is_callback_interface %}
 {# Optional arguments without a default value generate an early call with
-   fewer arguments if they are omitted.
-   Optional Dictionary arguments default to empty dictionary. #}
+   fewer arguments if they are omitted. #}
 if (UNLIKELY(info.Length() <= {{argument.index}})) {
     {% if world_suffix %}
     {{cpp_method_call(method, argument.v8_set_return_value_for_main_world, argument.cpp_value) | indent}}
@@ -212,7 +210,7 @@ if (!({{argument.enum_validation_expression}})) {
               (argument.index + 1)) | indent}}
     return;
 }
-{% elif argument.idl_type in ['Dictionary', 'Promise'] %}
+{% elif argument.idl_type in ['Promise'] %}
 {# Dictionaries must have type Undefined, Null or Object:
 http://heycam.github.io/webidl/#es-dictionary
 We also require this for our implementation of promises, though not in spec:

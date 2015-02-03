@@ -138,9 +138,6 @@ class IdlDefinitions(object):
             elif child_class == 'Implements':
                 # Implements is handled at the interface merging step
                 pass
-            elif child_class == 'Dictionary':
-                dictionary = IdlDictionary(idl_name, child)
-                self.dictionaries[dictionary.name] = dictionary
             else:
                 raise ValueError('Unrecognized node class: %s' % child_class)
 
@@ -200,51 +197,6 @@ class IdlCallbackFunction(TypedObject):
         TypedObject.resolve_typedefs(self, typedefs)
         for argument in self.arguments:
             argument.resolve_typedefs(typedefs)
-
-
-################################################################################
-# Dictionary
-################################################################################
-
-class IdlDictionary(object):
-    def __init__(self, idl_name, node):
-        self.extended_attributes = {}
-        self.is_partial = node.GetProperty('Partial') or False
-        self.idl_name = idl_name
-        self.name = node.GetName()
-        self.members = []
-        self.parent = None
-        for child in node.GetChildren():
-            child_class = child.GetClass()
-            if child_class == 'Inherit':
-                self.parent = child.GetName()
-            elif child_class == 'Key':
-                self.members.append(IdlDictionaryMember(idl_name, child))
-            elif child_class == 'ExtAttributes':
-                self.extended_attributes = (
-                    ext_attributes_node_to_extended_attributes(idl_name, child))
-            else:
-                raise ValueError('Unrecognized node class: %s' % child_class)
-
-
-class IdlDictionaryMember(object):
-    def __init__(self, idl_name, node):
-        self.default_value = None
-        self.extended_attributes = {}
-        self.idl_type = None
-        self.idl_name = idl_name
-        self.name = node.GetName()
-        for child in node.GetChildren():
-            child_class = child.GetClass()
-            if child_class == 'Type':
-                self.idl_type = type_node_to_type(child)
-            elif child_class == 'Default':
-                self.default_value = default_node_to_idl_literal(child)
-            elif child_class == 'ExtAttributes':
-                self.extended_attributes = (
-                    ext_attributes_node_to_extended_attributes(idl_name, child))
-            else:
-                raise ValueError('Unrecognized node class: %s' % child_class)
 
 
 ################################################################################

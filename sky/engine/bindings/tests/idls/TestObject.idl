@@ -346,14 +346,9 @@ interface TestObject {
     TestEnum testEnumMethod();
     void voidMethodTestEnumArg(TestEnum testEnumTypeArg);
     // Exceptional types
-    Dictionary dictionaryMethod();
-    Promise promiseMethod(long arg1, Dictionary arg2, DOMString arg3, DOMString... variadic);
-    Promise promiseMethodWithoutExceptionState(Dictionary arg1);
     SerializedScriptValue serializedScriptValueMethod();
-    void voidMethodDictionaryArg(Dictionary dictionaryArg);
     void voidMethodPromiseArg(Promise promiseArg);
     void voidMethodSerializedScriptValueArg(SerializedScriptValue serializedScriptValueArg);
-    void voidMethodDictionarySequenceArg(sequence<Dictionary> dictionarySequenceArg);
     Promise overloadedPromiseMethod(long arg);
     Promise overloadedPromiseMethod(DOMString arg);
 
@@ -370,8 +365,6 @@ interface TestObject {
     void voidMethodLongArgOptionalLongArgOptionalLongArg(long longArg, optional long optionalLongArg1, optional long optionalLongArg2);
     void voidMethodLongArgOptionalTestInterfaceEmptyArg(long longArg, optional TestInterfaceEmpty optionalTestInterfaceEmpty);
     void voidMethodTestInterfaceEmptyArgOptionalLongArg(TestInterfaceEmpty optionalTestInterfaceEmpty, optional long longArg);
-    // Optional arguments: exceptional case
-    void voidMethodOptionalDictionaryArg(optional Dictionary optionalDictionaryArg);
 
     // Optional arguments with defaults
     void voidMethodDefaultByteStringArg(optional ByteString defaultByteStringArg = "foo");
@@ -412,7 +405,6 @@ interface TestObject {
     void overloadedMethodI(DOMString stringArg);
     void overloadedMethodI(double doubleArg);
     void overloadedMethodJ(DOMString stringArg);
-    void overloadedMethodJ(TestDictionary testDictionaryArg);
 
 
     [PerWorldBindings] void overloadedPerWorldBindingsMethod();

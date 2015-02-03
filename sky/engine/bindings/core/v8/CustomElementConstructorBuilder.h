@@ -44,7 +44,6 @@
 namespace blink {
 
 class CustomElementDefinition;
-class Dictionary;
 class Document;
 class Element;
 class ExceptionState;
@@ -59,7 +58,8 @@ struct WrapperTypeInfo;
 class CustomElementConstructorBuilder {
     WTF_MAKE_NONCOPYABLE(CustomElementConstructorBuilder);
 public:
-    CustomElementConstructorBuilder(ScriptState*, const Dictionary* options);
+    // FIXME(Dictionary): options
+    explicit CustomElementConstructorBuilder(ScriptState*);
 
     // The builder accumulates state and may run script at specific
     // points. These methods must be called in order. When one fails
@@ -81,7 +81,6 @@ private:
     v8::Handle<v8::Function> retrieveCallback(v8::Isolate*, const char* name);
 
     RefPtr<ScriptState> m_scriptState;
-    const Dictionary* m_options;
     v8::Handle<v8::Object> m_prototype;
     const WrapperTypeInfo* m_wrapperType;
     v8::Handle<v8::Function> m_constructor;

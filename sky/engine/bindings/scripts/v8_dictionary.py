@@ -17,12 +17,6 @@ DICTIONARY_H_INCLUDES = frozenset([
     'platform/heap/Handle.h',
 ])
 
-DICTIONARY_CPP_INCLUDES = frozenset([
-    # FIXME: Remove this, http://crbug.com/321462
-    'bindings/core/v8/Dictionary.h',
-])
-
-
 def setter_name_for_dictionary_member(member):
     return 'set%s' % v8_utilities.capitalize(member.name)
 
@@ -35,7 +29,6 @@ def has_method_name_for_dictionary_member(member):
 
 def dictionary_context(dictionary):
     includes.clear()
-    includes.update(DICTIONARY_CPP_INCLUDES)
     return {
         'cpp_class': v8_utilities.cpp_name(dictionary),
         'header_includes': set(DICTIONARY_H_INCLUDES),

@@ -242,7 +242,6 @@ def argument_context(interface, method, argument, index):
             (has_extended_attribute_value(interface, 'TypeChecking', 'Unrestricted') or
              has_extended_attribute_value(method, 'TypeChecking', 'Unrestricted')) and
             idl_type.name in ('Float', 'Double'),
-        # Dictionary is special-cased, but arrays and sequences shouldn't be
         'idl_type': idl_type.base_type,
         'idl_type_object': idl_type,
         'index': index,
@@ -445,9 +444,6 @@ def union_arguments(idl_type):
 
 
 def argument_default_cpp_value(argument):
-    if argument.idl_type.is_dictionary:
-        # We always create impl objects for IDL dictionaries.
-        return '%s::create()' % argument.idl_type.base_type
     if not argument.default_value:
         return None
     return argument.idl_type.literal_cpp_value(argument.default_value)

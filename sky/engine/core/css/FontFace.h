@@ -46,7 +46,6 @@ namespace blink {
 
 class CSSFontFace;
 class CSSValueList;
-class Dictionary;
 class Document;
 class ExceptionState;
 class FontFaceReadyPromiseResolver;
@@ -58,9 +57,9 @@ class FontFace : public RefCounted<FontFace>, public DartWrappable {
 public:
     enum LoadStatus { Unloaded, Loading, Loaded, Error };
 
-    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, PassRefPtr<ArrayBuffer> source, const Dictionary&);
-    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, PassRefPtr<ArrayBufferView>, const Dictionary&);
-    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, const String& source, const Dictionary&);
+    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, PassRefPtr<ArrayBuffer> source);
+    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, PassRefPtr<ArrayBufferView>);
+    static PassRefPtr<FontFace> create(ExecutionContext*, const AtomicString& family, const String& source);
     static PassRefPtr<FontFace> create(Document*, const StyleRuleFontFace*);
 
     ~FontFace();
@@ -106,7 +105,7 @@ public:
 
 private:
     FontFace();
-    FontFace(ExecutionContext*, const AtomicString& family, const Dictionary& descriptors);
+    FontFace(ExecutionContext*, const AtomicString& family);
 
     void initCSSFontFace(Document*, PassRefPtr<CSSValue> src);
     void initCSSFontFace(const unsigned char* data, unsigned size);

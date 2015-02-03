@@ -42,7 +42,6 @@
 
 namespace blink {
 
-class Dictionary;
 class ExceptionState;
 class MutationCallback;
 class MutationObserver;
@@ -85,7 +84,7 @@ public:
 
     ~MutationObserver();
 
-    void observe(Node*, const Dictionary&, ExceptionState&);
+    void observe(Node*, ExceptionState&);
     Vector<RefPtr<MutationRecord> > takeRecords();
     void disconnect();
     void observationStarted(MutationObserverRegistration*);

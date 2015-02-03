@@ -67,7 +67,8 @@ typedef (CanvasRenderingContext2D or WebGLRenderingContext) RenderingContext;
     readonly attribute Element activeElement;
     boolean hasFocus();
 
-    [CallWith=ScriptState, CustomElementCallbacks, RaisesException, MeasureAs=DocumentRegisterElement] CustomElementConstructor registerElement(DOMString name, optional Dictionary options);
+    // FIXME(Dictionary): options
+    [CallWith=ScriptState, CustomElementCallbacks, RaisesException, MeasureAs=DocumentRegisterElement] CustomElementConstructor registerElement(DOMString name);
 
     // Page visibility API.
     readonly attribute DOMString visibilityState;

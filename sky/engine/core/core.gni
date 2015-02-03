@@ -79,8 +79,6 @@ sky_core_files = [
   "animation/DocumentAnimation.h",
   "animation/DocumentAnimations.cpp",
   "animation/DocumentAnimations.h",
-  "animation/EffectInput.cpp",
-  "animation/EffectInput.h",
   "animation/ElementAnimation.h",
   "animation/InertAnimation.cpp",
   "animation/InertAnimation.h",

@@ -74,6 +74,7 @@
 
 #include <algorithm>
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings2/exception_state_placeholder.h"

@@ -116,10 +116,6 @@ class CodeGeneratorBase(object):
             interface_name
             for interface_name, interface_info in interfaces_info.iteritems()
             if interface_info['is_callback_interface']))
-        IdlType.set_dictionaries(set(
-            dictionary_name
-            for dictionary_name, interface_info in interfaces_info.iteritems()
-            if interface_info['is_dictionary']))
         IdlType.set_implemented_as_interfaces(dict(
             (interface_name, interface_info['implemented_as'])
             for interface_name, interface_info in interfaces_info.iteritems()
@@ -202,39 +198,6 @@ class CodeGeneratorV8(CodeGeneratorBase):
         header_text, cpp_text = render_template(
             interface_info, header_template, cpp_template, template_context)
         header_path, cpp_path = self.output_paths(dictionary_name)
-        return (
-            (header_path, header_text),
-            (cpp_path, cpp_text),
-        )
-
-
-class CodeGeneratorDictionaryImpl(CodeGeneratorBase):
-    def __init__(self, interfaces_info, cache_dir, output_dir):
-        CodeGeneratorBase.__init__(self, interfaces_info, cache_dir, output_dir)
-
-    def output_paths(self, definition_name, interface_info):
-        if interface_info['component_dir'] in KNOWN_COMPONENTS:
-            output_dir = posixpath.join(self.output_dir,
-                                        interface_info['relative_dir'])
-        else:
-            output_dir = self.output_dir
-        header_path = posixpath.join(output_dir, '%s.h' % definition_name)
-        cpp_path = posixpath.join(output_dir, '%s.cpp' % definition_name)
-        return header_path, cpp_path
-
-    def generate_code_internal(self, definitions, definition_name):
-        if not definition_name in definitions.dictionaries:
-            raise ValueError('%s is not an IDL dictionary')
-        dictionary = definitions.dictionaries[definition_name]
-        interface_info = self.interfaces_info[definition_name]
-        header_template = self.jinja_env.get_template('dictionary_impl.h')
-        cpp_template = self.jinja_env.get_template('dictionary_impl.cpp')
-        template_context = v8_dictionary.dictionary_impl_context(
-            dictionary, self.interfaces_info)
-        header_text, cpp_text = render_template(
-            interface_info, header_template, cpp_template, template_context)
-        header_path, cpp_path = self.output_paths(
-            definition_name, interface_info)
         return (
             (header_path, header_text),
             (cpp_path, cpp_text),

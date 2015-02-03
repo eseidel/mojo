@@ -153,10 +153,6 @@ class IdlType(IdlTypeBase):
         return self.base_type in IdlType.callback_interfaces
 
     @property
-    def is_dictionary(self):
-        return self.base_type in IdlType.dictionaries
-
-    @property
     def is_enum(self):
         # FIXME: add an IdlEnumType class and a resolve_enums step at end of
         # IdlDefinitions constructor
@@ -186,7 +182,6 @@ class IdlType(IdlTypeBase):
         # In C++ these are RefPtr or PassRefPtr types.
         return not(self.is_basic_type or
                    self.is_callback_function or
-                   self.is_dictionary or
                    self.is_enum or
                    self.name == 'Any' or
                    self.name == 'Object' or

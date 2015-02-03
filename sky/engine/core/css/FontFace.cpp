@@ -33,7 +33,6 @@
 
 #include "gen/sky/core/CSSValueKeywords.h"
 #include "gen/sky/platform/FontFamilyNames.h"
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/css/BinaryDataFontFaceSource.h"
@@ -68,9 +67,9 @@ static PassRefPtr<CSSValue> parseCSSValue(const Document* document, const String
     return parsedStyle->getPropertyCSSValue(propertyID);
 }
 
-PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, const String& source, const Dictionary& descriptors)
+PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, const String& source)
 {
-    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family, descriptors));
+    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family));
 
     RefPtr<CSSValue> src = parseCSSValue(toDocument(context), source, CSSPropertySrc);
     if (!src || !src->isValueList())
@@ -80,16 +79,16 @@ PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicStr
     return fontFace.release();
 }
 
-PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, PassRefPtr<ArrayBuffer> source, const Dictionary& descriptors)
+PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, PassRefPtr<ArrayBuffer> source)
 {
-    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family, descriptors));
+    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family));
     fontFace->initCSSFontFace(static_cast<const unsigned char*>(source->data()), source->byteLength());
     return fontFace.release();
 }
 
-PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, PassRefPtr<ArrayBufferView> source, const Dictionary& descriptors)
+PassRefPtr<FontFace> FontFace::create(ExecutionContext* context, const AtomicString& family, PassRefPtr<ArrayBufferView> source)
 {
-    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family, descriptors));
+    RefPtr<FontFace> fontFace = adoptRef(new FontFace(context, family));
     fontFace->initCSSFontFace(static_cast<const unsigned char*>(source->baseAddress()), source->byteLength());
     return fontFace.release();
 }
@@ -128,24 +127,10 @@ FontFace::FontFace()
 {
 }
 
-FontFace::FontFace(ExecutionContext* context, const AtomicString& family, const Dictionary& descriptors)
+FontFace::FontFace(ExecutionContext* context, const AtomicString& family)
     : m_family(family)
     , m_status(Unloaded)
 {
-    Document* document = toDocument(context);
-    String value;
-    if (DictionaryHelper::get(descriptors, "style", value))
-        setPropertyFromString(document, value, CSSPropertyFontStyle);
-    if (DictionaryHelper::get(descriptors, "weight", value))
-        setPropertyFromString(document, value, CSSPropertyFontWeight);
-    if (DictionaryHelper::get(descriptors, "stretch", value))
-        setPropertyFromString(document, value, CSSPropertyFontStretch);
-    if (DictionaryHelper::get(descriptors, "unicodeRange", value))
-        setPropertyFromString(document, value, CSSPropertyUnicodeRange);
-    if (DictionaryHelper::get(descriptors, "variant", value))
-        setPropertyFromString(document, value, CSSPropertyFontVariant);
-    if (DictionaryHelper::get(descriptors, "featureSettings", value))
-        setPropertyFromString(document, value, CSSPropertyWebkitFontFeatureSettings);
 }
 
 FontFace::~FontFace()

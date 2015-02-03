@@ -26,7 +26,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/css/FontFaceSet.h"
 
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings/core/v8/ScriptPromiseResolver.h"
 #include "sky/engine/bindings/core/v8/ScriptState.h"
 #include "sky/engine/core/css/CSSFontSelector.h"

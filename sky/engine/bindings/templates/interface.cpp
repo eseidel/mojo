@@ -583,15 +583,15 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info)
     {% endfor %}
     {{cpp_class}}Init eventInit;
     if (info.Length() >= 2) {
-        TONATIVE_VOID(Dictionary, options, Dictionary(info[1], info.GetIsolate()));
-        if (!initialize{{cpp_class}}(eventInit, options, exceptionState, info)) {
+        // FIXME(Dictionary): options
+        //TONATIVE_VOID(Dictionary, options, Dictionary(info[1], info.GetIsolate()));
+        if (!initialize{{cpp_class}}(eventInit, exceptionState, info)) {
             exceptionState.ThrowIfNeeded();
             return;
         }
         {# Store attributes of type |any| on the wrapper to avoid leaking them
            between isolated worlds. #}
         {% for attribute in any_type_attributes %}
-        options.get("{{attribute.name}}", {{attribute.name}});
         if (!{{attribute.name}}.IsEmpty())
             V8HiddenValue::setHiddenValue(info.GetIsolate(), info.Holder(), v8AtomicString(info.GetIsolate(), "{{attribute.name}}"), {{attribute.name}});
         {% endfor %}
@@ -713,21 +713,13 @@ static const V8DOMConfiguration::MethodConfiguration {{v8_class}}Methods[] = {
 {##############################################################################}
 {% block initialize_event %}
 {% if has_event_constructor %}
-bool initialize{{cpp_class}}({{cpp_class}}Init& eventInit, const Dictionary& options, ExceptionState& exceptionState, const v8::FunctionCallbackInfo<v8::Value>& info, const String& forEventName)
+bool initialize{{cpp_class}}({{cpp_class}}Init& eventInit, ExceptionState& exceptionState, const v8::FunctionCallbackInfo<v8::Value>& info, const String& forEventName)
 {
-    Dictionary::ConversionContext conversionContext(forEventName.isEmpty() ? String("{{interface_name}}") : forEventName, "", exceptionState);
     {% if parent_interface %}{# any Event interface except Event itself #}
-    if (!initialize{{parent_interface}}(eventInit, options, exceptionState, info, forEventName.isEmpty() ? String("{{interface_name}}") : forEventName))
+    if (!initialize{{parent_interface}}(eventInit, exceptionState, info, forEventName.isEmpty() ? String("{{interface_name}}") : forEventName))
         return false;
 
     {% endif %}
-    {% for attribute in attributes
-           if (attribute.is_initialized_by_event_constructor and
-               not attribute.idl_type == 'any')%}
-    {% set is_nullable = 'true' if attribute.is_nullable else 'false' %}
-    if (!DictionaryHelper::convert(options, conversionContext.setConversionType("{{attribute.idl_type}}", {{is_nullable}}), "{{attribute.name}}", eventInit.{{attribute.cpp_name}}))
-        return false;
-    {% endfor %}
     return true;
 }
 

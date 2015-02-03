@@ -35,7 +35,6 @@
 #include "core/V8HTMLElementWrapperFactory.h" // FIXME: should be bindings/core/v8
 #include "sky/engine/bindings/core/v8/CustomElementBinding.h"
 #include "sky/engine/bindings/core/v8/DOMWrapperWorld.h"
-#include "sky/engine/bindings/core/v8/Dictionary.h"
 #include "sky/engine/bindings2/exception_state.h"
 #include "sky/engine/bindings/core/v8/V8Binding.h"
 #include "sky/engine/bindings/core/v8/V8HiddenValue.h"
@@ -50,9 +49,8 @@ namespace blink {
 
 static void constructCustomElement(const v8::FunctionCallbackInfo<v8::Value>&);
 
-CustomElementConstructorBuilder::CustomElementConstructorBuilder(ScriptState* scriptState, const Dictionary* options)
+CustomElementConstructorBuilder::CustomElementConstructorBuilder(ScriptState* scriptState)
     : m_scriptState(scriptState)
-    , m_options(options)
     , m_wrapperType(0)
 {
     ASSERT(m_scriptState->context() == m_scriptState->isolate()->GetCurrentContext());
@@ -60,6 +58,8 @@ CustomElementConstructorBuilder::CustomElementConstructorBuilder(ScriptState* sc
 
 bool CustomElementConstructorBuilder::validateOptions(const AtomicString& type, QualifiedName& tagName, ExceptionState& exceptionState)
 {
+    return true;
+    /*
     ASSERT(m_prototype.IsEmpty());
 
     v8::TryCatch tryCatch;
@@ -130,6 +130,7 @@ bool CustomElementConstructorBuilder::validateOptions(const AtomicString& type, 
     ASSERT(m_wrapperType);
     tagName = QualifiedName(localName);
     return m_wrapperType;
+    */
 }
 
 PassRefPtr<CustomElementLifecycleCallbacks> CustomElementConstructorBuilder::createCallbacks()

@@ -31,8 +31,6 @@
 
 namespace blink {
 
-class Dictionary;
-
 class ArrayValue {
 public:
     ArrayValue() : m_isolate(0) { }
@@ -49,7 +47,8 @@ public:
     bool isUndefinedOrNull() const;
 
     bool length(size_t&) const;
-    bool get(size_t index, Dictionary&) const;
+    // FIXME(Dictionary)
+    //bool get(size_t index, Dictionary&) const;
 
 private:
     // This object can only be used safely when stack allocated because of v8::Local.

@@ -30,10 +30,6 @@ class ViewManager;
 class View;
 }
 
-namespace inspector {
-class InspectorBackendMojo;
-}
-
 namespace sky {
 class Rasterizer;
 class RasterizerBitmap;
@@ -141,8 +137,6 @@ class DocumentView : public blink::ServiceProvider,
   scoped_refptr<Layer> root_layer_;
   RasterizerBitmap* bitmap_rasterizer_;  // Used for pixel tests.
   scoped_ptr<ScriptRunner> script_runner_;
-  scoped_ptr<inspector::InspectorBackendMojo> inspector_backend_;
-  int debugger_id_;
 
   base::WeakPtrFactory<DocumentView> weak_factory_;
 

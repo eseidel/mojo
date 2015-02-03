@@ -100,8 +100,6 @@ scoped_ptr<ui::TouchEvent> ConvertToUITouchEvent(
 
 }  // namespace
 
-static int s_next_debugger_id = 1;
-
 DocumentView::DocumentView(
     mojo::InterfaceRequest<mojo::ServiceProvider> services,
     mojo::ServiceProviderPtr exported_services,
@@ -115,7 +113,6 @@ DocumentView::DocumentView(
       view_manager_client_factory_(shell_, this),
       inspector_service_factory_(this),
       bitmap_rasterizer_(nullptr),
-      debugger_id_(s_next_debugger_id++),
       weak_factory_(this) {
   exported_services_.AddService(&view_manager_client_factory_);
   inspector_service_provider_impl_.AddService(&inspector_service_factory_);

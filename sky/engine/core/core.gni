@@ -940,14 +940,10 @@ sky_core_files = [
   "inspector/ConsoleMessageStorage.h",
   "inspector/IdentifiersFactory.cpp",
   "inspector/IdentifiersFactory.h",
-  "inspector/InjectedScriptHost.cpp",
-  "inspector/InjectedScriptHost.h",
   "inspector/InspectorCounters.cpp",
   "inspector/InspectorCounters.h",
   "inspector/InspectorNodeIds.cpp",
   "inspector/InspectorNodeIds.h",
-  "inspector/JavaScriptCallFrame.cpp",
-  "inspector/JavaScriptCallFrame.h",
   "inspector/ScriptArguments.cpp",
   "inspector/ScriptArguments.h",
   "inspector/ScriptAsyncCallStack.cpp",
@@ -1171,7 +1167,7 @@ sky_core_files = [
   "rendering/TrailingFloatsRootInlineBox.h",
   "rendering/VerticalPositionCache.h",
   "script/dart_controller.h",
-  "script/dart_controller.cc"
+  "script/dart_controller.cc",
 ]
 
 core_idl_files = get_path_info([
@@ -1297,8 +1293,6 @@ core_idl_files = get_path_info([
                                  "html/ImageData.idl",
                                  "html/TextMetrics.idl",
                                  "html/VoidCallback.idl",
-                                 "inspector/JavaScriptCallFrame.idl",
-                                 "inspector/InjectedScriptHost.idl",
                                ],
                                "abspath")
 

@@ -210,14 +210,6 @@ def cpp_value(interface, method, number_of_arguments):
     return '%s(%s)' % (cpp_method_name, ', '.join(cpp_arguments))
 
 
-# Mapping of IDL type to DartUtilities helper types.
-def dart_arg_type(argument_type):
-    if (argument_type.cpp_type == 'String'):
-        return 'DartStringAdapter'
-
-    return argument_type.cpp_type
-
-
 def dart_set_return_value(interface_name, method, cpp_value, for_main_world=False):
     idl_type = method.idl_type
     extended_attributes = method.extended_attributes

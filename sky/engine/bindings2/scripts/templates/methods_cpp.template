@@ -11,7 +11,7 @@ we must ensure either ALL or NO methods in this overload return Promise #}
 {% endif %}
 static void {{static_method_name(overloads.name)}}Dispatcher(Dart_NativeArguments args)
 {
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
     const int argOffset = {{offset}};
     int argCount = Dart_GetNativeArgumentCount(args) - argOffset;
 
@@ -84,7 +84,7 @@ static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArgum
 {% if cpp_class == "EventTarget" %}
     {{cpp_class}}* receiver = DartDOMWrapper::receiverToEventTarget(args);
 {% else %}
-    {{cpp_class}}* /* FIXME(vsm): Remove this. */ ALLOW_UNUSED receiver = DartDOMWrapper::receiver< {{cpp_class}} >(args);
+    {{cpp_class}}* /* FIXME(vsm): Remove this. */ ALLOW_UNUSED receiver = GetReceiver<{{cpp_class}}>(args);
 {% endif %}
 {% endif %}
 {% if method.is_custom_element_callbacks %}
@@ -95,7 +95,7 @@ static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArgum
       method.is_call_with_script_state or
       method.is_call_with_execution_context or
       method.is_call_with_script_arguments %}
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
 {% endif %}
     {
         {% if method.is_call_with_script_state %}
@@ -123,13 +123,13 @@ static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArgum
         int argCount /* FIXME(vsm): Remove this. */ ALLOW_UNUSED = Dart_GetNativeArgumentCount(args);
         {% endif %}
         {% if method.has_exception_state %}
-        DartExceptionState es;
+        ExceptionState es;
         {% endif %}
         {{generate_arguments(method) | indent(8)}}
         {{callback_return(method, method.dart_set_return_value, method.cpp_value)}}
         {% if method.has_exception_state %}
-        if (es.hadException()) {
-            exception = es.toDart(args, {{method.auto_scope}});
+        if (es.had_exception()) {
+            exception = es.GetDartException(args, {{method.auto_scope}});
             goto fail;
         }
 
@@ -319,7 +319,7 @@ static void {{static_method_name(constructor.name, overload_index)}}(Dart_Native
       is_constructor_call_with_execution_context or
       is_constructor_call_with_document or
       (constructor == named_constructor) %}
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
 {% endif %}
     {
 {% if is_constructor_call_with_execution_context %}
@@ -339,13 +339,13 @@ static void {{static_method_name(constructor.name, overload_index)}}(Dart_Native
 {% endif %}
         int argCount /* FIXME(vsm): Remove this. */ ALLOW_UNUSED = Dart_GetNativeArgumentCount(args);
 {% if constructor.has_exception_state %}
-        DartExceptionState es;
+        ExceptionState es;
 {% endif %}
         {{generate_arguments(constructor) | indent(8)}}
         {{callback_return(constructor, constructor.dart_set_return_value, constructor.cpp_value) | indent(8)}}
 {% if constructor.has_exception_state %}
-        if (es.hadException()) {
-            exception = es.toDart(args, {{constructor.auto_scope}});
+        if (es.had_exception()) {
+            exception = es.GetDartException(args, {{constructor.auto_scope}});
             goto fail;
         }
 
@@ -411,7 +411,7 @@ void initialize{{interface_name}}ForDart({{interface_name}}Init& eventInit, cons
 
 static void eventConstructorCallback(Dart_NativeArguments args)
 {
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
     {
         DartStringAdapter type = DartUtilities::dartToString(args, 0, exception);
         if (exception)
@@ -429,10 +429,10 @@ static void eventConstructorCallback(Dart_NativeArguments args)
             goto fail;
 
 	{% if is_constructor_raises_exception %}
-	DartExceptionState es;
+	ExceptionState es;
         RefPtrWillBeRawPtr<{{interface_name}}> event = {{interface_name}}::create(type, eventInit, es);
-        if (es.hadException()) {
-            exception = es.toDart(args);
+        if (es.had_exception()) {
+            exception = es.GetDartException(args);
             goto fail;
         }
 	{% else %}

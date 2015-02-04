@@ -46,6 +46,8 @@ class ExceptionState {
   const String& message() const { return message_; }
   bool had_exception() const { return had_exception_ || code_; }
 
+  Dart_Handle GetDartException(Dart_NativeArguments args, bool auto_scope);
+
  private:
   ExceptionCode code_;
   String message_;

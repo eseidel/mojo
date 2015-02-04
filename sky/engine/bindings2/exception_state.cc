@@ -37,4 +37,11 @@ bool ExceptionState::ThrowIfNeeded() {
 void ExceptionState::ClearException() {
 }
 
+Dart_Handle ExceptionState::GetDartException(Dart_NativeArguments args,
+                                             bool auto_scope) {
+  // TODO(abarth): Still don't understand autoscope.
+  DCHECK(auto_scope);
+  return exception_.Release();
+}
+
 } // namespace blink

@@ -93,15 +93,36 @@ struct DartConverter<String> {
     return Dart_HandleFromWeakPersistent(state->string_cache().Get(val.impl()));
   }
 
+  static void SetReturnValue(Dart_NativeArguments args, const String& val, bool auto_scope = true) {
+    // TODO(abarth): What should we do with auto_scope?
+    if (val.isEmpty()) {
+      Dart_SetReturnValue(args, Dart_EmptyString());
+      return;
+    }
+    DartState* state = DartState::Current();
+    Dart_SetWeakHandleReturnValue(args, state->string_cache().Get(val.impl()));
+  }
+
   static String FromDart(Dart_Handle handle) {
     intptr_t char_size = 0;
     intptr_t length = 0;
     void* peer = nullptr;
-    Dart_Handle result =
-        Dart_StringGetProperties(handle, &char_size, &length, &peer);
-    DCHECK(!Dart_IsError(result));
+    Dart_Handle result = Dart_StringGetProperties(handle, &char_size, &length, &peer);
     if (peer)
       return String(static_cast<StringImpl*>(peer));
+    if (Dart_IsError(result))
+      return String();
+    return ExternalizeDartString(handle);
+  }
+
+  static String FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+    // TODO(abarth): What should we do with auto_scope?
+    void* peer = 0;
+    Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
+    if (peer)
+      return reinterpret_cast<StringImpl*>(peer);
+    if (Dart_IsError(handle))
+      return String();
     return ExternalizeDartString(handle);
   }
 };

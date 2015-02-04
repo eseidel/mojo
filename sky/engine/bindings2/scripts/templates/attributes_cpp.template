@@ -2,7 +2,7 @@
 {% macro attribute_getter(cpp_class, attribute) %}
 static void {{static_attribute_name(attribute, 'Getter')}}(Dart_NativeArguments args) {
 {% if attribute.is_getter_raises_exception or attribute.is_call_with_execution_context %}
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
 {% endif %}
   {
 {% if attribute.is_call_with_execution_context %}
@@ -50,12 +50,7 @@ ExceptionState es;
         attribute.is_getter_raises_exception or
         attribute.is_nullable or
         attribute.idl_type == 'EventHandler' %}
-    {% if attribute.cpp_type == 'DartStringAdapter' %}
-      {% set native_type = 'String' %}
-    {% else %}
-      {% set native_type = attribute.cpp_type %}
-    {% endif %}
-{{native_type}} {{attribute.cpp_value}} = {{attribute.cpp_value_original}};    
+{{attribute.cpp_type}} {{attribute.cpp_value}} = {{attribute.cpp_value_original}};
   {% endif %}
   {% if attribute.is_nullable %}
 if (is_null)
@@ -63,7 +58,7 @@ if (is_null)
   {% endif %}
   {% if attribute.is_getter_raises_exception %}
 if (es.had_exception()) {
-    exception = es.toDart(args, {{attribute.auto_scope}});
+    exception = es.GetDartException(args, {{attribute.auto_scope}});
     goto fail;
 }
   {% endif %}
@@ -84,9 +79,9 @@ static void {{static_attribute_name(attribute, 'Setter')}}(Dart_NativeArguments 
     // FIXME: proper implementation.
     DART_UNIMPLEMENTED();
 {% else %}
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
     {
-        {{cpp_class}}* receiver = DartDOMWrapper::receiver< {{cpp_class}} >(args);
+        {{cpp_class}}* receiver = GetReceiver<{{cpp_class}}>(args);
 {% if attribute.is_custom_element_callbacks %}
         CustomElementCallbackDispatcher::CallbackDeliveryScope deliveryScope;
 {% endif %}
@@ -114,12 +109,12 @@ static void {{static_attribute_name(attribute, 'Setter')}}(Dart_NativeArguments 
         }
 {% endif %}
 {% if attribute.is_setter_raises_exception %}
-        DartExceptionState es;
+        ExceptionState es;
 {% endif %}
         {{attribute.cpp_setter}};
 {% if attribute.is_setter_raises_exception %}
-        if (es.hadException()) {
-            exception = es.toDart(args, {{attribute.auto_scope}});
+        if (es.had_exception()) {
+            exception = es.GetDartException(args, {{attribute.auto_scope}});
             goto fail;
         }
 {% endif %}
@@ -140,12 +135,7 @@ fail:
 {% set reflect_missing = attribute.reflect_missing %}
 {% set reflect_invalid = attribute.reflect_invalid %}
 {% set reflect_empty = attribute.reflect_empty %}
-{% if attribute.cpp_type == 'DartStringAdapter' %}
-  {% set native_type = 'String' %}
-{% else %}
-  {% set native_type = attribute.cpp_type %}
-{% endif %}
-{{native_type}} result = {{attribute.cpp_value_original}};    
+{{attribute.cpp_type}} result = {{attribute.cpp_value_original}};
 
 {# Attribute is limited to only known values: check that the attribute value is
    one of those. If not, set it to the empty string.

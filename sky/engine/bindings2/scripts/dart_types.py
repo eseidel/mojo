@@ -160,9 +160,7 @@ def cpp_type(idl_type, extended_attributes=None, raw_type=False, used_as_rvalue_
     if base_idl_type in NON_WRAPPER_TYPES:
         return ('PassRefPtr<%s>' if used_as_rvalue_type else 'RefPtr<%s>') % base_idl_type
     if base_idl_type in ('DOMString', 'ByteString', 'ScalarValueString'):
-        if not raw_type:
-            return 'String'
-        return 'DartStringAdapter'
+        return 'String'
 
     if idl_type.is_typed_array_type and raw_type:
         return 'RefPtr<%s>' % base_idl_type
@@ -363,23 +361,23 @@ DART_FIX_ME = 'DART_UNIMPLEMENTED(/* Conversion unimplemented*/);'
 DART_TO_CPP_VALUE = {
     # Basic
     'Date': 'DartUtilities::dartToDate(args, {index}, exception)',
-    'DOMString': 'DartUtilities::dartToString{null_check}(args, {index}, exception, {auto_scope})',
+    'DOMString': 'DartConverter<String>::FromAguments{null_check}(args, {index}, exception, {auto_scope})',
     'ByteString': 'DartUtilities::dartToByteString{null_check}(args, {index}, exception, {auto_scope})',
     'ScalarValueString': 'DartUtilities::dartToScalarValueString{null_check}(args, {index}, exception, {auto_scope})',
-    'boolean': 'DartUtilities::dartToBool{null_check}(args, {index}, exception)',
-    'float': 'static_cast<float>(DartUtilities::dartToDouble(args, {index}, exception))',
-    'unrestricted float': 'static_cast<float>(DartUtilities::dartToDouble(args, {index}, exception))',
-    'double': 'DartUtilities::dartToDouble(args, {index}, exception)',
-    'unrestricted double': 'DartUtilities::dartToDouble(args, {index}, exception)',
+    'boolean': 'DartConverter<bool>::FromAguments{null_check}(args, {index}, exception)',
+    'float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
+    'unrestricted float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
+    'double': 'DartConverter<double>::FromAguments(args, {index}, exception)',
+    'unrestricted double': 'DartConverter<double>::FromAguments(args, {index}, exception)',
     # FIXME(vsm): Inconsistent with V8.
-    'byte': 'DartUtilities::dartToUnsigned(args, {index}, exception)',
-    'octet': 'DartUtilities::dartToUnsigned(args, {index}, exception)',
-    'short': 'DartUtilities::dartToInt(args, {index}, exception)',
-    'unsigned short': 'DartUtilities::dartToUnsigned(args, {index}, exception)',
-    'long': 'DartUtilities::dartToInt(args, {index}, exception)',
-    'unsigned long': 'DartUtilities::dartToUnsignedLongLong(args, {index}, exception)',
-    'long long': 'DartUtilities::dartToLongLong(args, {index}, exception)',
-    'unsigned long long': 'DartUtilities::dartToUnsignedLongLong(args, {index}, exception)',
+    'byte': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
+    'octet': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
+    'short': 'DartConverter<int>::FromAguments(args, {index}, exception)',
+    'unsigned short': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
+    'long': 'DartConverter<int>::FromAguments(args, {index}, exception)',
+    'unsigned long': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
+    'long long': 'DartConverter<long long>::FromAguments(args, {index}, exception)',
+    'unsigned long long': 'DartConverter<unsigned long long>::FromAguments(args, {index}, exception)',
     # Interface types
     'CompareHow': 'static_cast<Range::CompareHow>(0) /* FIXME, DART_TO_CPP_VALUE[CompareHow] */',
     'EventTarget': '0 /* FIXME, DART_TO_CPP_VALUE[EventTarget] */',
@@ -590,7 +588,7 @@ DART_SET_RETURN_VALUE = {
     'boolean': 'DartConverter<bool>::SetReturnValue(args, {cpp_value})',
     'int': 'DartConverter<int>::SetReturnValue(args, {cpp_value})',
     'unsigned': 'DartConverter<unsigned>::SetReturnValue(args, {cpp_value})',
-    'DOMString': 'DartUtilities::setDartStringReturnValue(args, {cpp_value}, {auto_scope})',
+    'DOMString': 'DartConverter<String>::SetReturnValue(args, {cpp_value}, {auto_scope})',
     # FIXME(terry): Need to handle checking to byte values > 255 throwing exception.
     'ByteString': 'DartUtilities::setDartByteStringReturnValue(args, {cpp_value}, {auto_scope})',
     # FIXME(terry):  Need to make valid unicode; match UTF-16 to U+FFFD REPLACEMENT CHARACTER.
@@ -746,8 +744,8 @@ IdlTypeBase.cpp_value_to_dart_value = cpp_value_to_dart_value
 # initialization from constant strings, but better to do that once we're stable
 # on the bots so we can track any performance regression
 CPP_LITERAL_TO_DART_VALUE = {
-    'DOMString': {'nullptr': 'DartStringAdapter(DartStringPeer::nullString())',
-                  'String("")': 'DartStringAdapter(DartStringPeer::emptyString())',
+    'DOMString': {'nullptr': 'String()',
+                  'String("")': 'String(StringImpl::empty())',
                   '*': 'DartUtilities::dartToString(DartUtilities::stringToDart({cpp_literal}), exception)'},
     'ScalarValueString': {'nullptr': 'DartStringAdapter(DartStringPeer::nullString())',
                           'String("")': 'DartStringAdapter(DartStringPeer::emptyString())',
@@ -774,9 +772,9 @@ IdlType.literal_cpp_value = literal_cpp_value
 
 
 CPP_DEFAULT_VALUE_FOR_CPP_TYPE = {
-    'DOMString': 'DartStringAdapter(DartStringPeer::emptyString())',
-    'ByteString': 'DartStringAdapter(DartStringPeer::emptyString())',
-    'ScalarValueString': 'DartStringAdapter(DartStringPeer::emptyString())',
+    'DOMString': 'String()',
+    'ByteString': 'String()',
+    'ScalarValueString': 'String()',
     'boolean': 'false',
     'float': '0.0f',
     'unrestricted float': '0.0f',

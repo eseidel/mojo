@@ -27,6 +27,7 @@ class DartPersistentValue {
   bool is_empty() const { return !value_; }
 
   void Clear();
+  Dart_Handle Release();
 
  private:
   base::WeakPtr<DartState> dart_state_;

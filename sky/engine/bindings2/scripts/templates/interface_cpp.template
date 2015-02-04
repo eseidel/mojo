@@ -10,11 +10,11 @@
   {% set getter = indexed_property_getter %}
 static void indexedPropertyGetter(Dart_NativeArguments args)
 {
-    {{cpp_class}}* /* FIXME(vsm): Remove this. */ ALLOW_UNUSED receiver = DartDOMWrapper::receiver< {{cpp_class}} >(args);
-    Dart_Handle exception = 0;
+    {{cpp_class}}* /* FIXME(vsm): Remove this. */ ALLOW_UNUSED receiver = GetReceiver<{{cpp_class}}>(args);
+    Dart_Handle exception = nullptr;
     {
   {% if indexed_property_getter.is_raises_exception %}
-        DartExceptionState es;
+        ExceptionState es;
   {% endif %}
 
         {# TODO(terry): Assume index is unsigned long, which all currently are. #}
@@ -102,7 +102,7 @@ if (native_function == {{dart_class}}Internal::propertyQuery) {
 {% if constructor_overloads %}
 static void constructorCallbackDispatcher(Dart_NativeArguments args)
 {
-    Dart_Handle exception = 0;
+    Dart_Handle exception = nullptr;
     const int argOffset = 0;
     int argCount = Dart_GetNativeArgumentCount(args) + argOffset;
     {# 2. Initialize argcount to be min(maxarg, n). #}

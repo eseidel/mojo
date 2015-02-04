@@ -36,7 +36,7 @@ namespace blink {
 
 class CSSPrimitiveValue;
 
-class RGBColor : public RefCounted<RGBColor>, public DartWrappableBase {
+class RGBColor : public RefCounted<RGBColor> {
 public:
     static PassRefPtr<RGBColor> create(unsigned rgbColor);
 

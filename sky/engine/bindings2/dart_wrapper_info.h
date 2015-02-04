@@ -8,13 +8,13 @@
 #include "sky/engine/wtf/Noncopyable.h"
 
 namespace blink {
-class DartWrappableBase;
+class DartWrappable;
 
 struct DartWrapperInfo {
   const intptr_t class_id;
   const size_t size_in_bytes;
-  const void (*ref_object)(DartWrappableBase*);
-  const void (*deref_object)(DartWrappableBase*);
+  const void (*ref_object)(DartWrappable*);
+  const void (*deref_object)(DartWrappable*);
 
  private:
   WTF_MAKE_NONCOPYABLE(DartWrapperInfo);

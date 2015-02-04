@@ -12,12 +12,9 @@ namespace blink {
 class DartState;
 struct DartWrapperInfo;
 
-class DartWrappableBase {
-};
-
 // DartWrappable is a base class that you can inherit from in order to be
 // exposed to Dart code as an interface.
-class DartWrappable : public DartWrappableBase {
+class DartWrappable {
  public:
   DartWrappable() : dart_wrapper_(nullptr) {}
 
@@ -35,6 +32,12 @@ class DartWrappable : public DartWrappableBase {
   virtual ~DartWrappable();
 
  private:
+  enum NativeFields {
+    kWrapperInfoIndex,
+    kPeerIndex,
+    kNumberOfNativeFields,
+  };
+
   Dart_WeakPersistentHandle dart_wrapper_;
 };
 

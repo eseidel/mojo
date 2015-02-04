@@ -28,7 +28,7 @@
 
 namespace blink {
 
-class RectBase : public RefCounted<RectBase>, public DartWrappableBase {
+class RectBase : public RefCounted<RectBase> {
     DECLARE_EMPTY_DESTRUCTOR_WILL_BE_REMOVED(RectBase);
 public:
     CSSPrimitiveValue* top() const { return m_top.get(); }

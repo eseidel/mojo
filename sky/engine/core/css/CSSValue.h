@@ -42,7 +42,7 @@ enum CSSTextFormattingFlags { QuoteCSSStringIfNeeded, AlwaysQuoteCSSString };
 // They should be handled by separate wrapper classes.
 
 // Please don't expose more CSSValue types to the web.
-class CSSValue : public RefCounted<CSSValue>, public DartWrappableBase {
+class CSSValue : public RefCounted<CSSValue> {
 public:
     enum Type {
         CSS_INHERIT = 0,

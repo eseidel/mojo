@@ -108,8 +108,7 @@ public:
     Screen& screen() const;
 
     Location& location() const;
-    void setLocation(const String& location, LocalDOMWindow* callingWindow, LocalDOMWindow* enteredWindow,
-        SetLocationLocking = LockHistoryBasedOnGestureState);
+    void setLocation(const String& location, SetLocationLocking = LockHistoryBasedOnGestureState);
 
     DOMSelection* getSelection();
 

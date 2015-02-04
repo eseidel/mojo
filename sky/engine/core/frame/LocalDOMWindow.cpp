@@ -677,7 +677,7 @@ void LocalDOMWindow::removeAllEventListeners()
     removeAllEventListenersInternal(DoBroadcastListenerRemoval);
 }
 
-void LocalDOMWindow::setLocation(const String& urlString, LocalDOMWindow* callingWindow, LocalDOMWindow* enteredWindow, SetLocationLocking locking)
+void LocalDOMWindow::setLocation(const String& urlString, SetLocationLocking locking)
 {
     // FIXME(sky): remove.
 }

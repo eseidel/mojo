@@ -7,6 +7,8 @@ import("//sky/engine/core/core.gni")
 
 source_set("bindings2") {
   sources = [
+    "dart_class_library.cc",
+    "dart_class_library.h",
     "dart_converter.cc",
     "dart_converter.h",
     "dart_isolate_scope.cc",
@@ -21,6 +23,9 @@ source_set("bindings2") {
     "dart_value.h",
     "dart_wrappable.cc",
     "dart_wrappable.h",
+    "dart_wrapper.cc",
+    "dart_wrapper.h",
+    "dart_wrapper_info.h",
     "exception_messages.cc",
     "exception_messages.h",
     "exception_state.cc",

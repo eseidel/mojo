@@ -103,6 +103,13 @@ struct DartConverter<String> {
     Dart_SetWeakHandleReturnValue(args, state->string_cache().Get(val.impl()));
   }
 
+  static void SetReturnValueWithNullCheck(Dart_NativeArguments args, const String& val, bool auto_scope = true) {
+    if (val.isNull())
+      Dart_SetReturnValue(args, Dart_Null());
+    else
+      SetReturnValue(args, val, auto_scope);
+  }
+
   static String FromDart(Dart_Handle handle) {
     intptr_t char_size = 0;
     intptr_t length = 0;

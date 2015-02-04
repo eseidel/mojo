@@ -594,9 +594,9 @@ DART_SET_RETURN_VALUE = {
     # FIXME(terry):  Need to make valid unicode; match UTF-16 to U+FFFD REPLACEMENT CHARACTER.
     'ScalarValueString': 'DartUtilities::setDartScalarValueStringReturnValue(args, {cpp_value}, {auto_scope})',
     # [TreatNullReturnValueAs]
-    'StringOrNull': 'DartUtilities::setDartStringReturnValueWithNullCheck(args, {cpp_value}, {auto_scope})',
+    'StringOrNull': 'DartConverter<String>::SetReturnValueWithNullCheck(args, {cpp_value}, {auto_scope})',
     # FIXME(vsm): How should we handle undefined?
-    'StringOrUndefined': 'DartUtilities::setDartStringReturnValue(args, {cpp_value}, {auto_scope})',
+    'StringOrUndefined': 'DartConverter<String>::SetReturnValueWithNullCheck(args, {cpp_value}, {auto_scope})',
     'void': '',
     # We specialize these as well in Dart.
     'float': 'DartConverter<double>::SetReturnValue(args, {cpp_value})',

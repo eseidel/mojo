@@ -15,13 +15,25 @@ namespace blink {
 
 // DartConvert converts types back and forth from Sky to Dart. The template
 // parameter |T| determines what kind of type conversion to perform.
-template<typename T>
+template<typename T, typename Enable = void>
 struct DartConverter {};
 
 template<>
 struct DartConverter<bool> {
   static Dart_Handle ToDart(DartState* state, bool val) {
     return Dart_NewBoolean(val);
+  }
+
+  static void SetReturnValue(Dart_NativeArguments args, bool val) {
+    Dart_SetBooleanReturnValue(args, val);
+  }
+
+  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    bool result = false;
+    Dart_Handle handle = Dart_GetNativeBooleanArgument(args, index, &result);
+    if (Dart_IsError(handle))
+      return false;
+    return result;
   }
 };
 
@@ -124,12 +136,23 @@ struct DartConverter<String> {
 
   static String FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
-    void* peer = 0;
+    void* peer = nullptr;
     Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
     if (peer)
       return reinterpret_cast<StringImpl*>(peer);
     if (Dart_IsError(handle))
       return String();
+    return ExternalizeDartString(handle);
+  }
+
+  static String FromAgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+    // TODO(abarth): What should we do with auto_scope?
+    void* peer = nullptr;
+    Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
+    if (peer)
+      return reinterpret_cast<StringImpl*>(peer);
+    if (Dart_IsError(handle) || Dart_IsNull(handle))
+        return String();
     return ExternalizeDartString(handle);
   }
 };

@@ -88,7 +88,7 @@ static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArgum
 {% endif %}
 {% endif %}
 {% if method.is_custom_element_callbacks %}
-    CustomElementCallbackDispatcher::CallbackDeliveryScope deliveryScope;
+    CustomElementProcessingStack::CallbackDeliveryScope deliveryScope;
 {% endif %}
 {% if arguments_count > 0 or
       method.has_exception_state or

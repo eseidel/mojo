@@ -319,8 +319,7 @@ def includes_for_type(idl_type):
         base_idl_type = idl_type.constructor_type_name
     if base_idl_type not in component_dir:
         return set()
-    return set(['bindings/%s/dart/Dart%s.h' % (component_dir[base_idl_type],
-                                               base_idl_type)])
+    return set(['gen/sky/bindings/Dart%s.h' % base_idl_type])
 
 IdlType.includes_for_type = property(includes_for_type)
 IdlUnionType.includes_for_type = property(
@@ -364,7 +363,7 @@ DART_TO_CPP_VALUE = {
     'DOMString': 'DartConverter<String>::FromAguments{null_check}(args, {index}, exception, {auto_scope})',
     'ByteString': 'DartUtilities::dartToByteString{null_check}(args, {index}, exception, {auto_scope})',
     'ScalarValueString': 'DartUtilities::dartToScalarValueString{null_check}(args, {index}, exception, {auto_scope})',
-    'boolean': 'DartConverter<bool>::FromAguments{null_check}(args, {index}, exception)',
+    'boolean': 'DartConverter<bool>::FromAguments(args, {index}, exception)',
     'float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
     'unrestricted float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
     'double': 'DartConverter<double>::FromAguments(args, {index}, exception)',
@@ -428,7 +427,7 @@ def dart_value_to_cpp_value(idl_type, extended_attributes, variable_name,
     elif idl_type.is_callback_interface:
         cpp_expression_format = ('Dart{idl_type}::create{null_check}(args, {index}, exception)')
     else:
-        cpp_expression_format = ('Dart{idl_type}::toNative{null_check}(args, {index}, exception)')
+        cpp_expression_format = ('DartConverter<{idl_type}*>::FromAguments{null_check}(args, {index}, exception)')
 
     # We allow the calling context to force a null check to handle
     # some cases that require calling context info.  V8 handles all
@@ -615,8 +614,8 @@ DART_SET_RETURN_VALUE = {
     # TODO(terry): Remove ForMainWorld stuff.
     'DOMWrapperForMainWorld': DART_FIX_ME,
     # FIXME(vsm): V8 has a fast path. Do we?
-    'DOMWrapperFast': 'Dart{type_name}::returnToDart(args, WTF::getPtr({cpp_value}), {auto_scope})',
-    'DOMWrapperDefault': 'Dart{type_name}::returnToDart(args, {cpp_value}, {auto_scope})',
+    'DOMWrapperFast': 'DartConverter<{type_name}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
+    'DOMWrapperDefault': 'DartConverter<{type_name}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
     # Typed arrays don't have special Dart* classes for Dart.
     'ArrayBuffer': 'Dart_SetReturnValue(args, DartUtilities::arrayBufferToDart({cpp_value}))',
     'TypedList': 'Dart_SetReturnValue(args, DartUtilities::arrayBufferViewToDart({cpp_value}))',

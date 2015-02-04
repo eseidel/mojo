@@ -39,7 +39,7 @@ source_set("bindings2") {
     "//base",
     "//dart/runtime/bin:libdart_withcore",
     "//sky/engine/wtf",
-    ":compile_idls",
+    ":generated_bindings",
   ]
 }
 
@@ -241,7 +241,7 @@ template("idl_compiler") {
     # really expressible in GN now).
     script = "$bindings_scripts_dir/compiler.py"
 
-    inputs = idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered by parsetab)
+    inputs = idl_lexer_parser_files + idl_compiler_files + idl_template_files
     inputs += [
       "$bindings_output_dir/lextab.py",
       "$bindings_output_dir/parsetab.pickle",
@@ -292,4 +292,10 @@ template("idl_compiler") {
 idl_compiler("compile_idls") {
   sources = core_idl_files
   output_dir = bindings_output_dir
+}
+
+source_set("generated_bindings") {
+  deps = [ ":compile_idls" ]
+  # Uncomment this line to build the generated files.
+  # sources = get_target_outputs(":compile_idls")
 }

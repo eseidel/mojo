@@ -53,3 +53,16 @@ idl_compiler_files = [
   "scripts/v8_utilities.py",
   "scripts/code_generator_v8.py",
 ]
+
+idl_template_files = [
+  "scripts/templates/attributes_cpp.template",
+  "scripts/templates/callback_interface_cpp.template",
+  "scripts/templates/callback_interface_h.template",
+  "scripts/templates/dart_blink.template",
+  "scripts/templates/global_cpp.template",
+  "scripts/templates/global_h.template",
+  "scripts/templates/interface_base_cpp.template",
+  "scripts/templates/interface_cpp.template",
+  "scripts/templates/interface_h.template",
+  "scripts/templates/methods_cpp.template",
+]

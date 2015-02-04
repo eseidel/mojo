@@ -61,7 +61,7 @@ static_library("core") {
     ":prerequisites",
     "//sky/engine/platform",
     "//sky/engine/bindings2",
-    "//dart/runtime/bin:libdart_withcore"
+    "//dart/runtime/bin:libdart_withcore",
   ]
 
   sources = sky_core_files
@@ -136,7 +136,7 @@ template("generate_event_interfaces") {
     write_file(idl_files_list, rebase_path(invoker.sources, root_build_dir))
 
     inputs = [
-               "//sky/engine/bindings/scripts/utilities.py",
+               "//sky/engine/bindings2/scripts/utilities.py",
                idl_files_list,
              ] + invoker.sources
 
@@ -145,7 +145,7 @@ template("generate_event_interfaces") {
       output_file,
     ]
 
-    script = "//sky/engine/bindings/scripts/generate_event_interfaces.py"
+    script = "//sky/engine/bindings2/scripts/generate_event_interfaces.py"
     args = [
       "--event-idl-files-list",
       rebase_path(idl_files_list, root_build_dir),

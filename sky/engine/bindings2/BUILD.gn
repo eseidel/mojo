@@ -36,7 +36,7 @@ source_set("bindings2") {
     "//base",
     "//dart/runtime/bin:libdart_withcore",
     "//sky/engine/wtf",
-    ":interfaces_info_individual_core",
+    ":compile_idls",
   ]
 }
 
@@ -121,7 +121,7 @@ template("compute_interfaces_info_individual") {
     file_list = "$target_gen_dir/${target_name}_file_list.txt"
     write_file(file_list, rebase_path(invoker.sources, root_build_dir))
 
-    # FIXME: We should list all python dependencies.
+    # TODO(eseidel): Use depfile instead of this manual list.
     inputs = [ "$bindings_scripts_dir/utilities.py" ] + invoker.sources
 
     outputs = [
@@ -144,7 +144,149 @@ template("compute_interfaces_info_individual") {
   }
 }
 
-compute_interfaces_info_individual("interfaces_info_individual_core") {
-  sources = core_idl_files
+action("compute_interfaces_info_individual") {
+  sources = core_idl_files + core_dependency_idl_files
+  script = "$bindings_scripts_dir/compute_interfaces_info_individual.py"
   output_file = "$bindings_output_dir/InterfacesInfoIndividual.pickle"
+
+  # TODO(eseidel): This is no longer needed, could pass these as args.
+  file_list = "$target_gen_dir/${target_name}_file_list.txt"
+  write_file(file_list, rebase_path(sources, root_build_dir))
+
+  # TODO(eseidel): Use depfile instead of this manual list.
+  inputs = [ "$bindings_scripts_dir/utilities.py" ] + sources
+
+  outputs = [
+    file_list,
+    output_file,
+  ]
+
+  args = [
+    # TODO(eseidel): Remove component-dir, it is meaningless in sky.
+    "--component-dir",
+    "ignored",
+    "--idl-files-list",
+    rebase_path(file_list, root_build_dir),
+    "--interfaces-info-file",
+    rebase_path(output_file, root_build_dir),
+
+    # TODO(eseidel): only-if-changed is always true, remove
+    "--write-file-only-if-changed=1",
+  ]
+}
+
+interfaces_info_individual_path =
+    "$bindings_output_dir/InterfacesInfoIndividual.pickle"
+
+interfaces_info_overall_path =
+    "$bindings_output_dir/InterfacesInfoOverall.pickle"
+
+action("compute_interfaces_info_overall") {
+  script = "$bindings_scripts_dir/compute_interfaces_info_overall.py"
+
+  inputs = [
+    interfaces_info_individual_path,
+  ]
+  outputs = [
+    interfaces_info_overall_path,
+  ]
+
+  args = [
+    # TODO(eseidel): only-if-changed is always true, remove
+    "--write-file-only-if-changed=1",
+    "--",
+  ]
+  args += rebase_path(inputs, root_build_dir)
+  args += rebase_path(outputs, root_build_dir)
+
+  deps = [
+    ":compute_interfaces_info_individual",
+  ]
+}
+
+# This separate pre-caching step is required to use lex/parse table
+# caching in PLY, since PLY itself does not check if the cache is
+# valid, and thus may end up using a stale cache if this step hasn't
+# been run to update it.
+#
+# This action's dependencies *is* the cache validation.
+#
+# GYP version: scripts.gyp:cached_lex_yacc_tables
+action("cached_lex_yacc_tables") {
+  script = "scripts/blink_idl_parser.py"
+
+  inputs = idl_lexer_parser_files
+  outputs = [
+    "$bindings_output_dir/lextab.py",
+    "$bindings_output_dir/parsetab.pickle",
+  ]
+
+  args = [ rebase_path(bindings_output_dir, root_build_dir) ]
+}
+
+# Runs the idl_compiler script over a list of sources.
+#
+# Parameters:
+#   sources = list of IDL files to compile
+#   output_dir = string containing the directory to put the output files.
+template("idl_compiler") {
+  output_dir = invoker.output_dir
+
+  action_foreach(target_name) {
+    # TODO(brettw) GYP adds a "-S before the script name to skip "import site" to
+    # speed up startup. Figure out if we need this and do something similar (not
+    # really expressible in GN now).
+    script = "$bindings_scripts_dir/compiler.py"
+
+    inputs = idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered by parsetab)
+    inputs += [
+      "$bindings_output_dir/lextab.py",
+      "$bindings_output_dir/parsetab.pickle",
+
+      # "$bindings_output_dir/cached_jinja_templates.stamp",
+      "//sky/engine/bindings2/IDLExtendedAttributes.txt",
+
+      # If the dependency structure or public interface info (e.g.,
+      # [ImplementedAs]) changes, we rebuild all files, since we're not
+      # computing dependencies file-by-file in the build.
+      # This data is generally stable.
+      interfaces_info_overall_path,
+    ]
+
+    # Further, if any dependency (partial interface or implemented
+    # interface) changes, rebuild everything, since every IDL potentially
+    # depends on them, because we're not computing dependencies
+    # file-by-file.
+    # FIXME: This is too conservative, and causes excess rebuilds:
+    # compute this file-by-file.  http://crbug.com/341748
+    # This should theoretically just be the IDL files passed in.
+    inputs += core_dependency_idl_files
+
+    sources = invoker.sources
+    outputs = [
+      "$output_dir/Dart{{source_name_part}}.cpp",
+      "$output_dir/Dart{{source_name_part}}.h",
+    ]
+
+    args = [
+      "--output-dir",
+      rebase_path(output_dir, root_build_dir),
+      "--interfaces-info",
+      rebase_path(interfaces_info_overall_path, root_build_dir),
+      "--write-file-only-if-changed=1",  # Always true for Ninja.
+      "{{source}}",
+    ]
+
+    deps = [
+      ":compute_interfaces_info_overall",
+      ":cached_lex_yacc_tables",
+
+      # ":cached_jinja_templates",
+    ]
+  }
+}
+
+idl_compiler("compile_idls") {
+  sources = core_idl_files
+  output_dir = bindings_output_dir
 }

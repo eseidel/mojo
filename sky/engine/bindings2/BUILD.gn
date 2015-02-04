@@ -310,5 +310,5 @@ source_set("generated_bindings") {
   ]
 
   # Uncomment this line to build the generated files.
-  sources = get_target_outputs(":compile_idls")
+  #sources = get_target_outputs(":compile_idls")
 }

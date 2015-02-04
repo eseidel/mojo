@@ -5,7 +5,7 @@
 // WARNING: Do not edit - generated code.
 
 #include "sky/engine/config.h"
-#include "DartWebkitClassIds.h"
+// #include "DartWebkitClassIds.h"
 
 #include "bindings/core/dart/DartLibraryIds.h"
 {% for interface in interfaces %}

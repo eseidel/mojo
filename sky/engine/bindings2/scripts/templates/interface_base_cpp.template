@@ -6,7 +6,6 @@
 
 #include "sky/engine/config.h"
 {% filter conditional(conditional_string) %}
-#include "bindings/dart/DartWebkitClassIds.h"
 #include "{{dart_class}}.h"
 
 {% for filename in cpp_includes %}
@@ -14,8 +13,6 @@
 {% endfor %}
 
 namespace blink {
-
-{% block to_dart_no_inline %}{% endblock %}
 
 namespace {{dart_class}}Internal {
 
@@ -63,9 +60,9 @@ namespace {{dart_class}}Internal {
   {% block indexed_property_getter %}{% endblock %}
 }
 
-Dart_NativeFunction {{dart_class}}::resolver(Dart_Handle nameHandle, int argumentCount, bool* autoSetupScope)
+Dart_NativeFunction {{dart_class}}::Resolver(Dart_Handle nameHandle, int argumentCount, bool* autoSetupScope)
 {
-    String name = DartUtilities::toString(nameHandle);
+    String name = StringFromDart(nameHandle);
     {% from 'methods_cpp.template' import generate_resolver_constructor with context %}
     {% from 'methods_cpp.template' import generate_resolver_event_constructor with context %}
     {# Resolver Constructors #}
@@ -102,7 +99,7 @@ Dart_NativeFunction {{dart_class}}::resolver(Dart_Handle nameHandle, int argumen
     return 0;
 }
 
-const uint8_t* {{dart_class}}::symbolizer(Dart_NativeFunction nf)
+const uint8_t* {{dart_class}}::Symbolizer(Dart_NativeFunction native_function)
 {
     {% from 'methods_cpp.template' import generate_symbolizer_constructor with context %}
     {% for constructor in constructors %}

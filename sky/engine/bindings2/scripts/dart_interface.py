@@ -48,15 +48,15 @@ import v8_interface
 
 
 INTERFACE_H_INCLUDES = frozenset([
-    'bindings/core/dart/DartDOMWrapper.h',
-    'platform/heap/Handle.h',
+    'dart/runtime/include/dart_api.h',
 ])
 
-INTERFACE_CPP_INCLUDES = frozenset([
 
-    'bindings/core/dart/DartUtilities.h',
-    'wtf/GetPtr.h',
-    'wtf/RefPtr.h',
+INTERFACE_CPP_INCLUDES = frozenset([
+    'sky/engine/bindings2/dart_converter.h',
+    'sky/engine/bindings2/dart_wrappable.h',
+    'sky/engine/wtf/GetPtr.h',
+    'sky/engine/wtf/RefPtr.h',
 ])
 
 

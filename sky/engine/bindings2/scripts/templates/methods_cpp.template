@@ -298,7 +298,7 @@ if (argumentCount >= {{args_required_one_based}} && argumentCount <= {{args_one_
   {% set method_name = static_method_name(method.name) %}
 {% endif %}
 {% set resolver_string = native_entry_group.grouper %}
-if (nf == {{dart_class}}Internal::{{method_name}}) {
+if (native_function == {{dart_class}}Internal::{{method_name}}) {
     return reinterpret_cast<const uint8_t*>("{{resolver_string}}");
 }
 {% endfor %}
@@ -483,7 +483,7 @@ if (argumentCount == 2 && name == "{{resolver_string}}") {
 {% macro generate_symbolizer_constructor(dart_class, class_name, constructor) %}
 {% for native_entry in constructor.native_entries %}
 {% set resolver_string = native_entry.resolver_string %}
-if (nf == {{dart_class}}Internal::{{static_method_name(constructor.name, constructor.overload_index)}}) {
+if (native_function == {{dart_class}}Internal::{{static_method_name(constructor.name, constructor.overload_index)}}) {
   return reinterpret_cast<const uint8_t*>("{{resolver_string}}");
 }
 {% endfor %}

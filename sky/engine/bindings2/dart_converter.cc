@@ -4,7 +4,3 @@
 
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_converter.h"
-
-namespace blink {
-
-} // namespace blink

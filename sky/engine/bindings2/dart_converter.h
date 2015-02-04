@@ -6,6 +6,7 @@
 #define SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_
 
 #include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/bindings2/dart_string.h"
 #include "sky/engine/bindings2/dart_string_cache.h"
 #include "sky/engine/bindings2/dart_value.h"
 #include "sky/engine/wtf/text/WTFString.h"
@@ -29,6 +30,10 @@ struct DartConverter<int> {
   static Dart_Handle ToDart(DartState* state, int val) {
     return Dart_NewInteger(val);
   }
+
+  static void SetReturnValue(Dart_NativeArguments args, int val) {
+    Dart_SetIntegerReturnValue(args, val);
+  }
 };
 
 template<>
@@ -36,12 +41,20 @@ struct DartConverter<unsigned> {
   static Dart_Handle ToDart(DartState* state, unsigned val) {
     return Dart_NewInteger(val);
   }
+
+  static void SetReturnValue(Dart_NativeArguments args, unsigned val) {
+    Dart_SetIntegerReturnValue(args, val);
+  }
 };
 
 template<>
 struct DartConverter<long long> {
   static Dart_Handle ToDart(DartState* state, long long val) {
     return Dart_NewInteger(val);
+  }
+
+  static void SetReturnValue(Dart_NativeArguments args, long long val) {
+    Dart_SetIntegerReturnValue(args, val);
   }
 };
 
@@ -53,12 +66,22 @@ struct DartConverter<unsigned long long> {
     DCHECK(val <= 0x7fffffffffffffffLL);
     return Dart_NewInteger(static_cast<int64_t>(val));
   }
+
+  static void SetReturnValue(Dart_NativeArguments args,
+                             unsigned long long val) {
+    DCHECK(val <= 0x7fffffffffffffffLL);
+    Dart_SetIntegerReturnValue(args, val);
+  }
 };
 
 template<>
 struct DartConverter<double> {
   static Dart_Handle ToDart(DartState* state, double val) {
     return Dart_NewDouble(val);
+  }
+
+  static void SetReturnValue(Dart_NativeArguments args, double val) {
+    Dart_SetDoubleReturnValue(args, val);
   }
 };
 
@@ -68,6 +91,18 @@ struct DartConverter<String> {
     if (val.isEmpty())
       return Dart_EmptyString();
     return Dart_HandleFromWeakPersistent(state->string_cache().Get(val.impl()));
+  }
+
+  static String FromDart(Dart_Handle handle) {
+    intptr_t char_size = 0;
+    intptr_t length = 0;
+    void* peer = nullptr;
+    Dart_Handle result =
+        Dart_StringGetProperties(handle, &char_size, &length, &peer);
+    DCHECK(!Dart_IsError(result));
+    if (peer)
+      return String(static_cast<StringImpl*>(peer));
+    return ExternalizeDartString(handle);
   }
 };
 
@@ -99,6 +134,10 @@ struct DartConverter<DartValue> {
   static Dart_Handle ToDart(DartState* state, DartValue* val) {
     return val->dart_value();
   }
+
+  static void SetReturnValue(Dart_NativeArguments args, DartValue* val) {
+    Dart_SetReturnValue(args, val->dart_value());
+  }
 };
 
 inline Dart_Handle StringToDart(DartState* state, const String& val) {
@@ -107,6 +146,10 @@ inline Dart_Handle StringToDart(DartState* state, const String& val) {
 
 inline Dart_Handle StringToDart(DartState* state, const AtomicString& val) {
   return DartConverter<AtomicString>::ToDart(state, val);
+}
+
+inline String StringFromDart(Dart_Handle handle) {
+  return DartConverter<String>::FromDart(handle);
 }
 
 } // namespace blink

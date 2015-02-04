@@ -73,7 +73,7 @@ if (argumentCount == 2 && (name == "{{resolver_string}}")) {
     {% if indexed_property_getter and not indexed_property_getter.is_custom %}
       {% for native_entry in indexed_property_getter.native_entries %}
         {% set resolver_string = native_entry.resolver_string %}
-if (nf == {{dart_class}}Internal::indexedPropertyGetter) {
+if (native_function == {{dart_class}}Internal::indexedPropertyGetter) {
     return reinterpret_cast<const uint8_t*>("{{resolver_string}}");
 }
       {% endfor %}
@@ -86,7 +86,7 @@ if (nf == {{dart_class}}Internal::indexedPropertyGetter) {
     {% if named_property_getter %}
       {% for native_entry in named_property_getter.native_entries %}
         {% set resolver_string = native_entry.resolver_string %}
-if (nf == {{dart_class}}Internal::propertyQuery) {
+if (native_function == {{dart_class}}Internal::propertyQuery) {
     return reinterpret_cast<const uint8_t*>("{{resolver_string}}");
 }
       {% endfor %}
@@ -94,13 +94,6 @@ if (nf == {{dart_class}}Internal::propertyQuery) {
 {% endblock %}
 
 {##############################################################################}
-{% block to_dart_no_inline %}
-template<>
-Dart_Handle toDartNoInline({{cpp_class}}* impl, DartDOMData* domData)
-{
-    return {{dart_class}}::toDart(impl);
-}
-{% endblock %}
 
 {% from 'methods_cpp.template' import static_method_name with context %}
 

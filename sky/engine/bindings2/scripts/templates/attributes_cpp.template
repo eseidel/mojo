@@ -1,48 +1,36 @@
 {##############################################################################}
 {% macro attribute_getter(cpp_class, attribute) %}
-static void {{static_attribute_name(attribute, 'Getter')}}(Dart_NativeArguments args)
-{
-{% if attribute.idl_type == "EventHandler" %}
-{# TODO(terry): Need to fix properly. #}
-    // FIXME: proper implementation.
-    DART_UNIMPLEMENTED();
-{% else %}
-  {% if attribute.is_getter_raises_exception or attribute.is_call_with_execution_context or attribute.is_call_with_script_state %}
+static void {{static_attribute_name(attribute, 'Getter')}}(Dart_NativeArguments args) {
+{% if attribute.is_getter_raises_exception or attribute.is_call_with_execution_context %}
     Dart_Handle exception = 0;
-  {% endif %}
-    {
-  {% if attribute.is_call_with_execution_context %}
-        ExecutionContext* context = DartUtilities::scriptExecutionContext();
-        if (!context) {
-            exception = Dart_NewStringFromCString("Failed to retrieve a context");
-            goto fail;
-        }
-
-  {% endif %}
-{% if attribute.is_call_with_script_state %}
-  ScriptState* state = DartUtilities::currentScriptState();
-  if (!state) {
-      exception = Dart_NewStringFromCString("Failed to retrieve a script state");
-      goto fail;
-  }
 {% endif %}
-  {% if attribute.dart_set_return_value and not attribute.is_static %}
-        {{cpp_class}}* receiver = DartDOMWrapper::receiver< {{cpp_class}} >(args);
-  {% else %}
-        // FIXME: Need receiver setup too.
-  {% endif %}
-  {% if attribute.reflect_only %}
-        {{generate_reflects(attribute) | indent(8)}}
-  {% endif %}
-        {{callback_return(attribute)|indent(8)}}
-        return;
+  {
+{% if attribute.is_call_with_execution_context %}
+    ExecutionContext* context = DartUtilities::scriptExecutionContext();
+    if (!context) {
+      exception = Dart_NewStringFromCString("Failed to retrieve a context");
+      goto fail;
     }
-  {% if attribute.is_getter_raises_exception or attribute.is_call_with_execution_context or attribute.is_call_with_script_state %}
-
+{% endif %}
+{% if attribute.is_call_with_script_state %}
+    DartState* dart_state = DartState::Current();
+    DCHECK(state);
+{% endif %}
+{% if attribute.dart_set_return_value and not attribute.is_static %}
+    {{cpp_class}}* receiver = GetReceiver<{{cpp_class}}>(args);
+{% else %}
+    // FIXME: Need receiver setup too.
+{% endif %}
+{% if attribute.reflect_only %}
+    {{generate_reflects(attribute)|indent(4)}}
+{% endif %}
+    {{callback_return(attribute)|indent(4)}}
+    return;
+  }
+{% if attribute.is_getter_raises_exception or attribute.is_call_with_execution_context %}
 fail:
     Dart_ThrowException(exception);
     ASSERT_NOT_REACHED();
-  {% endif %}
 {% endif %}
 }
 {% endmacro %}
@@ -52,11 +40,11 @@ fail:
 {% macro callback_return(attribute) %}
 {% if attribute.dart_set_return_value %}
   {% if attribute.is_nullable %}
-bool isNull = false;
+bool is_null = false;
   {% endif %}
   {% if attribute.is_getter_raises_exception or
         attribute.is_nullable %}
-DartExceptionState es;
+ExceptionState es;
   {% endif %}
   {% if attribute.cached_attribute_validation_method or
         attribute.is_getter_raises_exception or
@@ -67,15 +55,14 @@ DartExceptionState es;
     {% else %}
       {% set native_type = attribute.cpp_type %}
     {% endif %}
-{# TODO(vsm): We still need to generate checks for cache attributes. #}
 {{native_type}} {{attribute.cpp_value}} = {{attribute.cpp_value_original}};    
   {% endif %}
   {% if attribute.is_nullable %}
-if (isNull)
+if (is_null)
     return;
   {% endif %}
   {% if attribute.is_getter_raises_exception %}
-if (es.hadException()) {
+if (es.had_exception()) {
     exception = es.toDart(args, {{attribute.auto_scope}});
     goto fail;
 }
@@ -219,12 +206,12 @@ if (argumentCount == 2 && name == "{{attribute.native_entry_setter.resolver_stri
 {##############################################################################}
 {% macro generate_attribute_symbolizer_body(dart_class, class_name, attribute) %}
 {% if not attribute.is_getter_suppressed %}
-if (nf == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Getter')}}) {
+if (native_function == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Getter')}}) {
     return reinterpret_cast<const uint8_t*>("{{attribute.native_entry_getter.resolver_string}}");
 }
 {% endif %}
   {% if not attribute.is_read_only and not attribute.is_setter_suppressed %}
-if (nf == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Setter')}}) {
+if (native_function == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Setter')}}) {
     return reinterpret_cast<const uint8_t*>("{{attribute.native_entry_setter.resolver_string}}");
 }
   {% endif %}

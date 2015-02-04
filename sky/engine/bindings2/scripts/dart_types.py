@@ -587,9 +587,9 @@ IdlTypeBase.dart_conversion_type = dart_conversion_type
 
 
 DART_SET_RETURN_VALUE = {
-    'boolean': 'Dart_SetBooleanReturnValue(args, {cpp_value})',
-    'int': 'DartUtilities::setDartIntegerReturnValue(args, {cpp_value})',
-    'unsigned': 'DartUtilities::setDartUnsignedLongLongReturnValue(args, {cpp_value})',
+    'boolean': 'DartConverter<bool>::SetReturnValue(args, {cpp_value})',
+    'int': 'DartConverter<int>::SetReturnValue(args, {cpp_value})',
+    'unsigned': 'DartConverter<unsigned>::SetReturnValue(args, {cpp_value})',
     'DOMString': 'DartUtilities::setDartStringReturnValue(args, {cpp_value}, {auto_scope})',
     # FIXME(terry): Need to handle checking to byte values > 255 throwing exception.
     'ByteString': 'DartUtilities::setDartByteStringReturnValue(args, {cpp_value}, {auto_scope})',
@@ -601,10 +601,10 @@ DART_SET_RETURN_VALUE = {
     'StringOrUndefined': 'DartUtilities::setDartStringReturnValue(args, {cpp_value}, {auto_scope})',
     'void': '',
     # We specialize these as well in Dart.
-    'float': 'Dart_SetDoubleReturnValue(args, {cpp_value})',
-    'unrestricted float': 'Dart_SetDoubleReturnValue(args, {cpp_value})',
-    'double': 'Dart_SetDoubleReturnValue(args, {cpp_value})',
-    'unrestricted double': 'Dart_SetDoubleReturnValue(args, {cpp_value})',
+    'float': 'DartConverter<double>::SetReturnValue(args, {cpp_value})',
+    'unrestricted float': 'DartConverter<double>::SetReturnValue(args, {cpp_value})',
+    'double': 'DartConverter<double>::SetReturnValue(args, {cpp_value})',
+    'unrestricted double': 'DartConverter<double>::SetReturnValue(args, {cpp_value})',
     # No special function, but instead convert value to Dart_Handle
     # and then use general Dart_SetReturnValue.
     'array': 'Dart_SetReturnValue(args, {cpp_value})',

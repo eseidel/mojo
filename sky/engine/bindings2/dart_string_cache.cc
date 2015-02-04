@@ -6,33 +6,9 @@
 #include "sky/engine/bindings2/dart_string_cache.h"
 
 #include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/bindings2/dart_string.h"
 
 namespace blink {
-namespace {
-
-static void FinalizeString(void* string_impl) {
-  DCHECK(string_impl);
-  reinterpret_cast<StringImpl*>(string_impl)->deref();
-}
-
-Dart_Handle CreateDartString(StringImpl* string_impl) {
-  if (!string_impl)
-    return Dart_EmptyString();
-
-  string_impl->ref(); // Balanced in FinalizeString.
-
-  if (string_impl->is8Bit()) {
-    return Dart_NewExternalLatin1String(
-        reinterpret_cast<const uint8_t*>(string_impl->characters8()),
-        string_impl->length(), string_impl, FinalizeString);
-  } else {
-    return Dart_NewExternalUTF16String(
-        reinterpret_cast<const uint16_t*>(string_impl->characters16()),
-        string_impl->length(), string_impl, FinalizeString);
-  }
-}
-
-} // namespace
 
 DartStringCache::DartStringCache()
     : last_dart_string_(nullptr) {

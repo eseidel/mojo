@@ -17,6 +17,8 @@ source_set("bindings2") {
     "dart_persistent_value.h",
     "dart_state.cc",
     "dart_state.h",
+    "dart_string.cc",
+    "dart_string.h",
     "dart_string_cache.cc",
     "dart_string_cache.h",
     "dart_value.cc",
@@ -295,7 +297,15 @@ idl_compiler("compile_idls") {
 }
 
 source_set("generated_bindings") {
-  deps = [ ":compile_idls" ]
+  deps = [
+    "//base",
+    "//dart/runtime/bin:libdart_withcore",
+    "//sky/engine/wtf",
+    ":compile_idls"
+  ]
+
+  include_dirs = [ ".." ]
+
   # Uncomment this line to build the generated files.
   # sources = get_target_outputs(":compile_idls")
 }

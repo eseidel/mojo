@@ -43,6 +43,14 @@ class DartWrappable {
 
 #define DEFINE_WRAPPERTYPEINFO()
 
+template <typename T>
+static T* GetReceiver(Dart_NativeArguments args) {
+  intptr_t receiver;
+  Dart_Handle result = Dart_GetNativeReceiver(args, &receiver);
+  DCHECK(!Dart_IsError(result));
+  return static_cast<T*>(reinterpret_cast<DartWrappable*>(receiver));
+}
+
 } // namespace blink
 
 #endif // SKY_ENGINE_BINDINGS2_DART_WRAPPABLE_H_

@@ -13,3 +13,4 @@ import 'dart:mojo_bindings';
 import 'dart:mojo_builtin';
 import 'dart:mojo_core';
 import 'dart:typed_data';
+import 'dart:blink';

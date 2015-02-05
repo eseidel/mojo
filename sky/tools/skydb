@@ -118,7 +118,11 @@ class SkyDebugger(object):
             remote_server_port,
             self.pids['sky_server_root'],
             self.pids['build_dir'])
-        shell_args += ['--origin=%s' % build_dir_url]
+
+        # TODO(eseidel): We should do this on linux, but we need to fix
+        # mojo http loading to be faster first.
+        if is_android:
+            shell_args += ['--origin=%s' % build_dir_url]
 
         # Desktop-only work-around for mojo crashing under chromoting.
         if not is_android and args.use_osmesa:

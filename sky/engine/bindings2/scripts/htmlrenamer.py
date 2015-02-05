@@ -926,25 +926,9 @@ class HtmlRenamer(object):
     if interface.id in _library_names:
       return _library_names[interface.id]
 
-    # TODO(ager, blois): The conditional has been removed from indexed db,
-    # so we can no longer determine the library based on the conditionals.
-    if interface.id.startswith("IDB"):
-      return 'indexed_db'
-    if interface.id.startswith("SQL"):
-      return 'web_sql'
-    if interface.id.startswith("SVG"):
-      return 'svg'
     if interface.id.startswith("WebGL") or interface.id.startswith("OES") \
         or interface.id.startswith("EXT"):
       return 'web_gl'
-
-    if 'Conditional' in interface.ext_attrs:
-      if 'WEB_AUDIO' in interface.ext_attrs['Conditional']:
-        return 'web_audio'
-      if 'INDEXED_DATABASE' in interface.ext_attrs['Conditional']:
-        return 'indexed_db'
-      if 'SQL_DATABASE' in interface.ext_attrs['Conditional']:
-        return 'web_sql'
 
     if interface.id in typed_array_renames:
       return 'typed_data'
@@ -956,25 +940,9 @@ class HtmlRenamer(object):
     if interface.id in _library_ids:
       return _library_ids[interface.id]
 
-    # TODO(ager, blois): The conditional has been removed from indexed db,
-    # so we can no longer determine the library based on the conditionals.
-    if interface.id.startswith("IDB"):
-      return 'IndexedDb'
-    if interface.id.startswith("SQL"):
-      return 'WebSql'
-    if interface.id.startswith("SVG"):
-      return 'Svg'
     if interface.id.startswith("WebGL") or interface.id.startswith("OES") \
         or interface.id.startswith("EXT"):
       return 'WebGl'
-
-    if 'Conditional' in interface.ext_attrs:
-      if 'WEB_AUDIO' in interface.ext_attrs['Conditional']:
-        return 'WebAudio'
-      if 'INDEXED_DATABASE' in interface.ext_attrs['Conditional']:
-        return 'IndexedDb'
-      if 'SQL_DATABASE' in interface.ext_attrs['Conditional']:
-        return 'WebSql'
 
     if interface.id in typed_array_renames:
       return 'TypedData'
@@ -991,10 +959,7 @@ class HtmlRenamer(object):
 
   def _DartifyName(self, dart_name):
     # Strip off any standard prefixes.
-    name = re.sub(r'^SVG', '', dart_name)
-    name = re.sub(r'^IDB', '', name)
     name = re.sub(r'^WebGL', '', name)
-    name = re.sub(r'^WebKit', '', name)
 
     return self._CamelCaseName(name)
 

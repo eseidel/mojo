@@ -51,6 +51,8 @@ source_set("bindings2") {
   ]
 }
 
+blink_dartium_path = "$bindings_output_dir/_blink_dartium.dart"
+
 action("generate_snapshot_bin") {
   deps = [
     "//dart/runtime/bin:gen_snapshot($host_toolchain)",
@@ -68,6 +70,9 @@ action("generate_snapshot_bin") {
       get_label_info("//dart/runtime/bin:gen_snapshot($host_toolchain)",
                      "root_out_dir")
   script = "//dart/runtime/tools/create_snapshot_bin.py"
+
+  dartium_path = rebase_path(blink_dartium_path)
+
   args = [
     "--executable",
     rebase_path("$gen_snapshot_dir/gen_snapshot"),
@@ -79,6 +84,7 @@ action("generate_snapshot_bin") {
     rebase_path(output, root_build_dir),
     "--target_os",
     os,
+    "--url_mapping=dart:blink,$dartium_path",
   ]
 }
 
@@ -320,7 +326,7 @@ action("generate_dart_globals") {
 action("generate_dart_blink") {
   sources = core_idl_files
   script = "$bindings_scripts_dir/compiler.py"
-  output_file = "$bindings_output_dir/dart/_blink_dartium.dart"
+  output_file = blink_dartium_path
 
   file_list = "$target_gen_dir/${target_name}_file_list.txt"
   write_file(file_list, rebase_path(sources, root_build_dir))

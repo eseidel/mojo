@@ -35,8 +35,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:_internal' hide Symbol, deprecated;
 import 'dart:html_common';
-import 'dart:indexed_db';
-import 'dart:indexed_db' show indexed_dbBlinkMap;
 import 'dart:isolate';
 import 'dart:js' as js;
 import "dart:convert";
@@ -48,14 +46,6 @@ import 'dart:nativewrappers';
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:web_gl' show web_glBlinkMap;
-import 'dart:web_sql';
-// Not actually used, but imported since dart:html can generate these objects.
-import 'dart:svg' as svg;
-import 'dart:svg' show svgBlinkMap;
-import 'dart:svg' show Matrix;
-import 'dart:svg' show SvgSvgElement;
-import 'dart:web_audio' as web_audio;
-import 'dart:web_audio' show web_audioBlinkMap;
 import 'dart:_blink' as _blink;
 
 export 'dart:math' show Rectangle, Point;
@@ -170,30 +160,6 @@ Type _getType(String key) {
     return result;
   }
 
-  // Check the indexed db library.
-  result = _getIndexDbType(key);
-  if (result != null) {
-    return result;
-  }
-
-  // Check the web audio library.
-  result = _getWebAudioType(key);
-  if (result != null) {
-    return result;
-  }
-
-  // Check the web sql library.
-  result = _getWebSqlType(key);
-  if (result != null) {
-    return result;
-  }
-
-  // Check the svg library.
-  result = _getSvgType(key);
-  if (result != null) {
-    return result;
-  }
-
   return null;
 }
 
@@ -207,34 +173,6 @@ Type _getHtmlType(String key) {
 Type _getWebGlType(String key) {
   if (web_glBlinkMap.containsKey(key)) {
     return web_glBlinkMap[key]();
-  }
-  return null;
-}
-
-Type _getIndexDbType(String key) {
-  if (indexed_dbBlinkMap.containsKey(key)) {
-    return indexed_dbBlinkMap[key]();
-  }
-  return null;
-}
-
-Type _getWebAudioType(String key) {
-  if (web_audioBlinkMap.containsKey(key)) {
-    return web_audioBlinkMap[key]();
-  }
-  return null;
-}
-
-Type _getWebSqlType(String key) {
-  if (web_sqlBlinkMap.containsKey(key)) {
-    return web_sqlBlinkMap[key]();
-  }
-  return null;
-}
-
-Type _getSvgType(String key) {
-  if (svgBlinkMap.containsKey(key)) {
-    return svgBlinkMap[key]();
   }
   return null;
 }

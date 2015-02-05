@@ -3,9 +3,11 @@
 <import src="dart-library.sky" as="library" />
 <script>
 
+import "dart:blink";
+
 main() {
-  String where = library.getPlace();
-  return "hello $where";
+  var node = new BlinkNode();
+  return BlinkNode.firstChild_Getter(node);
 }
 
 </script>

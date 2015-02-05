@@ -14,25 +14,6 @@ class _ChildNodeListLazy extends ListBase<Node> implements NodeListWrapper {
 
   _ChildNodeListLazy(this._this);
 
-
-$if DART2JS
-  Node get first {
-    Node result = JS('Node|Null', '#.firstChild', _this);
-    if (result == null) throw new StateError("No elements");
-    return result;
-  }
-  Node get last {
-    Node result = JS('Node|Null', '#.lastChild', _this);
-    if (result == null) throw new StateError("No elements");
-    return result;
-  }
-  Node get single {
-    int l = this.length;
-    if (l == 0) throw new StateError("No elements");
-    if (l > 1) throw new StateError("More than one element");
-    return JS('Node|Null', '#.firstChild', _this);
-  }
-$else
   Node get first {
     Node result = _this.firstChild;
     if (result == null) throw new StateError("No elements");
@@ -49,7 +30,6 @@ $else
     if (l > 1) throw new StateError("More than one element");
     return _this.firstChild;
   }
-$endif
 
   void add(Node value) {
     _this.append(value);

@@ -33,6 +33,14 @@ DartController::DartController() {
 DartController::~DartController() {
 }
 
+bool LogIfError(Dart_Handle handle) {
+  if (Dart_IsError(handle)) {
+    LOG(ERROR) << Dart_GetError(handle);
+    return true;
+  }
+  return false;
+}
+
 void DartController::ExecuteModuleScript(AbstractModule& module,
                                          const String& source,
                                          const TextPosition& textPosition) {
@@ -43,8 +51,8 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
       Dart_NewStringFromCString(module.url().utf8().data()),
       Dart_NewStringFromCString(source.utf8().data()),
       textPosition.m_line.zeroBasedInt(), textPosition.m_column.zeroBasedInt());
-
-  ASSERT(!Dart_IsError(library));
+  if (LogIfError(library))
+    return;
 
   Dart_FinalizeLoading(true);
 
@@ -57,7 +65,8 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
         Module* childModule = child->module();
         if (childModule && !childModule->exports()->is_empty()) {
           Dart_Handle importResult = Dart_LibraryImportLibrary(library, childModule->exports()->dart_value(), Dart_NewStringFromCString(name.utf8().data()));
-          ASSERT(!Dart_IsError(importResult));
+          if (LogIfError(importResult))
+            return;
         }
       }
     }
@@ -74,6 +83,8 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
   // so as to capture & report other errors.
   Dart_Handle invoke_result =
       Dart_Invoke(library, Dart_NewStringFromCString("main"), 0, nullptr);
+  if (LogIfError(invoke_result))
+    return;
 
   Dart_Handle str = Dart_ToString(invoke_result);
   const char* xyz = "invalid";
@@ -89,6 +100,9 @@ static Dart_Isolate IsolateCreateCallback(const char* script_uri,
   DartState* parent_dart_state = static_cast<DartState*>(callback_data);
   DCHECK(parent_dart_state);
   // TODO(dart)
+
+  Dart_Handle blink = Dart_LookupLibrary(Dart_NewStringFromCString("dart:_blink"));
+  LogIfError(blink);
   return nullptr;
 }
 

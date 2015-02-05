@@ -21,15 +21,14 @@ namespace blink {
 // can lead to memory leaks.
 class DartValue : public RefCounted<DartValue> {
   WTF_MAKE_NONCOPYABLE(DartValue);
+
  public:
   static PassRefPtr<DartValue> Create(DartState* dart_state,
                                       Dart_Handle value) {
     return adoptRef(new DartValue(dart_state, value));
   }
 
-  static PassRefPtr<DartValue> Create() {
-      return adoptRef(new DartValue());
-  }
+  static PassRefPtr<DartValue> Create() { return adoptRef(new DartValue()); }
 
   ~DartValue();
 
@@ -56,6 +55,6 @@ class DartValue : public RefCounted<DartValue> {
   DartPersistentValue dart_value_;
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_DART_VALUE_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_VALUE_H_

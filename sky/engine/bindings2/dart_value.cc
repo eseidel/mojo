@@ -20,9 +20,9 @@ DartValue::~DartValue() {
 bool DartValue::Equals(DartValue* other) const {
   DCHECK(other);
   if (is_empty())
-      return other->is_empty();
+    return other->is_empty();
   if (other->is_empty())
-      return false;
+    return false;
   return Dart_IdentityEquals(dart_value(), other->dart_value());
 }
 
@@ -30,4 +30,4 @@ void DartValue::Clear() {
   dart_value_.Clear();
 }
 
-} // namespace blink
+}  // namespace blink

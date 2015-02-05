@@ -23,7 +23,6 @@ class DartIsolateScope {
   Dart_Isolate isolate_;
   Dart_Isolate previous_;
 };
-
 }
 
-#endif // SKY_ENGINE_BINDINGS2_DART_ISOLATE_SCOPE_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_ISOLATE_SCOPE_H_

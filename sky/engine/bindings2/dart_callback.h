@@ -12,7 +12,9 @@ namespace blink {
 
 class DartCallback {
  public:
-  DartCallback(DartState* dart_state, Dart_Handle callback, Dart_Handle& exception);
+  DartCallback(DartState* dart_state,
+               Dart_Handle callback,
+               Dart_Handle& exception);
   ~DartCallback();
 
   bool handleEvent(int argc, Dart_Handle* argv);
@@ -23,7 +25,6 @@ class DartCallback {
  private:
   DartPersistentValue callback_;
 };
-
 }
 
-#endif // SKY_ENGINE_BINDINGS2_DART_CALLBACK_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_CALLBACK_H_

@@ -10,9 +10,10 @@ namespace blink {
 #if ENABLE(ASSERT)
 
 NoExceptionStateAssertionChecker::NoExceptionStateAssertionChecker(
-    const char* file, int line) {
+    const char* file,
+    int line) {
 }
 
 #endif
 
-} // namespace blink
+}  // namespace blink

@@ -17,4 +17,4 @@ Dart_PersistentHandle DartClassLibrary::GetClassById(intptr_t class_id) {
   return nullptr;
 }
 
-} // namespace blink
+}  // namespace blink

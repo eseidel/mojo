@@ -18,6 +18,7 @@ class DartState;
 // don't leak the Dart_PersistentHandle.
 class DartPersistentValue {
   WTF_MAKE_NONCOPYABLE(DartPersistentValue);
+
  public:
   DartPersistentValue();
   DartPersistentValue(DartState* dart_state, Dart_Handle value);
@@ -29,15 +30,12 @@ class DartPersistentValue {
   void Clear();
   Dart_Handle Release();
 
-  const base::WeakPtr<DartState>& dart_state() const {
-    return dart_state_;
-  }
+  const base::WeakPtr<DartState>& dart_state() const { return dart_state_; }
 
  private:
   base::WeakPtr<DartState> dart_state_;
   Dart_PersistentHandle value_;
 };
-
 }
 
-#endif // SKY_ENGINE_BINDINGS2_DART_PERSISTENT_VALUE_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_PERSISTENT_VALUE_H_

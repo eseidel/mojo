@@ -25,6 +25,6 @@ class ScheduledAction {
   DartPersistentValue action_;
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_SCHEDULED_ACTION_H_
+#endif  // SKY_ENGINE_BINDINGS2_SCHEDULED_ACTION_H_

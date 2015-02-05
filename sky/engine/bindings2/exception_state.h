@@ -15,6 +15,7 @@ typedef int ExceptionCode;
 
 class ExceptionState {
   WTF_MAKE_NONCOPYABLE(ExceptionState);
+
  public:
   enum Context {
     ConstructionContext,
@@ -27,12 +28,15 @@ class ExceptionState {
     IndexedGetterContext,
     IndexedSetterContext,
     IndexedDeletionContext,
-    UnknownContext, // FIXME: Remove this once we've flipped over to the new API.
+    UnknownContext,  // FIXME: Remove this once we've flipped over to the new
+                     // API.
   };
 
   ExceptionState();
   ExceptionState(Context context, const char* interfaceName);
-  ExceptionState(Context context, const char* propertyName, const char* interfaceName);
+  ExceptionState(Context context,
+                 const char* propertyName,
+                 const char* interfaceName);
   ~ExceptionState();
 
   void ThrowDOMException(const ExceptionCode& code, const String& message);
@@ -55,12 +59,10 @@ class ExceptionState {
   DartPersistentValue exception_;
 };
 
-class NonThrowableExceptionState final : public ExceptionState {
-};
+class NonThrowableExceptionState final : public ExceptionState {};
 
-class TrackExceptionState final : public ExceptionState {
-};
+class TrackExceptionState final : public ExceptionState {};
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_EXCEPTION_STATE_H_
+#endif  // SKY_ENGINE_BINDINGS2_EXCEPTION_STATE_H_

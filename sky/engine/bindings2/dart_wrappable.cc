@@ -16,14 +16,12 @@ DartWrapperInfo kSingletonWrapperInfo = {0, 0, nullptr, nullptr};
 
 void FinalizeWrapper(void* isolate_callback_data,
                      Dart_WeakPersistentHandle wrapper,
-                     void* peer)
-{
+                     void* peer) {
   DartWrappable* wrappable = reinterpret_cast<DartWrappable*>(peer);
   wrappable->set_dart_wrapper(nullptr);
   const DartWrapperInfo& info = wrappable->GetDartWrapperInfo();
   info.deref_object(wrappable);
 }
-
 }
 
 DartWrappable::~DartWrappable() {
@@ -45,8 +43,8 @@ Dart_Handle DartWrappable::Wrap(DartState* dart_state) {
   intptr_t native_fields[kNumberOfNativeFields];
   native_fields[kWrapperInfoIndex] = reinterpret_cast<intptr_t>(&info);
   native_fields[kPeerIndex] = reinterpret_cast<intptr_t>(this);
-  Dart_Handle wrapper = Dart_AllocateWithNativeFields(
-      type, kNumberOfNativeFields, native_fields);
+  Dart_Handle wrapper =
+      Dart_AllocateWithNativeFields(type, kNumberOfNativeFields, native_fields);
   DCHECK(!Dart_IsError(wrapper));
 
   info.ref_object(this);  // Balanced in FinalizeWrapper.
@@ -56,4 +54,4 @@ Dart_Handle DartWrappable::Wrap(DartState* dart_state) {
   return wrapper;
 }
 
-} // namespace blink
+}  // namespace blink

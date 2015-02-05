@@ -12,12 +12,10 @@ namespace blink {
 template <typename T>
 class Nullable {
  public:
-  Nullable() : value_() , is_null_(true) {}
-  Nullable(const T& value) : value_(value) , is_null_(false) {}
+  Nullable() : value_(), is_null_(true) {}
+  Nullable(const T& value) : value_(value), is_null_(false) {}
   Nullable(const Nullable& other)
-      : value_(other.value_),
-        is_null_(other.is_null_) {
-  }
+      : value_(other.value_), is_null_(other.is_null_) {}
 
   Nullable& operator=(const Nullable& other) = default;
 
@@ -26,8 +24,14 @@ class Nullable {
     is_null_ = false;
   }
 
-  const T& get() const { DCHECK(!is_null_); return value_; }
-  T& get() { DCHECK(!is_null_); return value_; }
+  const T& get() const {
+    DCHECK(!is_null_);
+    return value_;
+  }
+  T& get() {
+    DCHECK(!is_null_);
+    return value_;
+  }
 
   bool is_null() const { return is_null_; }
 
@@ -36,8 +40,8 @@ class Nullable {
   operator UnspecifiedBoolType() const { return is_null_ ? 0 : &value_; }
 
   bool operator==(const Nullable& other) const {
-    return (is_null_ && other.is_null_)
-        || (!is_null_ && !other.is_null_ && value_ == other.value_);
+    return (is_null_ && other.is_null_) ||
+           (!is_null_ && !other.is_null_ && value_ == other.value_);
   }
 
  private:
@@ -45,6 +49,6 @@ class Nullable {
   bool is_null_;
 };
 
-} // namespace blink
+}  // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS2_NULLABLE_H_

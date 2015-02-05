@@ -10,8 +10,7 @@
 
 namespace blink {
 
-DartStringCache::DartStringCache()
-    : last_dart_string_(nullptr) {
+DartStringCache::DartStringCache() : last_dart_string_(nullptr) {
 }
 
 DartStringCache::~DartStringCache() {
@@ -35,7 +34,7 @@ Dart_WeakPersistentHandle DartStringCache::GetSlow(StringImpl* string_impl,
   Dart_WeakPersistentHandle wrapper = Dart_NewWeakPersistentHandle(
       string, string_impl, size_in_bytes, FinalizeCacheEntry);
 
-  string_impl->ref(); // Balanced in FinalizeCacheEntry.
+  string_impl->ref();  // Balanced in FinalizeCacheEntry.
   cache_.set(string_impl, wrapper);
 
   last_dart_string_ = wrapper;
@@ -54,8 +53,7 @@ void DartStringCache::FinalizeCacheEntry(void* isolate_callback_data,
   StringImpl* string_impl = reinterpret_cast<StringImpl*>(peer);
   DartStringCache& cache = state->string_cache();
 
-  Dart_WeakPersistentHandle cached_handle =
-    cache.cache_.take(string_impl);
+  Dart_WeakPersistentHandle cached_handle = cache.cache_.take(string_impl);
   ASSERT_UNUSED(handle == cached_handle, cached_handle);
 
   if (cache.last_dart_string_ == handle) {
@@ -66,4 +64,4 @@ void DartStringCache::FinalizeCacheEntry(void* isolate_callback_data,
   string_impl->deref();
 }
 
-} // namespace blink
+}  // namespace blink

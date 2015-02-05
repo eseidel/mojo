@@ -11,7 +11,7 @@
 namespace blink {
 
 class IgnorableExceptionState final : public ExceptionState {
-public:
+ public:
   ExceptionState& ReturnThis() { return *this; }
 };
 
@@ -25,7 +25,8 @@ class NoExceptionStateAssertionChecker final : public ExceptionState {
   ExceptionState& ReturnThis() { return *this; }
 };
 
-#define ASSERT_NO_EXCEPTION (::blink::NoExceptionStateAssertionChecker(__FILE__, __LINE__).ReturnThis())
+#define ASSERT_NO_EXCEPTION \
+  (::blink::NoExceptionStateAssertionChecker(__FILE__, __LINE__).ReturnThis())
 
 #else
 
@@ -33,6 +34,6 @@ class NoExceptionStateAssertionChecker final : public ExceptionState {
 
 #endif
 
-} // namespace blink
+}  // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS2_EXCEPTION_STATE_PLACEHOLDER_H_

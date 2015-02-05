@@ -7,12 +7,12 @@
 
 namespace blink {
 
-ExceptionState::ExceptionState()
-    : code_(0),
-      had_exception_(false) {
+ExceptionState::ExceptionState() : code_(0), had_exception_(false) {
 }
 
-ExceptionState::ExceptionState(Context context, const char* propertyName, const char* interfaceName) {
+ExceptionState::ExceptionState(Context context,
+                               const char* propertyName,
+                               const char* interfaceName) {
 }
 
 ExceptionState::ExceptionState(Context context, const char* interfaceName) {
@@ -21,7 +21,8 @@ ExceptionState::ExceptionState(Context context, const char* interfaceName) {
 ExceptionState::~ExceptionState() {
 }
 
-void ExceptionState::ThrowDOMException(const ExceptionCode&, const String& message) {
+void ExceptionState::ThrowDOMException(const ExceptionCode&,
+                                       const String& message) {
 }
 
 void ExceptionState::ThrowTypeError(const String& message) {
@@ -44,4 +45,4 @@ Dart_Handle ExceptionState::GetDartException(Dart_NativeArguments args,
   return exception_.Release();
 }
 
-} // namespace blink
+}  // namespace blink

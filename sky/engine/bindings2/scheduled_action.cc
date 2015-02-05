@@ -17,4 +17,4 @@ ScheduledAction::~ScheduledAction() {
 void ScheduledAction::Execute(ExecutionContext*) {
 }
 
-} // namespace blink
+}  // namespace blink

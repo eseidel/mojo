@@ -24,6 +24,7 @@ class DartClassLibrary;
 // DartState is analogous to gin::PerIsolateData and JSC::ExecState.
 class DartState {
   WTF_MAKE_NONCOPYABLE(DartState);
+
  public:
   class Scope {
    public:
@@ -59,6 +60,6 @@ class DartState {
   friend class DartController;
 };
 
-} // namespace blink
+}  // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS2_DART_STATE_H_

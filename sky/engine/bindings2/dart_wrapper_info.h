@@ -20,6 +20,6 @@ struct DartWrapperInfo {
   WTF_MAKE_NONCOPYABLE(DartWrapperInfo);
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_DART_WRAPPER_INFO_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_WRAPPER_INFO_H_

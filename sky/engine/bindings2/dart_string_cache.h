@@ -22,7 +22,8 @@ class DartStringCache {
   DartStringCache();
   ~DartStringCache();
 
-  Dart_WeakPersistentHandle Get(StringImpl* string_impl, bool auto_scope = true) {
+  Dart_WeakPersistentHandle Get(StringImpl* string_impl,
+                                bool auto_scope = true) {
     DCHECK(string_impl);
     if (last_string_impl_.get() == string_impl)
       return last_dart_string_;
@@ -40,6 +41,6 @@ class DartStringCache {
   RefPtr<StringImpl> last_string_impl_;
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_DART_STRING_CACHE_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_STRING_CACHE_H_

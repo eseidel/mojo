@@ -15,14 +15,12 @@ namespace blink {
 
 // DartConvert converts types back and forth from Sky to Dart. The template
 // parameter |T| determines what kind of type conversion to perform.
-template<typename T, typename Enable = void>
+template <typename T, typename Enable = void>
 struct DartConverter {};
 
-template<>
+template <>
 struct DartConverter<bool> {
-  static Dart_Handle ToDart(bool val) {
-    return Dart_NewBoolean(val);
-  }
+  static Dart_Handle ToDart(bool val) { return Dart_NewBoolean(val); }
 
   static void SetReturnValue(Dart_NativeArguments args, bool val) {
     Dart_SetBooleanReturnValue(args, val);
@@ -34,18 +32,18 @@ struct DartConverter<bool> {
     return result;
   }
 
-  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static bool FromArguments(Dart_NativeArguments args,
+                            int index,
+                            Dart_Handle& exception) {
     bool result = false;
     Dart_GetNativeBooleanArgument(args, index, &result);
     return result;
   }
 };
 
-template<typename T>
+template <typename T>
 struct DartConverterInteger {
-  static Dart_Handle ToDart(T val) {
-    return Dart_NewInteger(val);
-  }
+  static Dart_Handle ToDart(T val) { return Dart_NewInteger(val); }
 
   static void SetReturnValue(Dart_NativeArguments args, T val) {
     Dart_SetIntegerReturnValue(args, val);
@@ -57,26 +55,29 @@ struct DartConverterInteger {
     return result;
   }
 
-  static T FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static T FromArguments(Dart_NativeArguments args,
+                         int index,
+                         Dart_Handle& exception) {
     int64_t result = 0;
     Dart_GetNativeIntegerArgument(args, index, &result);
     return result;
   }
 };
 
-template<>
-struct DartConverter<int> : public DartConverterInteger<int> { };
+template <>
+struct DartConverter<int> : public DartConverterInteger<int> {};
 
-template<>
-struct DartConverter<unsigned> : public DartConverterInteger<unsigned> { };
+template <>
+struct DartConverter<unsigned> : public DartConverterInteger<unsigned> {};
 
-template<>
-struct DartConverter<long long> : public DartConverterInteger<long long> { };
+template <>
+struct DartConverter<long long> : public DartConverterInteger<long long> {};
 
-template<>
+template <>
 struct DartConverter<unsigned long long> {
   static Dart_Handle ToDart(unsigned long long val) {
-    // FIXME: WebIDL unsigned long long is guaranteed to fit into 64-bit unsigned,
+    // FIXME: WebIDL unsigned long long is guaranteed to fit into 64-bit
+    // unsigned,
     // so we need a dart API for constructing an integer from uint64_t.
     DCHECK(val <= 0x7fffffffffffffffLL);
     return Dart_NewInteger(static_cast<int64_t>(val));
@@ -94,18 +95,18 @@ struct DartConverter<unsigned long long> {
     return result;
   }
 
-  static unsigned long long FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static unsigned long long FromArguments(Dart_NativeArguments args,
+                                          int index,
+                                          Dart_Handle& exception) {
     int64_t result = 0;
     Dart_GetNativeIntegerArgument(args, index, &result);
     return result;
   }
 };
 
-template<typename T>
+template <typename T>
 struct DartConverterFloatingPoint {
-  static Dart_Handle ToDart(T val) {
-    return Dart_NewDouble(val);
-  }
+  static Dart_Handle ToDart(T val) { return Dart_NewDouble(val); }
 
   static void SetReturnValue(Dart_NativeArguments args, T val) {
     Dart_SetDoubleReturnValue(args, val);
@@ -117,20 +118,22 @@ struct DartConverterFloatingPoint {
     return result;
   }
 
-  static T FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static T FromArguments(Dart_NativeArguments args,
+                         int index,
+                         Dart_Handle& exception) {
     double result = 0;
     Dart_GetNativeDoubleArgument(args, index, &result);
     return result;
   }
 };
 
-template<>
-struct DartConverter<float> : public DartConverterFloatingPoint<float> { };
+template <>
+struct DartConverter<float> : public DartConverterFloatingPoint<float> {};
 
-template<>
-struct DartConverter<double> : public DartConverterFloatingPoint<double> { };
+template <>
+struct DartConverter<double> : public DartConverterFloatingPoint<double> {};
 
-template<>
+template <>
 struct DartConverter<String> {
   static Dart_Handle ToDart(DartState* state, const String& val) {
     if (val.isEmpty())
@@ -138,7 +141,9 @@ struct DartConverter<String> {
     return Dart_HandleFromWeakPersistent(state->string_cache().Get(val.impl()));
   }
 
-  static void SetReturnValue(Dart_NativeArguments args, const String& val, bool auto_scope = true) {
+  static void SetReturnValue(Dart_NativeArguments args,
+                             const String& val,
+                             bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     if (val.isEmpty()) {
       Dart_SetReturnValue(args, Dart_EmptyString());
@@ -148,7 +153,9 @@ struct DartConverter<String> {
     Dart_SetWeakHandleReturnValue(args, state->string_cache().Get(val.impl()));
   }
 
-  static void SetReturnValueWithNullCheck(Dart_NativeArguments args, const String& val, bool auto_scope = true) {
+  static void SetReturnValueWithNullCheck(Dart_NativeArguments args,
+                                          const String& val,
+                                          bool auto_scope = true) {
     if (val.isNull())
       Dart_SetReturnValue(args, Dart_Null());
     else
@@ -159,7 +166,8 @@ struct DartConverter<String> {
     intptr_t char_size = 0;
     intptr_t length = 0;
     void* peer = nullptr;
-    Dart_Handle result = Dart_StringGetProperties(handle, &char_size, &length, &peer);
+    Dart_Handle result =
+        Dart_StringGetProperties(handle, &char_size, &length, &peer);
     if (peer)
       return String(static_cast<StringImpl*>(peer));
     if (Dart_IsError(result))
@@ -167,7 +175,10 @@ struct DartConverter<String> {
     return ExternalizeDartString(handle);
   }
 
-  static String FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static String FromArguments(Dart_NativeArguments args,
+                              int index,
+                              Dart_Handle& exception,
+                              bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     void* peer = nullptr;
     Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
@@ -178,36 +189,39 @@ struct DartConverter<String> {
     return ExternalizeDartString(handle);
   }
 
-  static String FromArgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static String FromArgumentsWithNullCheck(Dart_NativeArguments args,
+                                           int index,
+                                           Dart_Handle& exception,
+                                           bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     void* peer = nullptr;
     Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
     if (peer)
       return reinterpret_cast<StringImpl*>(peer);
     if (Dart_IsError(handle) || Dart_IsNull(handle))
-        return String();
+      return String();
     return ExternalizeDartString(handle);
   }
 };
 
-template<>
+template <>
 struct DartConverter<AtomicString> {
   static Dart_Handle ToDart(DartState* state, const AtomicString& val) {
     return DartConverter<String>::ToDart(state, val.string());
   }
 };
 
-template<typename T>
+template <typename T>
 struct DartConverter<Vector<T>> {
   static Dart_Handle ToDart(const Vector<T>& val) {
     Dart_Handle list = Dart_NewList(val.size());
     if (Dart_IsError(list))
-        return list;
+      return list;
     for (size_t i = 0; i < val.size(); i++) {
-        Dart_Handle result =
-            Dart_ListSetAt(list, i, DartConverter<T>::ToDart(val[i]));
-        if (Dart_IsError(result))
-            return result;
+      Dart_Handle result =
+          Dart_ListSetAt(list, i, DartConverter<T>::ToDart(val[i]));
+      if (Dart_IsError(result))
+        return result;
     }
     return list;
   }
@@ -220,20 +234,23 @@ struct DartConverter<Vector<T>> {
     Dart_ListLength(handle, &length);
     result.reserveCapacity(length);
     for (intptr_t i = 0; i < length; ++i) {
-        Dart_Handle element = Dart_ListGetAt(handle, i);
-        DCHECK(!Dart_IsError(element));
-        result.append(DartConverter<T>::FromDart(element));
+      Dart_Handle element = Dart_ListGetAt(handle, i);
+      DCHECK(!Dart_IsError(element));
+      result.append(DartConverter<T>::FromDart(element));
     }
     return result;
   }
 
-  static Vector<T> FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static Vector<T> FromArguments(Dart_NativeArguments args,
+                                 int index,
+                                 Dart_Handle& exception,
+                                 bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     return FromDart(Dart_GetNativeArgument(args, index));
   }
 };
 
-template<>
+template <>
 struct DartConverter<DartValue> {
   static Dart_Handle ToDart(DartState* state, DartValue* val) {
     return val->dart_value();
@@ -256,11 +273,11 @@ inline String StringFromDart(Dart_Handle handle) {
   return DartConverter<String>::FromDart(handle);
 }
 
-template<typename T>
+template <typename T>
 inline Dart_Handle VectorToDart(const Vector<T>& val) {
   return DartConverter<Vector<T>>::ToDart(val);
 }
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_

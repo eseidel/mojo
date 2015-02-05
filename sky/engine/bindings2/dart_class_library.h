@@ -19,6 +19,6 @@ class DartClassLibrary {
  private:
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // SKY_ENGINE_BINDINGS2_DART_CLASS_LIBRARY_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_CLASS_LIBRARY_H_

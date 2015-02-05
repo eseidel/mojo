@@ -14,7 +14,6 @@ class DartApiScope {
   DartApiScope() { Dart_EnterScope(); }
   ~DartApiScope() { Dart_ExitScope(); }
 };
-
 }
 
-#endif // SKY_ENGINE_BINDINGS2_DART_API_SCOPE_H_
+#endif  // SKY_ENGINE_BINDINGS2_DART_API_SCOPE_H_

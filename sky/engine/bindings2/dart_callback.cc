@@ -9,7 +9,9 @@
 
 namespace blink {
 
-DartCallback::DartCallback(DartState* dart_state, Dart_Handle callback, Dart_Handle& exception)
+DartCallback::DartCallback(DartState* dart_state,
+                           Dart_Handle callback,
+                           Dart_Handle& exception)
     : callback_(dart_state, callback) {
   if (!Dart_IsClosure(callback)) {
     exception = Dart_NewStringFromCString("Callback must be a function");
@@ -32,4 +34,4 @@ bool DartCallback::handleEvent(int argc, Dart_Handle* argv) {
   return true;
 }
 
-} // namespace blink
+}  // namespace blink

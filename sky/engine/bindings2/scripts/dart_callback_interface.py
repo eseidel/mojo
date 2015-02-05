@@ -39,12 +39,10 @@ from dart_utilities import DartUtilities
 from v8_globals import includes
 
 CALLBACK_INTERFACE_H_INCLUDES = frozenset([
-    'bindings/core/dart/DartCallback.h',
-    'bindings/core/dart/DartDOMWrapper.h',
-    'bindings/core/v8/ActiveDOMCallback.h',
+    'bindings2/dart_callback.h',
 ])
+
 CALLBACK_INTERFACE_CPP_INCLUDES = frozenset([
-    'bindings/core/dart/DartBindingsCommonIncludes.h',
     'wtf/GetPtr.h',
     'wtf/RefPtr.h',
 ])

@@ -428,7 +428,7 @@ def interface_context(interface):
 
 
     if inherits_interface(interface.name, 'EventTarget'):
-        includes.update(['bindings/core/dart/DartEventListener.h'])
+        includes.update(['bindings2/dart_event_listener.h'])
 
     # [SetWrapperReferenceTo]
     set_wrapper_reference_to_list = [{

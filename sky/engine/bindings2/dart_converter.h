@@ -37,38 +37,33 @@ struct DartConverter<bool> {
   }
 };
 
-template<>
-struct DartConverter<int> {
-  static Dart_Handle ToDart(DartState* state, int val) {
+template<typename T>
+struct DartConverterInteger {
+  static Dart_Handle ToDart(DartState* state, T val) {
     return Dart_NewInteger(val);
   }
 
-  static void SetReturnValue(Dart_NativeArguments args, int val) {
+  static void SetReturnValue(Dart_NativeArguments args, T val) {
     Dart_SetIntegerReturnValue(args, val);
+  }
+
+  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    int64_t result = 0;
+    Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
+    if (Dart_IsError(handle))
+      return 0;
+    return result;
   }
 };
 
 template<>
-struct DartConverter<unsigned> {
-  static Dart_Handle ToDart(DartState* state, unsigned val) {
-    return Dart_NewInteger(val);
-  }
-
-  static void SetReturnValue(Dart_NativeArguments args, unsigned val) {
-    Dart_SetIntegerReturnValue(args, val);
-  }
-};
+struct DartConverter<int> : public DartConverterInteger<int> { };
 
 template<>
-struct DartConverter<long long> {
-  static Dart_Handle ToDart(DartState* state, long long val) {
-    return Dart_NewInteger(val);
-  }
+struct DartConverter<unsigned> : public DartConverterInteger<unsigned> { };
 
-  static void SetReturnValue(Dart_NativeArguments args, long long val) {
-    Dart_SetIntegerReturnValue(args, val);
-  }
-};
+template<>
+struct DartConverter<long long> : public DartConverterInteger<long long> { };
 
 template<>
 struct DartConverter<unsigned long long> {
@@ -84,6 +79,14 @@ struct DartConverter<unsigned long long> {
     DCHECK(val <= 0x7fffffffffffffffLL);
     Dart_SetIntegerReturnValue(args, val);
   }
+
+  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    int64_t result = 0;
+    Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
+    if (Dart_IsError(handle))
+      return 0;
+    return result;
+  }
 };
 
 template<>
@@ -94,6 +97,14 @@ struct DartConverter<double> {
 
   static void SetReturnValue(Dart_NativeArguments args, double val) {
     Dart_SetDoubleReturnValue(args, val);
+  }
+
+  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    double result = 0;
+    Dart_Handle handle = Dart_GetNativeDoubleArgument(args, index, &result);
+    if (Dart_IsError(handle))
+      return 0;
+    return result;
   }
 };
 

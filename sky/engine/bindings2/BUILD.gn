@@ -369,7 +369,7 @@ source_set("generated_bindings") {
     "//third_party/qcms",
     "//third_party/zlib",
     "//url",
-    ":compile_idls"
+    ":compile_idls",
     ":generate_dart_bindings",
     ":generate_dart_blink",
   ]

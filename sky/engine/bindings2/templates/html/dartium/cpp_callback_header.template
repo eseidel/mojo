@@ -20,7 +20,7 @@ public:
 
     static PassOwnPtr<NativeType> create(Dart_Handle object, Dart_Handle& exception)
     {
-        return adoptPtr(new Dart$(INTERFACE)(object, exception, DartUtilities::scriptExecutionContext()));
+        return adoptPtr(new Dart$(INTERFACE)(object, exception, CoreDartState::CurrentDocument()));
     }
 
     static PassOwnPtr<NativeType> createWithNullCheck(Dart_Handle object, Dart_Handle& exception)

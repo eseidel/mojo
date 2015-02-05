@@ -6,7 +6,7 @@ static void {{static_attribute_name(attribute, 'Getter')}}(Dart_NativeArguments 
 {% endif %}
   {
 {% if attribute.is_call_with_execution_context %}
-    ExecutionContext* context = DartUtilities::scriptExecutionContext();
+    ExecutionContext* context = CoreDartState::CurrentDocument();
     if (!context) {
       exception = Dart_NewStringFromCString("Failed to retrieve a context");
       goto fail;
@@ -93,7 +93,7 @@ static void {{static_attribute_name(attribute, 'Setter')}}(Dart_NativeArguments 
 {% if attribute.is_call_with_execution_context or
       attribute.is_setter_call_with_execution_context %}
 
-        ExecutionContext* context = DartUtilities::scriptExecutionContext();
+        ExecutionContext* context = CoreDartState::CurrentDocument();
         if (!context) {
             exception = Dart_NewStringFromCString("Failed to retrieve a context");
             goto fail;

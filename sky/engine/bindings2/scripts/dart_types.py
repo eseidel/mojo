@@ -417,7 +417,7 @@ def dart_value_to_cpp_value(idl_type, extended_attributes, variable_name,
     elif idl_type.is_callback_interface:
         cpp_expression_format = ('Dart{idl_type}::create{null_check}(args, {index}, exception)')
     else:
-        cpp_expression_format = ('DartConverter<{idl_type}*>::FromArguments{null_check}(args, {index}, exception)')
+        cpp_expression_format = ('DartConverter<{implemented_as}*>::FromArguments{null_check}(args, {index}, exception)')
 
     # We allow the calling context to force a null check to handle
     # some cases that require calling context info.  V8 handles all
@@ -432,6 +432,7 @@ def dart_value_to_cpp_value(idl_type, extended_attributes, variable_name,
                                         arguments=arguments,
                                         index=index,
                                         idl_type=base_idl_type,
+                                        implemented_as=idl_type.implemented_as,
                                         auto_scope=DartUtilities.bool_to_cpp(auto_scope))
 
 

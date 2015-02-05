@@ -124,7 +124,7 @@ void LocalFrame::detach()
     // Finish all cleanup work that might require talking to the embedder.
     // Notify ScriptController that the frame is closing, since its cleanup ends up calling
     // back to FrameLoaderClient via WindowProxy.
-    dart().clearForClose();
+    dart().ClearForClose();
     // After this, we must no longer talk to the client since this clears
     // its owning reference back to our owning LocalFrame.
     loaderClient()->detachedFromParent();

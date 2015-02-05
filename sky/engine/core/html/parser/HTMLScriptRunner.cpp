@@ -60,7 +60,8 @@ void HTMLScriptRunner::executeScript(PassRefPtr<HTMLScriptElement> element, Text
 
     contextDocument->pushCurrentScript(element);
     ASSERT(sourceDocument.module());
-    frame->dart().executeModuleScript(*sourceDocument.module(), source, textPosition);
+    frame->dart().ExecuteModuleScript(*sourceDocument.module(), source,
+                                      textPosition);
     contextDocument->popCurrentScript();
 }
 

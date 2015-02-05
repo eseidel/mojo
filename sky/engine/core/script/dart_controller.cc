@@ -13,8 +13,10 @@
 #include "sky/engine/wtf/text/TextPosition.h"
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
 #include "sky/engine/core/dom/Element.h"
+#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/bindings2/dart_api_scope.h"
+#include "sky/engine/bindings2/dart_isolate_scope.h"
 #include "sky/engine/bindings2/dart_state.h"
-
 
 namespace mojo {
 namespace dart {
@@ -31,12 +33,11 @@ DartController::DartController() {
 DartController::~DartController() {
 }
 
-void DartController::clearForClose() {
-}
-
-void DartController::executeModuleScript(AbstractModule& module, const String& source, const TextPosition& textPosition) {
-
-  Dart_EnterScope();
+void DartController::ExecuteModuleScript(AbstractModule& module,
+                                         const String& source,
+                                         const TextPosition& textPosition) {
+  DartIsolateScope isolate_scope(core_dart_state_->isolate());
+  DartApiScope dart_api_scope;
 
   Dart_Handle library = Dart_LoadLibrary(
       Dart_NewStringFromCString(module.url().utf8().data()),
@@ -46,7 +47,6 @@ void DartController::executeModuleScript(AbstractModule& module, const String& s
   ASSERT(!Dart_IsError(library));
 
   Dart_FinalizeLoading(true);
-  DartState* dartState = DartState::Current();
 
   if (HTMLImport* parent = module.document()->import()) {
     for (HTMLImportChild* child = static_cast<HTMLImportChild*>(parent->firstChild());
@@ -64,7 +64,8 @@ void DartController::executeModuleScript(AbstractModule& module, const String& s
   }
 
   if (!module.isApplication()) {
-    static_cast<Module*>(&module)->setExports(DartValue::Create(dartState, library));
+    static_cast<Module*>(&module)
+        ->setExports(DartValue::Create(core_dart_state_.get(), library));
     return;
   }
 
@@ -80,7 +81,6 @@ void DartController::executeModuleScript(AbstractModule& module, const String& s
   LOG(INFO) << xyz;
 }
 
-
 static Dart_Isolate IsolateCreateCallback(const char* script_uri,
                                           const char* main,
                                           const char* package_root,
@@ -92,11 +92,9 @@ static Dart_Isolate IsolateCreateCallback(const char* script_uri,
   return nullptr;
 }
 
-
 static void UnhandledExceptionCallback(Dart_Handle error) {
   // TODO(dart)
 }
-
 
 static void IsolateShutdownCallback(void* callback_data) {
   DartState* dart_state = static_cast<DartState*>(callback_data);
@@ -104,49 +102,51 @@ static void IsolateShutdownCallback(void* callback_data) {
   // TODO(dart)
 }
 
-
 static Dart_Isolate ServiceIsolateCreateCallback(void* callback_data,
                                                  char** error) {
   // TODO(dart)
   return nullptr;
 }
 
-
 static void GcPrologue() {
   Dart_EnterScope();
+
   DartState* dart_state = DartState::Current();
   DCHECK(dart_state);
   // TODO(dart)
 }
 
-
 static void GcEpilogue() {
   Dart_ExitScope();
 }
 
+void DartController::SetDocument(Document* document) {
+  DCHECK(document);
+  char* error = nullptr;
+  core_dart_state_ = adoptPtr(new CoreDartState(document));
+  Dart_Isolate isolate = Dart_CreateIsolate(
+      document->url().string().utf8().data(), "main",
+      mojo::dart::snapshot_buffer,
+      static_cast<DartState*>(core_dart_state_.get()), &error);
+  CHECK(isolate) << error;
+  core_dart_state_->set_isolate(isolate);
+  Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
+}
+
+void DartController::ClearForClose() {
+  DartIsolateScope scope(core_dart_state_->isolate());
+  Dart_ShutdownIsolate();
+  core_dart_state_.clear();
+}
 
 void DartController::InitVM() {
-  bool result = Dart_SetVMFlags(0, NULL);
-
-  result = Dart_Initialize(IsolateCreateCallback,
-                           nullptr,  // Isolate interrupt callback.
-                           UnhandledExceptionCallback, IsolateShutdownCallback,
-                           // File IO callbacks.
-                           nullptr, nullptr, nullptr, nullptr, nullptr,
-                           ServiceIsolateCreateCallback);
-
-  char* error;
-
-  // TODO(dart): What URI to use
-  DartState* dart_state = new DartState();
-  Dart_Isolate isolate = Dart_CreateIsolate(
-      "what:uri", "main", mojo::dart::snapshot_buffer, dart_state, &error);
-  if (!isolate) {
-    delete dart_state;
-    abort();
-  }
-  dart_state->set_isolate(isolate);
-  Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
+  CHECK(Dart_SetVMFlags(0, NULL));
+  CHECK(Dart_Initialize(IsolateCreateCallback,
+                        nullptr,  // Isolate interrupt callback.
+                        UnhandledExceptionCallback, IsolateShutdownCallback,
+                        // File IO callbacks.
+                        nullptr, nullptr, nullptr, nullptr, nullptr,
+                        ServiceIsolateCreateCallback));
 }
 
 } // namespace blink

@@ -6,26 +6,30 @@
 #define SKY_ENGINE_CORE_SCRIPT_DART_CONTROLLER_H_
 
 #include "dart/runtime/include/dart_api.h"
-
+#include "sky/engine/wtf/OwnPtr.h"
 #include "sky/engine/wtf/text/AtomicString.h"
 #include "sky/engine/wtf/text/TextPosition.h"
 
 namespace blink {
-
 class AbstractModule;
+class CoreDartState;
+class Document;
 
 class DartController {
-public:
-
-  static void InitVM();
-
+ public:
   DartController();
   ~DartController();
 
-  void executeModuleScript(AbstractModule& module, const String& source, const TextPosition& textPosition);
+  static void InitVM();
 
-  void clearForClose();
+  void ExecuteModuleScript(AbstractModule& module,
+                           const String& source,
+                           const TextPosition& textPosition);
+  void ClearForClose();
+  void SetDocument(Document*);
 
+ private:
+  OwnPtr<CoreDartState> core_dart_state_;
 };
 
 }

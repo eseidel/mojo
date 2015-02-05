@@ -31,7 +31,7 @@ class DartState {
     ~Scope();
   };
 
-  ~DartState();
+  virtual ~DartState();
 
   static DartState* Current();
 
@@ -41,9 +41,10 @@ class DartState {
   DartClassLibrary& class_library() { return *class_library_; }
   DartStringCache& string_cache() { return *string_cache_; }
 
- private:
-  explicit DartState();
+ protected:
+  DartState();
 
+ private:
   void set_isolate(Dart_Isolate isolate) {
     CHECK(!isolate_);
     isolate_ = isolate;

@@ -46,6 +46,7 @@ source_set("bindings2") {
     "//base",
     "//dart/runtime/bin:libdart_withcore",
     "//sky/engine/wtf",
+    "//sky/engine/platform:platform",
     ":generated_bindings",
   ]
 }

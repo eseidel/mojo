@@ -833,9 +833,8 @@ _library_ids = monitored.Dict('htmlrenamer._library_names', {
 })
 
 class HtmlRenamer(object):
-  def __init__(self, database, metadata):
+  def __init__(self, database):
     self._database = database
-    self._metadata = metadata
 
   def RenameInterface(self, interface):
     if 'Callback' in interface.ext_attrs:
@@ -893,16 +892,6 @@ class HtmlRenamer(object):
     return target_name
 
   def ShouldSuppressMember(self, interface, member, member_prefix=''):
-    """ Returns true if the member should be suppressed."""
-    if self._FindMatch(interface, member, member_prefix, removed_html_members):
-      return True
-    if interface.id in _removed_html_interfaces:
-      return True
-    metadata_member = member
-    if member_prefix == 'on:':
-      metadata_member = 'on' + metadata_member.lower()
-    if self._metadata.IsSuppressed(interface, metadata_member):
-      return True
     return False
 
   def ShouldSuppressInterface(self, interface):

@@ -175,11 +175,10 @@ _html_explicit_event_classes = set(['DocumentFragment'])
 
 class HtmlEventGenerator(object):
 
-  def __init__(self, database, renamer, metadata, template_loader):
+  def __init__(self, database, renamer, template_loader):
     self._event_classes = set()
     self._database = database
     self._renamer = renamer
-    self._metadata = metadata
     self._template_loader = template_loader
     self._media_events = None
 
@@ -197,15 +196,11 @@ class HtmlEventGenerator(object):
       if self._GetEventRedirection(interface, html_name, event_type):
         continue
 
-      annotations = self._metadata.FormatMetadata(
-          self._metadata.GetMetadata(library_name, interface,
-              annotation_name, 'on' + dom_name), '  ')
-
       members_emitter.Emit(
           "\n"
           "  $(ANNOTATIONS)static const EventStreamProvider<$TYPE> "
           "$(NAME)Event = const EventStreamProvider<$TYPE>('$DOM_NAME');\n",
-          ANNOTATIONS=annotations,
+          ANNOTATIONS=None,
           NAME=html_name,
           DOM_NAME=dom_name,
           TYPE=event_type)
@@ -229,9 +224,6 @@ class HtmlEventGenerator(object):
       else:
         provider = html_name + 'Event'
 
-      annotations = self._metadata.GetFormattedMetadata(
-          library_name, interface, annotation_name, '  ')
-
       isElement = False
       for parent in self._database.Hierarchy(interface):
         if parent.id == 'Element':
@@ -251,7 +243,7 @@ class HtmlEventGenerator(object):
         emitter.Emit(
             "\n"
             "  $(ANNOTATIONS)$(ELEM_TYPE)Stream<$TYPE> get $(NAME)$BODY;\n",
-            ANNOTATIONS=annotations,
+            ANNOTATIONS=None,
             ELEM_TYPE=elem_type,
             NAME=getter_name,
             BODY = ('' if emitter == stream_getter_signatures_emitter else

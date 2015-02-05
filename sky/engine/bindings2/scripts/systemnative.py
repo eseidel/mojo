@@ -374,7 +374,6 @@ class DartiumBackend(HtmlDartGenerator):
     self._template_loader = options.templates
     self._type_registry = options.type_registry
     self._interface_type_info = self._type_registry.TypeInfo(self._interface.id)
-    self._metadata = options.metadata
     # These get initialized by StartInterface
     self._cpp_header_emitter = None
     self._cpp_impl_emitter = None
@@ -659,12 +658,9 @@ class DartiumBackend(HtmlDartGenerator):
     if 'CustomConstructor' not in self._interface.ext_attrs:
         return False
 
-    annotations = self._metadata.GetFormattedMetadata(self._library_name,
-        self._interface, self._interface.id, '  ')
-
     self._members_emitter.Emit(
         '\n  $(ANNOTATIONS)factory $CTOR($PARAMS) => _create($FACTORY_PARAMS);\n',
-        ANNOTATIONS=annotations,
+        ANNOTATIONS=None,
         CTOR=constructor_info._ConstructorFullName(self._DartType),
         PARAMS=constructor_info.ParametersAsDeclaration(self._DartType),
         FACTORY_PARAMS= \
@@ -1584,10 +1580,6 @@ class DartiumBackend(HtmlDartGenerator):
       auto_scope_setup=True, emit_metadata=True, emit_to_native=False,
       native_entry=None):
     metadata = []
-    if emit_metadata:
-      metadata = self._metadata.GetFormattedMetadata(
-          self._renamer.GetLibraryName(self._interface),
-          self._interface, idl_name, '  ')
 
     if (native_entry):
         dart_native_name, native_binding = native_entry

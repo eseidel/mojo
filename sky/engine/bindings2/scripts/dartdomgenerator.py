@@ -38,7 +38,6 @@ import optparse
 import shutil
 import subprocess
 import time
-from dartmetadata import DartMetadata
 from generator import TypeRegistry
 from htmleventgenerator import HtmlEventGenerator
 from htmlrenamer import HtmlRenamer
@@ -56,13 +55,11 @@ import utils
 _logger = logging.getLogger('dartdomgenerator')
 
 class GeneratorOptions(object):
-  def __init__(self, templates, database, type_registry, renamer,
-      metadata):
+  def __init__(self, templates, database, type_registry, renamer):
     self.templates = templates
     self.database = database
     self.type_registry = type_registry
     self.renamer = renamer
-    self.metadata = metadata;
 
 def LoadDatabase(database_dir, use_database_cache):
   common_database = database.Database(database_dir)
@@ -98,8 +95,7 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
   generator.AddMissingArguments(webkit_database)
 
   emitters = multiemitter.MultiEmitter(logging_level)
-  metadata = DartMetadata(logging_level)
-  renamer = HtmlRenamer(webkit_database, metadata)
+  renamer = HtmlRenamer(webkit_database)
   type_registry = TypeRegistry(webkit_database, renamer)
 
   print 'GenerateFromDatabase %s seconds' % round((time.time() - start_time), 2)
@@ -107,12 +103,10 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
   def RunGenerator(dart_libraries, dart_output_dir,
                    template_loader, backend_factory):
     options = GeneratorOptions(
-        template_loader, webkit_database, type_registry, renamer,
-        metadata)
+        template_loader, webkit_database, type_registry, renamer)
     dart_library_emitter = DartLibraryEmitter(
         emitters, dart_output_dir, dart_libraries)
-    event_generator = HtmlEventGenerator(webkit_database, renamer, metadata,
-        template_loader)
+    event_generator = HtmlEventGenerator(webkit_database, renamer, template_loader)
 
     def generate_interface(interface):
       backend = backend_factory(interface)
@@ -130,8 +124,7 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
                                      template_paths,
                                      {'DARTIUM': True, 'DART2JS': False})
     backend_options = GeneratorOptions(
-        template_loader, webkit_database, type_registry, renamer,
-        metadata)
+        template_loader, webkit_database, type_registry, renamer)
     cpp_output_dir = os.path.join(dartium_output_dir, 'cpp')
     cpp_library_emitter = CPPLibraryEmitter(emitters, cpp_output_dir)
     dart_output_dir = os.path.join(dartium_output_dir, 'dart')
@@ -153,9 +146,6 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
         webkit_database, dartium_output_dir, type_registry, renamer)
     emitters.Flush()
 
-  if update_dom_metadata:
-    metadata.Flush()
-
 
 def GenerateSingleFile(library_path, output_dir, generated_output_dir=None):
   library_dir = os.path.dirname(library_path)
@@ -166,79 +156,3 @@ def GenerateSingleFile(library_path, output_dir, generated_output_dir=None):
   command = ' '.join(['cd', library_dir, ';',
                       copy_dart_script, output_dir, library_filename])
   subprocess.call([command], shell=True)
-
-
-def main():
-  parser = optparse.OptionParser()
-  parser.add_option('--parallel', dest='parallel',
-                    action='store_true', default=False,
-                    help='Use fremontcut in parallel mode.')
-  parser.add_option('--systems', dest='systems',
-                    action='store', type='string',
-                    default='htmldartium',
-                    help='Systems to generate (htmldart2js, htmldartium)')
-  parser.add_option('--output-dir', dest='output_dir',
-                    action='store', type='string',
-                    default=None,
-                    help='Directory to put the generated files')
-  parser.add_option('--use-database-cache', dest='use_database_cache',
-                    action='store_true',
-                    default=False,
-                    help='''Use the cached database from the previous run to
-                    improve startup performance''')
-  parser.add_option('--update-dom-metadata', dest='update_dom_metadata',
-                    action='store_true',
-                    default=False,
-                    help='''Update the metadata list of DOM APIs''')
-  parser.add_option('--verbose', dest='logging_level',
-                    action='store_false', default=logging.WARNING,
-                    help='Output all informational messages')
-  parser.add_option('--logging', dest='logging', type='int',
-                    action='store', default=logging.NOTSET,
-                    help='Level of logging 20 is Info, 30 is Warnings, 40 is Errors')
-
-  (options, args) = parser.parse_args()
-
-  current_dir = os.path.dirname(__file__)
-  database_dir = os.path.join(current_dir, '..', 'database')
-  logging.config.fileConfig(os.path.join(current_dir, 'logging.conf'))
-  systems = options.systems.split(',')
-
-  output_dir = options.output_dir or os.path.join(
-      current_dir, '..', '..', utils.GetBuildDir(utils.GuessOS()),
-      'generated')
-
-  dartium_output_dir = None
-  if 'htmldartium' in systems:
-    dartium_output_dir = os.path.join(output_dir, 'dartium')
-
-  logging_level = options.logging_level \
-    if options.logging == logging.NOTSET else options.logging
-
-  start_time = time.time()
-
-  # Parse the IDL and create the database.
-  database = fremontcutbuilder.main(options.parallel, logging_level=logging_level)
-
-  GenerateFromDatabase(database, None, dartium_output_dir,
-      options.update_dom_metadata, logging_level)
-
-  file_generation_start_time = time.time()
-
-  if 'htmldartium' in systems:
-    _logger.info('Generating dartium single files.')
-    file_generation_start_time = time.time()
-
-    for library_name in HTML_LIBRARY_NAMES:
-      GenerateSingleFile(
-          os.path.join(dartium_output_dir, '%s_dartium.dart' % library_name),
-          os.path.join('..', '..', '..', 'sdk', 'lib', library_name, 'dartium'))
-
-  print '\nGenerating single file %s seconds' % round(time.time() - file_generation_start_time, 2)
-
-  end_time = time.time()
-
-  print '\nDone (dartdomgenerator) %s seconds' % round(end_time - start_time, 2)
-
-if __name__ == '__main__':
-  sys.exit(main())

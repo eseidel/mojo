@@ -76,10 +76,6 @@ _html_element_constructors = monitored.Dict(
   'HTMLTitleElement': 'title',
 })
 
-_svg_element_constructors = monitored.Dict(
-      'systemhtml._svg_element_constructors', {
-})
-
 _element_constructors = {
   'html': _html_element_constructors,
   'typed_data': {},
@@ -134,7 +130,6 @@ class HtmlDartInterfaceGenerator(object):
     self._backend = backend
     self._interface_type_info = self._type_registry.TypeInfo(self._interface.id)
     self._library_name = self._renamer.GetLibraryName(self._interface)
-    self._metadata = options.metadata
 
   def Generate(self):
     if IsCustomType(self._interface.id):
@@ -155,11 +150,8 @@ class HtmlDartInterfaceGenerator(object):
         self._library_name)
     code.Emit(self._template_loader.Load('callback.darttemplate'))
 
-    annotations = self._metadata.GetFormattedMetadata(self._library_name,
-        self._interface)
-
     code.Emit('$(ANNOTATIONS)typedef void $NAME($PARAMS);\n',
-              ANNOTATIONS=annotations,
+              ANNOTATIONS=None,
               NAME=typedef_name,
               PARAMS=info.ParametersAsDeclaration(self._DartType))
     self._backend.GenerateCallback(info)
@@ -236,9 +228,6 @@ class HtmlDartInterfaceGenerator(object):
       if not base_class:
         base_class = 'Interceptor'
 
-    annotations = self._metadata.GetFormattedMetadata(
-        self._library_name, self._interface, None, '')
-
     class_modifiers = ''
     if (self._renamer.ShouldSuppressInterface(self._interface) or
         IsPureInterface(self._interface.id)):
@@ -251,7 +240,7 @@ class HtmlDartInterfaceGenerator(object):
     implementation_members_emitter = implementation_emitter.Emit(
         self._backend.ImplementationTemplate(),
         LIBRARYNAME='dart.dom.%s' % self._library_name,
-        ANNOTATIONS=annotations,
+        ANNOTATIONS=None,
         CLASS_MODIFIERS=class_modifiers,
         CLASSNAME=self._interface_type_info.implementation_name(),
         EXTENDS=' extends %s' % base_class if base_class else '',

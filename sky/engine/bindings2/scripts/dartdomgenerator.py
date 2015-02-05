@@ -5,7 +5,6 @@
 
 """This is the entry point to create Dart APIs from the IDL database."""
 
-import css_code_generator
 import os
 import sys
 
@@ -14,8 +13,6 @@ import sys
 # dart_dir is the location of dart's enlistment dartium (dartium-git/src/dart)
 # and Dart (dart-git/dart).
 dart_dir = os.path.abspath(os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
-sys.path.insert(1, os.path.join(dart_dir, 'tools/dom/new_scripts'))
-sys.path.insert(1, os.path.join(dart_dir, 'third_party/WebCore/bindings/scripts'))
 
 # Dartium's third_party directory location is dartium-git/src/third_party
 # and Dart's third_party directory location is dart-git/dart/third_party.
@@ -31,13 +28,11 @@ if not os.path.exists(ply_dir):
   assert(os.path.exists(third_party_dir))
 sys.path.insert(1, third_party_dir)
 
-sys.path.insert(1, os.path.join(dart_dir, 'tools/dom/scripts'))
 
 import dartgenerator
 import database
 import fremontcutbuilder
 import logging
-import monitored
 import multiemitter
 import optparse
 import shutil
@@ -47,7 +42,7 @@ from dartmetadata import DartMetadata
 from generator import TypeRegistry
 from htmleventgenerator import HtmlEventGenerator
 from htmlrenamer import HtmlRenamer
-from systemhtml import DartLibraryEmitter, Dart2JSBackend,\
+from systemhtml import DartLibraryEmitter,\
                        HtmlDartInterfaceGenerator, DartLibrary, DartLibraries,\
                        HTML_LIBRARY_NAMES
 from systemnative import CPPLibraryEmitter, DartiumBackend
@@ -129,29 +124,6 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
 
     dart_library_emitter.EmitLibraries(auxiliary_dir)
 
-  if dart2js_output_dir:
-    template_paths = ['html/dart2js', 'html/impl', 'html/interface', '']
-    template_loader = TemplateLoader(template_dir,
-                                     template_paths,
-                                     {'DARTIUM': False, 'DART2JS': True})
-    backend_options = GeneratorOptions(
-        template_loader, webkit_database, type_registry, renamer,
-        metadata)
-    backend_factory = lambda interface:\
-        Dart2JSBackend(interface, backend_options, logging_level)
-
-    dart_output_dir = os.path.join(dart2js_output_dir, 'dart')
-    dart_libraries = DartLibraries(
-        HTML_LIBRARY_NAMES, template_loader, 'dart2js', dart2js_output_dir)
-
-    print '\nGenerating dart2js:\n'
-    start_time = time.time()
-
-    RunGenerator(dart_libraries, dart_output_dir, template_loader,
-                 backend_factory)
-
-    print 'Generated dart2js in %s seconds' % round(time.time() - start_time, 2)
-
   if dartium_output_dir:
     template_paths = ['html/dartium', 'html/impl', 'html/interface', '']
     template_loader = TemplateLoader(template_dir,
@@ -175,9 +147,6 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
                  template_loader, backend_factory)
     print 'Generated dartium in %s seconds' % round(time.time() - start_time, 2)
 
-    cpp_library_emitter.EmitDerivedSources(
-        template_loader.Load('cpp_derived_sources.template'),
-        dartium_output_dir)
     cpp_library_emitter.EmitResolver(
         template_loader.Load('cpp_resolver.template'), dartium_output_dir)
     cpp_library_emitter.EmitClassIdTable(
@@ -187,7 +156,6 @@ def GenerateFromDatabase(common_database, dart2js_output_dir,
   if update_dom_metadata:
     metadata.Flush()
 
-  monitored.FinishMonitoring(dart2js_output_dir, _logger)
 
 def GenerateSingleFile(library_path, output_dir, generated_output_dir=None):
   library_dir = os.path.dirname(library_path)
@@ -199,11 +167,6 @@ def GenerateSingleFile(library_path, output_dir, generated_output_dir=None):
                       copy_dart_script, output_dir, library_filename])
   subprocess.call([command], shell=True)
 
-def UpdateCssProperties():
-  """Regenerate the CssStyleDeclaration template file with the current CSS
-  properties."""
-  _logger.info('Updating Css Properties.')
-  css_code_generator.GenerateCssTemplateFile()
 
 def main():
   parser = optparse.OptionParser()
@@ -212,7 +175,7 @@ def main():
                     help='Use fremontcut in parallel mode.')
   parser.add_option('--systems', dest='systems',
                     action='store', type='string',
-                    default='htmldart2js,htmldartium',
+                    default='htmldartium',
                     help='Systems to generate (htmldart2js, htmldartium)')
   parser.add_option('--output-dir', dest='output_dir',
                     action='store', type='string',
@@ -245,9 +208,6 @@ def main():
       current_dir, '..', '..', utils.GetBuildDir(utils.GuessOS()),
       'generated')
 
-  dart2js_output_dir = None
-  if 'htmldart2js' in systems:
-    dart2js_output_dir = os.path.join(output_dir, 'dart2js')
   dartium_output_dir = None
   if 'htmldartium' in systems:
     dartium_output_dir = os.path.join(output_dir, 'dartium')
@@ -257,23 +217,13 @@ def main():
 
   start_time = time.time()
 
-  UpdateCssProperties()
-
   # Parse the IDL and create the database.
   database = fremontcutbuilder.main(options.parallel, logging_level=logging_level)
 
-  GenerateFromDatabase(database, dart2js_output_dir, dartium_output_dir,
+  GenerateFromDatabase(database, None, dartium_output_dir,
       options.update_dom_metadata, logging_level)
 
   file_generation_start_time = time.time()
-
-  if 'htmldart2js' in systems:
-    _logger.info('Generating dart2js single files.')
-
-    for library_name in HTML_LIBRARY_NAMES:
-      GenerateSingleFile(
-          os.path.join(dart2js_output_dir, '%s_dart2js.dart' % library_name),
-          os.path.join('..', '..', '..', 'sdk', 'lib', library_name, 'dart2js'))
 
   if 'htmldartium' in systems:
     _logger.info('Generating dartium single files.')

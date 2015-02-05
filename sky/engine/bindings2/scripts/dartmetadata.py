@@ -7,14 +7,13 @@
 DOM APIs.
 """
 
+from generator import ConstantOutputOrder
 import copy
 import json
 import logging
 import monitored
 import os
 import re
-from generator import ConstantOutputOrder
-from htmlrenamer import renamed_html_members, html_interface_renames
 
 _logger = logging.getLogger('dartmetadata')
 
@@ -26,344 +25,6 @@ _logger = logging.getLogger('dartmetadata')
 #   +TYPE:            add annotations only if there are member annotations.
 #   -TYPE:            add annotations only if there are no member annotations.
 #   TYPE:             add regardless of member annotations.
-
-_dart2js_annotations = monitored.Dict('dartmetadata._dart2js_annotations', {
-
-    'ArrayBufferView': [
-      "@Creates('TypedData')",
-      "@Returns('TypedData|Null')",
-    ],
-
-    'CanvasRenderingContext2D.createImageData': [
-      "@Creates('ImageData|=Object')",
-    ],
-
-    'CanvasRenderingContext2D.getImageData': [
-      "@Creates('ImageData|=Object')",
-    ],
-
-    'CanvasRenderingContext2D.webkitGetImageDataHD': [
-      "@Creates('ImageData|=Object')",
-    ],
-
-    'CanvasRenderingContext2D.fillStyle': [
-      "@Creates('String|CanvasGradient|CanvasPattern')",
-      "@Returns('String|CanvasGradient|CanvasPattern')",
-    ],
-
-    'CanvasRenderingContext2D.strokeStyle': [
-      "@Creates('String|CanvasGradient|CanvasPattern')",
-      "@Returns('String|CanvasGradient|CanvasPattern')",
-    ],
-
-    'CustomEvent._detail': [
-      "@Creates('Null')",
-    ],
-
-    # Normally Window is nevernull, but starting from a <template> element in
-    # JavaScript, this will be null:
-    #     template.content.ownerDocument.defaultView
-    'Document.window': [
-      "@Creates('Window|=Object|Null')",
-      "@Returns('Window|=Object|Null')",
-    ],
-
-    'Document.getElementsByTagName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    'Document.getElementsByClassName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    # Methods returning Window can return a local window, or a cross-frame
-    # window (=Object) that needs wrapping.
-    'Window': [
-      "@Creates('Window|=Object')",
-      "@Returns('Window|=Object')",
-    ],
-
-    'Window.openDatabase': [
-      "@Creates('SqlDatabase')",
-    ],
-
-    'Window.showModalDialog': [
-      "@Creates('Null')",
-    ],
-
-    'Element.webkitGetRegionFlowRanges': [
-      "@Creates('JSExtendableArray')",
-      "@Returns('JSExtendableArray')",
-    ],
-
-    'Element.getElementsByTagName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    'Element.getElementsByClassName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    "ErrorEvent.error": [
-      "@Creates('Null')", # Only returns values created elsewhere.
-    ],
-
-    # To be in callback with the browser-created Event, we had to have called
-    # addEventListener on the target, so we avoid
-    'Event.currentTarget': [
-      "@Creates('Null')",
-      "@Returns('EventTarget|=Object')",
-    ],
-
-    # Only nodes in the DOM bubble and have target !== currentTarget.
-    'Event.target': [
-      "@Creates('Node')",
-      "@Returns('EventTarget|=Object')",
-    ],
-
-    'File.lastModifiedDate': [
-      "@Creates('Null')", # JS date object.
-    ],
-
-    'FocusEvent.relatedTarget': [
-      "@Creates('Null')",
-    ],
-
-    'HTMLCanvasElement.getContext': [
-      "@Creates('CanvasRenderingContext2D|RenderingContext')",
-      "@Returns('CanvasRenderingContext2D|RenderingContext|Null')",
-    ],
-
-    'HTMLInputElement.valueAsDate': [
-      "@Creates('Null')", # JS date object.
-    ],
-
-    # Rather than have the result of an IDBRequest as a union over all possible
-    # results, we mark the result as instantiating any classes, and mark
-    # each operation with the classes that it could cause to be asynchronously
-    # instantiated.
-    'IDBRequest.result': ["@Creates('Null')"],
-
-    # The source is usually a participant in the operation that generated the
-    # IDBRequest.
-    'IDBRequest.source':  ["@Creates('Null')"],
-
-    'IDBFactory.open': ["@Creates('Database')"],
-    'IDBFactory.webkitGetDatabaseNames': ["@Creates('DomStringList')"],
-
-    'IDBObjectStore.put': ["@_annotation_Creates_IDBKey"],
-    'IDBObjectStore.add': ["@_annotation_Creates_IDBKey"],
-    'IDBObjectStore.get': ["@annotation_Creates_SerializedScriptValue"],
-    'IDBObjectStore.openCursor': ["@Creates('Cursor')"],
-
-    'IDBIndex.get': ["@annotation_Creates_SerializedScriptValue"],
-    'IDBIndex.getKey': [
-      "@annotation_Creates_SerializedScriptValue",
-      # The source is the object store behind the index.
-      "@Creates('ObjectStore')",
-    ],
-    'IDBIndex.openCursor': ["@Creates('Cursor')"],
-    'IDBIndex.openKeyCursor': ["@Creates('Cursor')"],
-
-    'IDBCursorWithValue.value': [
-      '@annotation_Creates_SerializedScriptValue',
-      '@annotation_Returns_SerializedScriptValue',
-    ],
-
-    'IDBCursor.key': [
-      "@_annotation_Creates_IDBKey",
-      "@_annotation_Returns_IDBKey",
-    ],
-
-    'IDBCursor.primaryKey': [
-      "@_annotation_Creates_IDBKey",
-      "@_annotation_Returns_IDBKey",
-    ],
-
-    'IDBCursor.source': [
-      "@Creates('Null')",
-      "@Returns('ObjectStore|Index|Null')",
-    ],
-
-    'IDBDatabase.version': [
-      "@Creates('int|String|Null')",
-      "@Returns('int|String|Null')",
-    ],
-
-    'IDBIndex.keyPath': [
-      "@annotation_Creates_SerializedScriptValue",
-    ],
-
-    'IDBKeyRange.lower': [
-      "@annotation_Creates_SerializedScriptValue",
-    ],
-
-    'IDBKeyRange.upper': [
-      "@annotation_Creates_SerializedScriptValue",
-    ],
-
-    'IDBObjectStore.keyPath': [
-      "@annotation_Creates_SerializedScriptValue",
-    ],
-
-    '+IDBOpenDBRequest': [
-      "@Returns('Request')",
-      "@Creates('Request')",
-    ],
-
-    '+IDBRequest': [
-      "@Returns('Request')",
-      "@Creates('Request')",
-    ],
-
-    'IDBVersionChangeEvent.newVersion': [
-      "@Creates('int|String|Null')",
-      "@Returns('int|String|Null')",
-    ],
-
-    'IDBVersionChangeEvent.oldVersion': [
-      "@Creates('int|String|Null')",
-      "@Returns('int|String|Null')",
-    ],
-
-    'ImageData.data': [
-      "@Creates('NativeUint8ClampedList')",
-      "@Returns('NativeUint8ClampedList')",
-    ],
-
-    'MediaStream.getAudioTracks': [
-      "@Creates('JSExtendableArray')",
-      "@Returns('JSExtendableArray')",
-    ],
-
-    'MediaStream.getVideoTracks': [
-      "@Creates('JSExtendableArray')",
-      "@Returns('JSExtendableArray')",
-    ],
-
-    'MessageEvent.data': [
-      "@annotation_Creates_SerializedScriptValue",
-      "@annotation_Returns_SerializedScriptValue",
-    ],
-
-    'MessageEvent.ports': ["@Creates('JSExtendableArray')"],
-
-    'MessageEvent.source': [
-      "@Creates('Null')",
-      "@Returns('EventTarget|=Object')",
-    ],
-
-    'Metadata.modificationTime': [
-      "@Creates('Null')", # JS date object.
-    ],
-
-    'MouseEvent.relatedTarget': [
-      "@Creates('Node')",
-      "@Returns('EventTarget|=Object')",
-    ],
-
-    'PopStateEvent.state': [
-      "@annotation_Creates_SerializedScriptValue",
-      "@annotation_Returns_SerializedScriptValue",
-    ],
-
-    'RTCStatsReport.timestamp': [
-      "@Creates('Null')", # JS date object.
-    ],
-
-    'SerializedScriptValue': [
-      "@annotation_Creates_SerializedScriptValue",
-      "@annotation_Returns_SerializedScriptValue",
-    ],
-
-    'ShadowRoot.getElementsByTagName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    'ShadowRoot.getElementsByClassName': [
-      "@Creates('NodeList|HtmlCollection')",
-      "@Returns('NodeList|HtmlCollection')",
-    ],
-
-    'SQLResultSetRowList.item': ["@Creates('=Object')"],
-
-    # Touch targets are Elements in a Document, or the Document.
-    'Touch.target': [
-      "@Creates('Element|Document')",
-      "@Returns('Element|Document')",
-    ],
-
-    'TrackEvent.track': [
-      "@Creates('Null')",
-    ],
-
-    'WebGLRenderingContext.getBufferParameter': [
-      "@Creates('int|Null')",
-      "@Returns('int|Null')",
-    ],
-
-    'WebGLRenderingContext.getFramebufferAttachmentParameter': [
-      "@Creates('int|Renderbuffer|Texture|Null')",
-      "@Returns('int|Renderbuffer|Texture|Null')",
-    ],
-
-    'WebGLRenderingContext.getProgramParameter': [
-      "@Creates('int|bool|Null')",
-      "@Returns('int|bool|Null')",
-    ],
-
-    'WebGLRenderingContext.getRenderbufferParameter': [
-      "@Creates('int|Null')",
-      "@Returns('int|Null')",
-    ],
-
-    'WebGLRenderingContext.getShaderParameter': [
-      "@Creates('int|bool|Null')",
-      "@Returns('int|bool|Null')",
-    ],
-
-    'WebGLRenderingContext.getTexParameter': [
-      "@Creates('int|Null')",
-      "@Returns('int|Null')",
-    ],
-
-    'WebGLRenderingContext.getUniform': [
-      "@Creates('Null|num|String|bool|JSExtendableArray|"
-                "NativeFloat32List|NativeInt32List|NativeUint32List')",
-      "@Returns('Null|num|String|bool|JSExtendableArray|"
-                "NativeFloat32List|NativeInt32List|NativeUint32List')",
-    ],
-
-    'WebGLRenderingContext.getVertexAttrib': [
-      "@Creates('Null|num|bool|NativeFloat32List|Buffer')",
-      "@Returns('Null|num|bool|NativeFloat32List|Buffer')",
-    ],
-
-    'WebGLRenderingContext.getParameter': [
-      # Taken from http://www.khronos.org/registry/webgl/specs/latest/
-      # Section 5.14.3 Setting and getting state
-      "@Creates('Null|num|String|bool|JSExtendableArray|"
-                "NativeFloat32List|NativeInt32List|NativeUint32List|"
-                "Framebuffer|Renderbuffer|Texture')",
-      "@Returns('Null|num|String|bool|JSExtendableArray|"
-                "NativeFloat32List|NativeInt32List|NativeUint32List|"
-                "Framebuffer|Renderbuffer|Texture')",
-    ],
-
-    'WebGLRenderingContext.getContextAttributes': [
-      "@Creates('ContextAttributes|=Object')",
-    ],
-
-    'XMLHttpRequest.response': [
-      "@Creates('NativeByteBuffer|Blob|Document|=Object|JSExtendableArray"
-                "|String|num')",
-    ],
-}, dart2jsOnly=True)
 
 _blink_experimental_annotations = [
   "@SupportedBrowser(SupportedBrowser.CHROME)",
@@ -633,18 +294,7 @@ class DartMetadata(object):
 
   def GetDart2JSMetadata(self, idl_type, library_name,
       interface, member_name,):
-    """ Gets all annotations for Dart2JS members- including annotations for
-    both dart2js and dartium.
-    """
-    annotations = self.GetMetadata(library_name, interface, member_name)
-
-    ann2 = self._GetDart2JSSpecificAnnotations(idl_type, interface.id, member_name)
-    if ann2:
-      if annotations:
-        annotations.extend(ann2)
-      else:
-        annotations = ann2
-    return annotations
+    return self.GetMetadata(library_name, interface, member_name)
 
   def IsSuppressed(self, interface, member_name):
     annotations = self._GetSupportLevelAnnotations(interface.id, member_name)
@@ -669,15 +319,6 @@ class DartMetadata(object):
 
     if key in _annotations:
       annotations.extend(_annotations[key])
-
-    if (not member_name and
-        interface.javascript_binding_name.startswith('WebKit') and
-        interface.id not in html_interface_renames):
-      annotations.extend(_webkit_experimental_annotations)
-
-    if (member_name and member_name.startswith('webkit') and
-        key not in renamed_html_members):
-      annotations.extend(_webkit_experimental_annotations)
 
     if source_member_name:
       member_name = source_member_name
@@ -714,8 +355,7 @@ class DartMetadata(object):
 
 
   def AnyConversionAnnotations(self, idl_type, interface_name, member_name):
-    if (_annotations.get('%s.%s' % (interface_name, member_name)) or
-        self._GetDart2JSSpecificAnnotations(idl_type, interface_name, member_name)):
+    if (_annotations.get('%s.%s' % (interface_name, member_name))):
       return True
     else:
       return False
@@ -726,26 +366,6 @@ class DartMetadata(object):
       result = newline.join(metadata) + newline
       return result
     return ''
-
-  def _GetDart2JSSpecificAnnotations(self, idl_type, interface_name, member_name):
-    """ Finds dart2js-specific annotations. This does not include ones shared with
-    dartium.
-    """
-    ann1 = _dart2js_annotations.get("%s.%s" % (interface_name, member_name))
-    if ann1:
-      ann2 = _dart2js_annotations.get('+' + idl_type)
-      if ann2:
-        return ann2 + ann1
-      ann2 = _dart2js_annotations.get(idl_type)
-      if ann2:
-        return ann2 + ann1
-      return ann1
-
-    ann2 = _dart2js_annotations.get('-' + idl_type)
-    if ann2:
-      return ann2
-    ann2 = _dart2js_annotations.get(idl_type)
-    return ann2
 
   def _GetSupportInfo(self, interface_id, member_id=None):
     """ Looks up the interface or member in the DOM status list and returns the

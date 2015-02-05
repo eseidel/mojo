@@ -112,91 +112,13 @@ _dart_attribute_renames = monitored.Dict('generator._dart_attribute_renames', {
 interface_factories = monitored.Dict('generator.interface_factories', {
 })
 
-
-#
-# Custom native specs for the dart2js dom.
-#
-_dart2js_dom_custom_native_specs = monitored.Dict(
-      'generator._dart2js_dom_custom_native_specs', {
-
-    # Nodes with different tags in different browsers can be listed as multiple
-    # tags here provided there is not conflict in usage (e.g. browser X has tag
-    # T and no other browser has tag T).
-
-    'AnalyserNode': 'AnalyserNode,RealtimeAnalyserNode',
-    'AudioContext': 'AudioContext,webkitAudioContext',
-
-    'ChannelMergerNode': 'ChannelMergerNode,AudioChannelMerger',
-    'ChannelSplitterNode': 'ChannelSplitterNode,AudioChannelSplitter',
-
-    'ClientRectList': 'ClientRectList,DOMRectList',
-
-    'CSSStyleDeclaration':
-        #                    IE                   Firefox
-        'CSSStyleDeclaration,MSStyleCSSProperties,CSS2Properties',
-
-    'Clipboard': 'Clipboard,DataTransfer',
-
-    'ApplicationCache':
-        'ApplicationCache,DOMApplicationCache,OfflineResourceList',
-
-    'Event':
-        'Event,InputEvent,ClipboardEvent',
-
-    'HTMLTableCellElement':
-        'HTMLTableCellElement,HTMLTableDataCellElement,HTMLTableHeaderCellElement',
-
-    'GainNode': 'GainNode,AudioGainNode',
-
-    'IDBOpenDBRequest':
-        'IDBOpenDBRequest,IDBVersionChangeRequest',
-
-    'MouseEvent': 'MouseEvent,DragEvent,PointerEvent,MSPointerEvent',
-
-    'MutationObserver': 'MutationObserver,WebKitMutationObserver',
-
-    'NamedNodeMap': 'NamedNodeMap,MozNamedAttrMap',
-
-    'NodeList': 'NodeList,RadioNodeList',
-
-    'OscillatorNode': 'OscillatorNode,Oscillator',
-
-    'PannerNode': 'PannerNode,AudioPannerNode,webkitAudioPannerNode',
-
-    'RTCPeerConnection': 'RTCPeerConnection,mozRTCPeerConnection',
-
-    'RTCIceCandidate': 'RTCIceCandidate,mozRTCIceCandidate',
-
-    'RTCSessionDescription': 'RTCSessionDescription,mozRTCSessionDescription',
-
-    'RTCDataChannel': 'RTCDataChannel,DataChannel',
-
-    'ScriptProcessorNode': 'ScriptProcessorNode,JavaScriptAudioNode',
-
-    'TransitionEvent': 'TransitionEvent,WebKitTransitionEvent',
-
-    'WebGLLoseContext': 'WebGLLoseContext,WebGLExtensionLoseContext',
-
-    'CSSKeyframeRule':
-        'CSSKeyframeRule,MozCSSKeyframeRule,WebKitCSSKeyframeRule',
-
-    'CSSKeyframesRule':
-        'CSSKeyframesRule,MozCSSKeyframesRule,WebKitCSSKeyframesRule',
-
-    'WheelEvent': 'WheelEvent,MouseWheelEvent,MouseScrollEvent',
-
-}, dart2jsOnly=True)
-
 def IsRegisteredType(type_name):
   return type_name in _idl_type_registry
 
 def MakeNativeSpec(javascript_binding_name):
-  if javascript_binding_name in _dart2js_dom_custom_native_specs:
-    return _dart2js_dom_custom_native_specs[javascript_binding_name]
-  else:
-    # Make the class 'hidden' so it is dynamically patched at runtime.  This
-    # is useful for browser compat.
-    return javascript_binding_name
+  # Make the class 'hidden' so it is dynamically patched at runtime.  This
+  # is useful for browser compat.
+  return javascript_binding_name
 
 
 def MatchSourceFilter(thing):
@@ -604,96 +526,8 @@ class Conversion(object):
 _serialize_SSV = Conversion('convertDartToNative_SerializedScriptValue',
                            'dynamic', 'dynamic')
 
-dart2js_conversions = monitored.Dict('generator.dart2js_conversions', {
-    'Date get':
-      Conversion('convertNativeToDart_DateTime', 'dynamic', 'DateTime'),
-    'Date set':
-      Conversion('convertDartToNative_DateTime', 'DateTime', 'dynamic'),
-    # Wrap non-local Windows.  We need to check EventTarget (the base type)
-    # as well.  Note, there are no functions that take a non-local Window
-    # as a parameter / setter.
-    'Window get':
-      Conversion('_convertNativeToDart_Window', 'dynamic', 'WindowBase'),
-    'EventTarget get':
-      Conversion('_convertNativeToDart_EventTarget', 'dynamic',
-                 'EventTarget'),
-    'EventTarget set':
-      Conversion('_convertDartToNative_EventTarget', 'EventTarget',
-                 'dynamic'),
-
-    'WebGLContextAttributes get':
-      Conversion('convertNativeToDart_ContextAttributes', 'dynamic',
-                 'ContextAttributes'),
-
-    'ImageData get':
-      Conversion('convertNativeToDart_ImageData', 'dynamic', 'ImageData'),
-    'ImageData set':
-      Conversion('convertDartToNative_ImageData', 'ImageData', 'dynamic'),
-
-    'Dictionary get':
-      Conversion('convertNativeToDart_Dictionary', 'dynamic', 'Map'),
-    'Dictionary set':
-      Conversion('convertDartToNative_Dictionary', 'Map', 'dynamic'),
-
-    'sequence<DOMString> set':
-      Conversion('convertDartToNative_StringArray', 'List<String>', 'List'),
-
-    'any set IDBObjectStore.add': _serialize_SSV,
-    'any set IDBObjectStore.put': _serialize_SSV,
-    'any set IDBCursor.update': _serialize_SSV,
-
-    # postMessage
-    'any set MessagePort.postMessage': _serialize_SSV,
-    'SerializedScriptValue set Window.postMessage': _serialize_SSV,
-
-    '* get CustomEvent.detail':
-      Conversion('convertNativeToDart_SerializedScriptValue',
-                 'dynamic', 'dynamic'),
-
-    # receiving message via MessageEvent
-    '* get MessageEvent.data':
-      Conversion('convertNativeToDart_SerializedScriptValue',
-                 'dynamic', 'dynamic'),
-
-    '* get History.state':
-      Conversion('convertNativeToDart_SerializedScriptValue',
-                 'dynamic', 'dynamic'),
-
-    '* get PopStateEvent.state':
-      Conversion('convertNativeToDart_SerializedScriptValue',
-                 'dynamic', 'dynamic'),
-
-    # IDBAny is problematic.  Some uses are just a union of other IDB types,
-    # which need no conversion..  Others include data values which require
-    # serialized script value processing.
-    '* get IDBCursorWithValue.value':
-      Conversion('_convertNativeToDart_IDBAny', 'dynamic', 'dynamic'),
-
-    # This is problematic.  The result property of IDBRequest is used for
-    # all requests.  Read requests like IDBDataStore.getObject need
-    # conversion, but other requests like opening a database return
-    # something that does not need conversion.
-    '* get IDBRequest.result':
-      Conversion('_convertNativeToDart_IDBAny', 'dynamic', 'dynamic'),
-
-    # "source: On getting, returns the IDBObjectStore or IDBIndex that the
-    # cursor is iterating. ...".  So we should not try to convert it.
-    '* get IDBCursor.source': None,
-
-    # Should be either a DOMString, an Array of DOMStrings or null.
-    '* get IDBObjectStore.keyPath': None,
-
-    '* get XMLHttpRequest.response':
-      Conversion('_convertNativeToDart_XHR_Response',
-                 'dynamic', 'dynamic'),
-}, dart2jsOnly=True)
 
 def FindConversion(idl_type, direction, interface, member):
-  table = dart2js_conversions
-  return (table.get('%s %s %s.%s' % (idl_type, direction, interface, member)) or
-          table.get('* %s %s.%s' % (direction, interface, member)) or
-          table.get('%s %s %s.*' % (idl_type, direction, interface)) or
-          table.get('%s %s' % (idl_type, direction)))
   return None
 
 

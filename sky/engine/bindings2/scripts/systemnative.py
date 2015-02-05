@@ -11,7 +11,7 @@ import os
 from generator import *
 from htmldartgenerator import *
 from idlnode import IDLArgument, IDLAttribute, IDLEnum, IDLMember
-from systemhtml import js_support_checks, GetCallbackInfo, HTML_LIBRARY_NAMES
+from systemhtml import GetCallbackInfo, HTML_LIBRARY_NAMES
 
 # TODO(vsm): This logic needs to pulled from the source IDL.  These tables are
 # an ugly workaround.
@@ -708,18 +708,6 @@ class DartiumBackend(HtmlDartGenerator):
         False,
         'ConstructorRaisesException' in ext_attrs or 'RaisesException' in ext_attrs,
         True)
-
-  def HasSupportCheck(self):
-    # Need to omit a support check if it is conditional in JS.
-    return self._interface.doc_js_name in js_support_checks
-
-  def GetSupportCheck(self):
-    # Assume that everything is supported on Dartium.
-    value = js_support_checks.get(self._interface.doc_js_name)
-    if type(value) == tuple:
-      return (value[0], 'true')
-    else:
-      return 'true'
 
   def FinishInterface(self):
     interface = self._interface
@@ -1729,16 +1717,6 @@ class CPPLibraryEmitter():
     path = os.path.join(self._cpp_sources_dir, 'Dart%s.cpp' % interface_name)
     self._sources_list.append(path)
     return self._emitters.FileEmitter(path)
-
-  def EmitDerivedSources(self, template, output_dir):
-    partitions = 20 # FIXME: this should be configurable.
-    sources_count = len(self._sources_list)
-    for i in range(0, partitions):
-      file_path = os.path.join(output_dir, 'DartDerivedSources%02i.cpp' % (i + 1))
-      includes_emitter = self._emitters.FileEmitter(file_path).Emit(template)
-      for source_file in self._sources_list[i::partitions]:
-        path = os.path.relpath(source_file, output_dir)
-        includes_emitter.Emit('#include "$PATH"\n', PATH=path)
 
   def EmitResolver(self, template, output_dir):
     for library_name in self._library_headers.keys():

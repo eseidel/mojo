@@ -12,6 +12,14 @@ namespace blink {
 
 class DartEventListener : public EventListener {
  public:
+  static EventListener* create(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    return nullptr;
+  }
+
+  static EventListener* createWithNullCheck(Dart_NativeArguments args, int idx, Dart_Handle& exception) {
+    return nullptr;
+  }
+
   ~DartEventListener() override;
 
   bool operator==(const EventListener& other) override { return this == &other; }

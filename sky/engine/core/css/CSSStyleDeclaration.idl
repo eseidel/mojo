@@ -32,7 +32,5 @@
 
     readonly attribute unsigned long    length;
     getter DOMString          item([Default=Undefined] optional unsigned long index);
-    [Custom=(PropertyGetter,PropertyEnumerator,PropertyQuery)] getter (DOMString or float) (DOMString name);
     [Custom] setter void (DOMString propertyName, DOMString? propertyValue);
 };
-

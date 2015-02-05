@@ -81,11 +81,7 @@ fail:
 static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArguments args)
 {
 {% if not method.is_static %}
-{% if cpp_class == "EventTarget" %}
-    {{cpp_class}}* receiver = DartDOMWrapper::receiverToEventTarget(args);
-{% else %}
     {{cpp_class}}* /* FIXME(vsm): Remove this. */ ALLOW_UNUSED receiver = GetReceiver<{{cpp_class}}>(args);
-{% endif %}
 {% endif %}
 {% if method.is_custom_element_callbacks %}
     CustomElementProcessingStack::CallbackDeliveryScope deliveryScope;

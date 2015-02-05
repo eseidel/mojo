@@ -29,7 +29,6 @@
 [
     Constructor(DOMString url),
     Constructor(DOMString url, DOMString base),
-    Constructor(DOMString url, URL base),
     ImplementedAs=DOMURL,
     RaisesException=Constructor,
 ] interface URL {

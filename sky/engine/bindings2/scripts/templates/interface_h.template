@@ -18,6 +18,11 @@ struct {{dart_class}} {
   // TODO(abarth): Need this from the class database: {{interface_name}}ClassId;
   static const int dart_class_id = 0;
 
+  static bool hasInstance(Dart_Handle handle) {
+    // TODO(abarth): Need to look up the class_id from |handle| and compare with |dart_class_id|.
+    return false;
+  }
+
   static Dart_NativeFunction Resolver(Dart_Handle name,
                                       int argument_count,
                                       bool* auto_scope);

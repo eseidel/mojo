@@ -101,28 +101,34 @@ struct DartConverter<unsigned long long> {
   }
 };
 
-template<>
-struct DartConverter<double> {
-  static Dart_Handle ToDart(double val) {
+template<typename T>
+struct DartConverterFloatingPoint {
+  static Dart_Handle ToDart(T val) {
     return Dart_NewDouble(val);
   }
 
-  static void SetReturnValue(Dart_NativeArguments args, double val) {
+  static void SetReturnValue(Dart_NativeArguments args, T val) {
     Dart_SetDoubleReturnValue(args, val);
   }
 
-  static double FromDart(Dart_Handle handle) {
+  static T FromDart(Dart_Handle handle) {
     double result = 0;
     Dart_DoubleValue(handle, &result);
     return result;
   }
 
-  static double FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static T FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     double result = 0;
     Dart_GetNativeDoubleArgument(args, index, &result);
     return result;
   }
 };
+
+template<>
+struct DartConverter<float> : public DartConverterFloatingPoint<float> { };
+
+template<>
+struct DartConverter<double> : public DartConverterFloatingPoint<double> { };
 
 template<>
 struct DartConverter<String> {

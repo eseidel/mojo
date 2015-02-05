@@ -42,7 +42,6 @@ class DatabaseBuilderOptions(object):
 
   def __init__(self,
       idl_defines=[],
-      source=None, source_attributes={},
       rename_operation_arguments_on_merge=False,
       add_new_interfaces=True,
       obsolete_old_declarations=False,
@@ -50,10 +49,6 @@ class DatabaseBuilderOptions(object):
     """Constructor.
     Args:
       idl_defines -- list of definitions for the idl gcc pre-processor
-      source -- the origin of the IDL file, used for annotating the
-        database.
-      source_attributes -- this map of attributes is used as
-        annotation attributes.
       rename_operation_arguments_on_merge -- if True, will rename
         operation arguments when merging using the new name rather
         than the old.
@@ -62,8 +57,8 @@ class DatabaseBuilderOptions(object):
       obsolete_old_declarations -- when True, if a declaration
         from a certain source is not re-declared, it will be removed.
     """
-    self.source = source
-    self.source_attributes = source_attributes
+    self.source = None
+    self.source_attributes = {}
     self.idl_defines = idl_defines
     self.rename_operation_arguments_on_merge = \
         rename_operation_arguments_on_merge
@@ -213,26 +208,7 @@ class DatabaseBuilder(object):
   def _annotate(self, interface, import_options):
     """Adds @ annotations based on the source and source_attributes
     members of import_options."""
-
-    source = import_options.source
-    if not source:
-      return
-
-    def add_source_annotation(idl_node):
-      annotation = IDLAnnotation(
-        copy.deepcopy(import_options.source_attributes))
-      idl_node.annotations[source] = annotation
-      if ((isinstance(idl_node, IDLInterface) or
-           isinstance(idl_node, IDLMember)) and
-          idl_node.is_fc_suppressed):
-        annotation['suppressed'] = None
-
-    add_source_annotation(interface)
-
-    map(add_source_annotation, interface.parents)
-    map(add_source_annotation, interface.constants)
-    map(add_source_annotation, interface.attributes)
-    map(add_source_annotation, interface.operations)
+    return
 
   def _sign(self, node):
     """Computes a unique signature for the node, for merging purposed, by
@@ -630,48 +606,6 @@ class DatabaseBuilder(object):
       if enabled(condition):
         return True
     return False
-
-  def fix_displacements(self, source):
-    """E.g. In W3C, something is declared on HTMLDocument but in WebKit
-    its on Document, so we need to mark that something in HTMLDocument
-    with @WebKit(via=Document). The 'via' attribute specifies the
-    parent interface that has the declaration."""
-
-    for interface in self._database.GetInterfaces():
-      changed = False
-
-      _logger.info('fixing displacements in %s' % interface.id)
-
-      for parent_interface in self._get_parent_interfaces(interface):
-        _logger.info('scanning parent %s of %s' %
-          (parent_interface.id, interface.id))
-
-        def fix_nodes(local_list, parent_list):
-          changed = False
-          parent_signatures_map = self._build_signatures_map(
-            parent_list)
-          for idl_node in local_list:
-            sig = self._sign(idl_node)
-            if sig in parent_signatures_map:
-              parent_member = parent_signatures_map[sig]
-              if (source in parent_member.annotations
-                  and source not in idl_node.annotations
-                  and _VIA_ANNOTATION_ATTR_NAME
-                      not in parent_member.annotations[source]):
-                idl_node.annotations[source] = IDLAnnotation(
-                    {_VIA_ANNOTATION_ATTR_NAME: parent_interface.id})
-                changed = True
-          return changed
-
-        changed = fix_nodes(interface.constants,
-                  parent_interface.constants) or changed
-        changed = fix_nodes(interface.attributes,
-                  parent_interface.attributes) or changed
-        changed = fix_nodes(interface.operations,
-                  parent_interface.operations) or changed
-      if changed:
-        _logger.info('fixed displaced declarations in %s' %
-          interface.id)
 
   def normalize_annotations(self, sources):
     """Makes the IDLs less verbose by removing annotation attributes

@@ -413,7 +413,7 @@ DOMSelection* LocalDOMWindow::getSelection()
     return m_frame->document()->getSelection();
 }
 
-void LocalDOMWindow::focus(ExecutionContext* context)
+void LocalDOMWindow::focus()
 {
     if (!m_frame)
         return;

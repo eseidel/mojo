@@ -38,7 +38,7 @@
 
     Selection getSelection();
 
-    [DoNotCheckSecurity, CallWith=ExecutionContext] void focus();
+    void focus();
 
     [Replaceable] readonly attribute long outerHeight;
     [Replaceable] readonly attribute long outerWidth;

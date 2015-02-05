@@ -28,11 +28,15 @@ struct DartConverter<bool> {
     Dart_SetBooleanReturnValue(args, val);
   }
 
+  static bool FromDart(Dart_Handle handle) {
+    bool result = 0;
+    Dart_BooleanValue(handle, &result);
+    return result;
+  }
+
   static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     bool result = false;
-    Dart_Handle handle = Dart_GetNativeBooleanArgument(args, index, &result);
-    if (Dart_IsError(handle))
-      return false;
+    Dart_GetNativeBooleanArgument(args, index, &result);
     return result;
   }
 };
@@ -47,11 +51,15 @@ struct DartConverterInteger {
     Dart_SetIntegerReturnValue(args, val);
   }
 
-  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static T FromDart(Dart_Handle handle) {
     int64_t result = 0;
-    Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
-    if (Dart_IsError(handle))
-      return 0;
+    Dart_IntegerToInt64(handle, &result);
+    return result;
+  }
+
+  static T FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    int64_t result = 0;
+    Dart_GetNativeIntegerArgument(args, index, &result);
     return result;
   }
 };
@@ -80,11 +88,15 @@ struct DartConverter<unsigned long long> {
     Dart_SetIntegerReturnValue(args, val);
   }
 
-  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static unsigned long long FromDart(Dart_Handle handle) {
     int64_t result = 0;
-    Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
-    if (Dart_IsError(handle))
-      return 0;
+    Dart_IntegerToInt64(handle, &result);
+    return result;
+  }
+
+  static unsigned long long FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    int64_t result = 0;
+    Dart_GetNativeIntegerArgument(args, index, &result);
     return result;
   }
 };
@@ -99,11 +111,15 @@ struct DartConverter<double> {
     Dart_SetDoubleReturnValue(args, val);
   }
 
-  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static double FromDart(Dart_Handle handle) {
     double result = 0;
-    Dart_Handle handle = Dart_GetNativeDoubleArgument(args, index, &result);
-    if (Dart_IsError(handle))
-      return 0;
+    Dart_DoubleValue(handle, &result);
+    return result;
+  }
+
+  static double FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    double result = 0;
+    Dart_GetNativeDoubleArgument(args, index, &result);
     return result;
   }
 };
@@ -177,7 +193,7 @@ struct DartConverter<AtomicString> {
 
 template<typename T>
 struct DartConverter<Vector<T>> {
-  static Dart_Handle ToDart(DartState* state, const Vector<T>& val) {
+  static Dart_Handle ToDart(const Vector<T>& val) {
     Dart_Handle list = Dart_NewList(val.size());
     if (Dart_IsError(list))
         return list;
@@ -188,6 +204,26 @@ struct DartConverter<Vector<T>> {
             return result;
     }
     return list;
+  }
+
+  static Vector<T> FromDart(Dart_Handle handle) {
+    Vector<T> result;
+    if (!Dart_IsList(handle))
+      return result;
+    intptr_t length = 0;
+    Dart_ListLength(handle, &length);
+    result.reserveCapacity(length);
+    for (intptr_t i = 0; i < length; ++i) {
+        Dart_Handle element = Dart_ListGetAt(handle, i);
+        DCHECK(!Dart_IsError(element));
+        result.append(DartConverter<T>::FromDart(element));
+    }
+    return result;
+  }
+
+  static Vector<T> FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+    // TODO(abarth): What should we do with auto_scope?
+    return FromDart(Dart_GetNativeArgument(args, index));
   }
 };
 
@@ -212,6 +248,11 @@ inline Dart_Handle StringToDart(DartState* state, const AtomicString& val) {
 
 inline String StringFromDart(Dart_Handle handle) {
   return DartConverter<String>::FromDart(handle);
+}
+
+template<typename T>
+inline Dart_Handle VectorToDart(const Vector<T>& val) {
+  return DartConverter<Vector<T>>::ToDart(val);
 }
 
 } // namespace blink

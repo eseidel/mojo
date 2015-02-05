@@ -112,7 +112,7 @@ public:
 
     DOMSelection* getSelection();
 
-    void focus(ExecutionContext* = 0);
+    void focus();
 
     int outerHeight() const;
     int outerWidth() const;

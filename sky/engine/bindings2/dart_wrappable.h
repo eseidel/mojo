@@ -49,10 +49,10 @@ class DartWrappable {
 template<typename T>
 struct DartConverter<T*, typename base::enable_if<
     base::is_convertible<T*, DartWrappable*>::value>::type> {
-  static Dart_Handle ToDart(DartState* state, DartWrappable* val) {
+  static Dart_Handle ToDart(DartWrappable* val) {
     if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
       return Dart_HandleFromWeakPersistent(wrapper);
-    return val->Wrap(state);
+    return val->Wrap(DartState::Current());
   }
 
   static void SetReturnValue(Dart_NativeArguments args, DartWrappable* val, bool auto_scope = true) {
@@ -86,6 +86,13 @@ struct DartConverter<T*, typename base::enable_if<
     // TODO(abarth): Add error checking.
     DCHECK(!Dart_IsError(result));
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(native_fields[DartWrappable::kPeerIndex]));
+  }
+};
+
+template<typename T>
+struct DartConverter<RefPtr<T>> {
+  static Dart_Handle ToDart(RefPtr<T> val) {
+    return DartConverter<T*>::ToDart(val.get());
   }
 };
 

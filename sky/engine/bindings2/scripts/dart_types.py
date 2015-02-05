@@ -446,12 +446,12 @@ def dart_value_to_cpp_value_array_or_sequence(native_array_element_type, variabl
         this_cpp_type = None
         ref_ptr_type = 'RefPtr'
         # FIXME(vsm): We're not using ref_ptr_type....
-        expression_format = 'DartUtilities::toNativeVector<{native_array_element_type} >(args, {index}, {variable_name}, exception)'
+        expression_format = '{variable_name} = DartConverter<Vector<{native_array_element_type}>>::FromArguments(args, {index}, exception)'
         add_includes_for_type(native_array_element_type)
     else:
         ref_ptr_type = None
         this_cpp_type = native_array_element_type.cpp_type
-        expression_format = 'DartUtilities::toNativeVector<{cpp_type}>(args, {index}, {variable_name}, exception)'
+        expression_format = '{variable_name} = DartConverter<Vector<{cpp_type}>>::FromArguments(args, {index}, exception)'
 
     expression = expression_format.format(native_array_element_type=native_array_element_type.name,
                                           cpp_type=this_cpp_type, index=index, ref_ptr_type=ref_ptr_type,
@@ -711,7 +711,7 @@ CPP_VALUE_TO_DART_VALUE = {
     'ScriptValue': 'DartUtilities::scriptValueToDart({cpp_value})',
     'SerializedScriptValue': 'DartUtilities::serializedScriptValueToDart({cpp_value})',
     # General
-    'array': 'DartDOMWrapper::vectorToDart{creation_context}({cpp_value})',
+    'array': 'VectorToDart({cpp_value})',
     'DOMWrapper': 'Dart{idl_type}::toDart({cpp_value})',
 }
 
@@ -722,9 +722,7 @@ def cpp_value_to_dart_value(idl_type, cpp_value, creation_context='', extended_a
     idl_type, cpp_value = preprocess_idl_type_and_value(idl_type, cpp_value, extended_attributes)
     this_dart_conversion_type = idl_type.dart_conversion_type(extended_attributes)
     format_string = CPP_VALUE_TO_DART_VALUE[this_dart_conversion_type]
-    statement = format_string.format(
-        cpp_value=cpp_value, creation_context=creation_context,
-        idl_type=idl_type.base_type)
+    statement = format_string.format(cpp_value=cpp_value, idl_type=idl_type.base_type)
     return statement
 
 IdlTypeBase.cpp_value_to_dart_value = cpp_value_to_dart_value
@@ -792,10 +790,7 @@ def default_cpp_value_for_cpp_type(idl_type):
     base_idl_type = idl_type.base_type
     if base_idl_type in CPP_DEFAULT_VALUE_FOR_CPP_TYPE:
         return CPP_DEFAULT_VALUE_FOR_CPP_TYPE[base_idl_type]
-    if base_idl_type in NON_WRAPPER_TYPES:
-        return 'nullptr'
-    format_str = 'Dart{idl_type}::toNativeWithNullCheck(Dart_Null(), exception)'
-    return format_str.format(idl_type=idl_type)
+    return 'nullptr'
 
 
 # Override idl_type.name to not suffix orNull to the name, in Dart we always

@@ -771,8 +771,8 @@ class SequenceIDLTypeInfo(IDLTypeInfo):
 
   def to_dart_conversion(self, value, interface_name=None, attributes=None):
     if isinstance(self._item_info, PrimitiveIDLTypeInfo):
-      return 'DartDOMWrapper::vectorToDart(%s)' % value
-    return 'DartDOMWrapper::vectorToDart<%s>(%s)' % (self._item_info.bindings_class(), value)
+      return 'yyyDartDOMWrapper::vectorToDart(%s)' % value
+    return 'yyxDartDOMWrapper::vectorToDart<%s>(%s)' % (self._item_info.bindings_class(), value)
 
   def return_to_dart_conversion(self, value, auto_dart_scope_setup=True,
                                 interface_name=None, attributes=None):

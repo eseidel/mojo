@@ -5,6 +5,8 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_callback.h"
 
+#include "sky/engine/bindings2/dart_state.h"
+
 namespace blink {
 
 DartCallback::DartCallback(DartState* dart_state, Dart_Handle callback, Dart_Handle& exception)
@@ -16,6 +18,14 @@ DartCallback::DartCallback(DartState* dart_state, Dart_Handle callback, Dart_Han
 }
 
 DartCallback::~DartCallback() {
+}
+
+bool DartCallback::IsIsolateAlive() const {
+  return !!callback_.dart_state();
+}
+
+Dart_Isolate DartCallback::GetIsolate() const {
+  return callback_.dart_state()->isolate();
 }
 
 bool DartCallback::handleEvent(int argc, Dart_Handle* argv) {

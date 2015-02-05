@@ -17,6 +17,9 @@ class DartCallback {
 
   bool handleEvent(int argc, Dart_Handle* argv);
 
+  bool IsIsolateAlive() const;
+  Dart_Isolate GetIsolate() const;
+
  private:
   DartPersistentValue callback_;
 };

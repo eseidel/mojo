@@ -70,7 +70,7 @@ struct DartConverter<T*, typename base::enable_if<
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(peer));
   }
 
-  static T* FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static T* FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(args, index, DartWrappable::kNumberOfNativeFields, native_fields);
     // TODO(abarth): Add error checking.
@@ -78,7 +78,7 @@ struct DartConverter<T*, typename base::enable_if<
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(native_fields[DartWrappable::kPeerIndex]));
   }
 
-  static T* FromAgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static T* FromArgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(args, index, DartWrappable::kNumberOfNativeFields, native_fields);
     if (Dart_IsNull(result))

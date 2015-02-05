@@ -736,8 +736,8 @@ def length_tests_methods(effective_overloads_by_length):
 DART_CHECK_TYPE = {
     'ArrayBufferView': 'Dart_IsTypedData({cpp_value})',
     'ArrayBuffer': 'Dart_IsByteBuffer({cpp_value})',
-    'Uint8Array': 'DartUtilities::isUint8Array({cpp_value})',
-    'Uint8ClampedArray': 'DartUtilities::isUint8ClampedArray({cpp_value})',
+    'Uint8Array': 'Dart_GetTypeOfTypedData({cpp_value}) == Dart_TypedData_kUint8',
+    'Uint8ClampedArray': 'Dart_GetTypeOfTypedData({cpp_value}) == Dart_TypedData_kUint8Clamped',
 }
 
 

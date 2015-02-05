@@ -29,6 +29,10 @@ class DartPersistentValue {
   void Clear();
   Dart_Handle Release();
 
+  const base::WeakPtr<DartState>& dart_state() const {
+    return dart_state_;
+  }
+
  private:
   base::WeakPtr<DartState> dart_state_;
   Dart_PersistentHandle value_;

@@ -410,7 +410,7 @@ def setter_base_name(interface, attribute, arguments):
 def scoped_content_attribute_name(interface, attribute):
     content_attribute_name = attribute.extended_attributes['Reflect'] or attribute.name.lower()
     namespace = 'HTMLNames'
-    includes.add('core/%s.h' % namespace)
+    includes.add('gen/sky/core/%s.h' % namespace)
     return '%s::%sAttr' % (namespace, content_attribute_name)
 
 

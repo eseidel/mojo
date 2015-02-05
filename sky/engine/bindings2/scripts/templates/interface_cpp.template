@@ -18,7 +18,7 @@ static void indexedPropertyGetter(Dart_NativeArguments args)
   {% endif %}
 
         {# TODO(terry): Assume index is unsigned long, which all currently are. #}
-        unsigned index = DartUtilities::dartToUnsigned(args, 1, exception);
+        unsigned index = DartConverter<unsigned>::FromArguments(args, 1, exception);
         if (exception)
             goto fail;
         {{indexed_property_getter.cpp_type}} result = {{indexed_property_getter.cpp_value}};
@@ -130,14 +130,14 @@ static void constructorCallbackDispatcher(Dart_NativeArguments args)
         {% if constructor_overloads.valid_arities %}
         if (argCount >= {{overloads.minarg}}) {
             const String message = "Wrong arity, expected one of {{constructor_overloads.valid_arities}}";
-            exception = DartUtilities::coreArgumentErrorException(message);
+            // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
             goto fail;
         }
         {% endif %}
         {# Otherwise just report "not enough arguments" #}
         {
             const String message = "Not enough arguments (at least {{constructor_overloads.minarg}} required)";
-            exception = DartUtilities::coreArgumentErrorException(message);
+            // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
             goto fail;
         }
         return;
@@ -145,7 +145,7 @@ static void constructorCallbackDispatcher(Dart_NativeArguments args)
     {# No match, throw error #}
     {
         const String message = "No matching constructor signature.";
-        exception = DartUtilities::coreArgumentErrorException(message);
+        // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
         goto fail;
     }
     return;

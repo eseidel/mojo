@@ -273,21 +273,11 @@ INCLUDES_FOR_TYPE = {
     'CompareHow': set(),
     'EventHandler': set(),
     'EventListener': set(),
-    'HTMLCollection': set(['bindings/core/dart/DartHTMLCollection.h',
-                           'core/dom/ClassCollection.h',
-                           'core/dom/TagCollection.h',
-                           'core/html/HTMLCollection.h',
-                           'core/html/HTMLFormControlsCollection.h',
-                           'core/html/HTMLTableRowsCollection.h']),
     'MediaQueryListListener': set(['core/css/MediaQueryListListener.h']),
-    'NodeList': set(['bindings/core/dart/DartNodeList.h',
-                     'core/dom/NameNodeList.h',
-                     'core/dom/NodeList.h',
-                     'core/dom/StaticNodeList.h',
-                     'core/html/LabelsNodeList.h']),
+    'NodeList': set(['core/dom/NodeList.h',
+                     'core/dom/StaticNodeList.h']),
     'Promise': set(['bindings/core/dart/DartScriptPromise.h']),
-    'SerializedScriptValue': set(),
-    'ScriptValue': set(['bindings/core/dart/DartScriptValue.h']),
+    'ScriptValue': set(['bindings2/dart_value.h']),
 }
 
 
@@ -360,23 +350,23 @@ DART_FIX_ME = 'DART_UNIMPLEMENTED(/* Conversion unimplemented*/);'
 DART_TO_CPP_VALUE = {
     # Basic
     'Date': 'DartUtilities::dartToDate(args, {index}, exception)',
-    'DOMString': 'DartConverter<String>::FromAguments{null_check}(args, {index}, exception, {auto_scope})',
+    'DOMString': 'DartConverter<String>::FromArguments{null_check}(args, {index}, exception, {auto_scope})',
     'ByteString': 'DartUtilities::dartToByteString{null_check}(args, {index}, exception, {auto_scope})',
     'ScalarValueString': 'DartUtilities::dartToScalarValueString{null_check}(args, {index}, exception, {auto_scope})',
-    'boolean': 'DartConverter<bool>::FromAguments(args, {index}, exception)',
-    'float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
-    'unrestricted float': 'static_cast<float>(DartConverter<double>::FromAguments(args, {index}, exception))',
-    'double': 'DartConverter<double>::FromAguments(args, {index}, exception)',
-    'unrestricted double': 'DartConverter<double>::FromAguments(args, {index}, exception)',
+    'boolean': 'DartConverter<bool>::FromArguments(args, {index}, exception)',
+    'float': 'static_cast<float>(DartConverter<double>::FromArguments(args, {index}, exception))',
+    'unrestricted float': 'static_cast<float>(DartConverter<double>::FromArguments(args, {index}, exception))',
+    'double': 'DartConverter<double>::FromArguments(args, {index}, exception)',
+    'unrestricted double': 'DartConverter<double>::FromArguments(args, {index}, exception)',
     # FIXME(vsm): Inconsistent with V8.
-    'byte': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
-    'octet': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
-    'short': 'DartConverter<int>::FromAguments(args, {index}, exception)',
-    'unsigned short': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
-    'long': 'DartConverter<int>::FromAguments(args, {index}, exception)',
-    'unsigned long': 'DartConverter<unsigned>::FromAguments(args, {index}, exception)',
-    'long long': 'DartConverter<long long>::FromAguments(args, {index}, exception)',
-    'unsigned long long': 'DartConverter<unsigned long long>::FromAguments(args, {index}, exception)',
+    'byte': 'DartConverter<unsigned>::FromArguments(args, {index}, exception)',
+    'octet': 'DartConverter<unsigned>::FromArguments(args, {index}, exception)',
+    'short': 'DartConverter<int>::FromArguments(args, {index}, exception)',
+    'unsigned short': 'DartConverter<unsigned>::FromArguments(args, {index}, exception)',
+    'long': 'DartConverter<int>::FromArguments(args, {index}, exception)',
+    'unsigned long': 'DartConverter<unsigned>::FromArguments(args, {index}, exception)',
+    'long long': 'DartConverter<long long>::FromArguments(args, {index}, exception)',
+    'unsigned long long': 'DartConverter<unsigned long long>::FromArguments(args, {index}, exception)',
     # Interface types
     'CompareHow': 'static_cast<Range::CompareHow>(0) /* FIXME, DART_TO_CPP_VALUE[CompareHow] */',
     'EventTarget': '0 /* FIXME, DART_TO_CPP_VALUE[EventTarget] */',
@@ -427,7 +417,7 @@ def dart_value_to_cpp_value(idl_type, extended_attributes, variable_name,
     elif idl_type.is_callback_interface:
         cpp_expression_format = ('Dart{idl_type}::create{null_check}(args, {index}, exception)')
     else:
-        cpp_expression_format = ('DartConverter<{idl_type}*>::FromAguments{null_check}(args, {index}, exception)')
+        cpp_expression_format = ('DartConverter<{idl_type}*>::FromArguments{null_check}(args, {index}, exception)')
 
     # We allow the calling context to force a null check to handle
     # some cases that require calling context info.  V8 handles all
@@ -614,8 +604,8 @@ DART_SET_RETURN_VALUE = {
     # TODO(terry): Remove ForMainWorld stuff.
     'DOMWrapperForMainWorld': DART_FIX_ME,
     # FIXME(vsm): V8 has a fast path. Do we?
-    'DOMWrapperFast': 'DartConverter<{type_name}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
-    'DOMWrapperDefault': 'DartConverter<{type_name}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
+    'DOMWrapperFast': 'DartConverter<{implemented_as}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
+    'DOMWrapperDefault': 'DartConverter<{implemented_as}*>::SetReturnValue(args, WTF::getPtr({cpp_value}), {auto_scope})',
     # Typed arrays don't have special Dart* classes for Dart.
     'ArrayBuffer': 'Dart_SetReturnValue(args, DartUtilities::arrayBufferToDart({cpp_value}))',
     'TypedList': 'Dart_SetReturnValue(args, DartUtilities::arrayBufferViewToDart({cpp_value}))',
@@ -665,6 +655,7 @@ def dart_set_return_value(idl_type, cpp_value,
     if release:
         cpp_value = '%s.release()' % cpp_value
     statement = format_string.format(cpp_value=cpp_value,
+                                     implemented_as=idl_type.implemented_as,
                                      type_name=idl_type.name,
                                      script_wrappable=script_wrappable,
                                      auto_scope=DartUtilities.bool_to_cpp(auto_scope))
@@ -703,14 +694,14 @@ CPP_VALUE_TO_DART_VALUE = {
     # Built-in types
     # FIXME(vsm): V8 uses DateOrNull - do we need a null check?
     'Date': 'DartUtilities::dateToDart({cpp_value})',
-    'DOMString': 'DartUtilities::stringToDartString({cpp_value})',
-    'boolean': 'DartUtilities::boolToDart({cpp_value})',
-    'int': 'DartUtilities::intToDart({cpp_value})',
-    'unsigned': 'DartUtilities::unsignedLongLongToDart({cpp_value})',
-    'float': 'DartUtilities::doubleToDart({cpp_value})',
-    'unrestricted float': 'DartUtilities::doubleToDart({cpp_value})',
-    'double': 'DartUtilities::doubleToDart({cpp_value})',
-    'unrestricted double': 'DartUtilities::doubleToDart({cpp_value})',
+    'DOMString': 'DartConverter<String>::ToDart(DartState::Current(), {cpp_value})',
+    'boolean': 'DartConverter<bool>::ToDart({cpp_value})',
+    'int': 'DartConverter<int>::ToDart({cpp_value})',
+    'unsigned': 'DartConverter<unsigned>::ToDart({cpp_value})',
+    'float': 'DartConverter<double>::ToDart({cpp_value})',
+    'unrestricted float': 'DartConverter<double>::ToDart({cpp_value})',
+    'double': 'DartConverter<double>::ToDart({cpp_value})',
+    'unrestricted double': 'DartConverter<double>::ToDart({cpp_value})',
     # FIXME(vsm): Dart_Null?
     'void': '',
     # Special cases

@@ -176,7 +176,7 @@ def getter_expression(interface, attribute, context):
         arguments.append('*receiver')
 
     if attribute.idl_type.is_explicit_nullable:
-        arguments.append('isNull')
+        arguments.append('is_null')
     if context['is_getter_raises_exception']:
         arguments.append('es')
     return '%s(%s)' % (getter_name, ', '.join(arguments))

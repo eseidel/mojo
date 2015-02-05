@@ -12,6 +12,10 @@
 #include "{{filename}}"
 {% endfor %}
 
+#include "sky/engine/bindings2/dart_api_scope.h"
+#include "sky/engine/bindings2/dart_converter.h"
+#include "sky/engine/bindings2/dart_isolate_scope.h"
+
 namespace blink {
 
 {% for method in methods if not method.custom %}
@@ -19,20 +23,17 @@ namespace blink {
 {
     {% set return_default = 'return true'
            if method.idl_type == 'boolean' else 'return' %}{# void #}
-    if (!m_callback.isIsolateAlive())
+    if (!callback_.IsIsolateAlive())
         {{return_default}};
-    DartIsolateScope scope(m_callback.isolate());
+    DartIsolateScope scope(callback_.GetIsolate());
     DartApiScope apiScope;
     {% if method.call_with_this_handle %}
     // FIXME: we ignore thisValue which may or may not be correct for Dart.
     {% endif %}
     {% for argument in method.arguments %}
     Dart_Handle {{argument.handle}} = {{argument.cpp_value_to_dart_value}};
-    if (Dart_IsError({{argument.handle}})) {
-        if (!isScriptControllerTerminating())
-            CRASH();
+    if (Dart_IsError({{argument.handle}}))
         {{return_default}};
-    }
     {% endfor %}
     {% if method.arguments %}
     Dart_Handle arguments[] = { {{method.arguments | join(', ', attribute='handle')}} };
@@ -42,7 +43,7 @@ namespace blink {
 
     {% set return_with = 'return'
            if method.idl_type == 'boolean' else '' %}{# void #}
-    {{return_with}} m_callback.handleEvent({{method.arguments | length}}, arguments);
+    {{return_with}} callback_.handleEvent({{method.arguments | length}}, arguments);
 }
 
 {% endfor %}

@@ -44,21 +44,21 @@ static void {{static_method_name(overloads.name)}}Dispatcher(Dart_NativeArgument
         {% if overloads.valid_arities %}
         if (argCount >= {{overloads.minarg}}) {
             const String message = "Wrong arity, expected one of {{overloads.valid_arities}}";
-            exception = DartUtilities::coreArgumentErrorException(message);
+            // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
             goto fail;
         }
         {% endif %}
         {# Otherwise just report "not enough arguments" #}
         {
             const String message = "Not enough arguments (at least {{overloads.minarg}} required)";
-            exception = DartUtilities::coreArgumentErrorException(message);
+            // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
             goto fail;
         }
         return;
     }
     {
         const String message = "No function was found that matched the signature provided.";
-        exception = DartUtilities::coreArgumentErrorException(message);
+        // TODO(dart): exception = DartUtilities::coreArgumentErrorException(message);
         goto fail;
     }
     return;
@@ -153,7 +153,7 @@ fail:
 {%- elif method.idl_type == 'void' -%}
 {{cpp_value}};
 {%- elif method.is_constructor -%}
-{{dart_class}}::returnToDart(args, {{cpp_value}}, {{method.auto_scope}});
+DartConverter<{{cpp_class}}*>::SetReturnValue(args, WTF::getPtr({{cpp_value}}), {{method.auto_scope}});
 {%- else -%}
 {{dart_set_return_value}};
 {%- endif -%}
@@ -364,86 +364,9 @@ fail:
 
 {##############################################################################}
 {% macro generate_event_constructor() %}
-template <typename T>
-static void convert(const String& idlType, Dart_Handle handle, bool nullable, T& value, Dart_Handle& exception)
-{
-    value = DartUtilities::TypeConvertor<T>()(handle, exception);
-}
-
-template <typename T>
-static void convert(const String& idlType, Dart_Handle handle, bool nullable, RefPtr<T>& value, Dart_Handle& exception)
-{
-    if (Dart_IsNull(handle))
-        value = nullptr;
-    else
-        exception = Dart_NewStringFromCString("Event initialization unimplemented for non-primitive types");
-}
-
-template <typename T>
-static void convert(const String& idlType, Dart_Handle handle, bool nullable, Member<T>& value, Dart_Handle& exception)
-{
-    if (Dart_IsNull(handle))
-        value = nullptr;
-    else
-        exception = Dart_NewStringFromCString("Event initialization unimplemented for non-primitive types");
-}
-
-void initialize{{interface_name}}ForDart({{interface_name}}Init& eventInit, const String& type, const HashMap<String, Dart_Handle>& options, Dart_Handle& exception)
-{
-    {% if parent_interface %}
-    Dart{{parent_interface}}Internal::initialize{{parent_interface}}ForDart(eventInit, type, options, exception);
-    if (exception)
-        return;
-    {% endif %}
-
-    {% for attribute in attributes
-           if (attribute.is_initialized_by_event_constructor and
-               not attribute.idl_type == 'any')%}
-    {% set is_nullable = 'true' if attribute.is_nullable else 'false' %}
-    if (options.contains("{{attribute.name}}")) {
-        Dart_Handle option = options.get("{{attribute.name}}");
-        convert("{{attribute.idl_type}}", option, {{is_nullable}}, eventInit.{{attribute.cpp_name}}, exception);
-        if (exception)
-            return;
-    }
-    {% endfor %}
-}
-
 static void eventConstructorCallback(Dart_NativeArguments args)
 {
-    Dart_Handle exception = nullptr;
-    {
-        DartStringAdapter type = DartUtilities::dartToString(args, 0, exception);
-        if (exception)
-            goto fail;
-
-        Dart_Handle handle = Dart_GetNativeArgument(args, 1);
-        HashMap<String, Dart_Handle> options;
-        DartUtilities::extractMapElements(handle, exception, options);
-        if (exception)
-            goto fail;
-
-        {{interface_name}}Init eventInit;
-        initialize{{interface_name}}ForDart(eventInit, type, options, exception);
-        if (exception)
-            goto fail;
-
-	{% if is_constructor_raises_exception %}
-	ExceptionState es;
-        RefPtrWillBeRawPtr<{{interface_name}}> event = {{interface_name}}::create(type, eventInit, es);
-        if (es.had_exception()) {
-            exception = es.GetDartException(args);
-            goto fail;
-        }
-	{% else %}
-        RefPtrWillBeRawPtr<{{interface_name}}> event = {{interface_name}}::create(type, eventInit);
-	{% endif %}
-        {{dart_class}}::returnToDart(args, event.get());
-        return;
-    }
-fail:
-    Dart_ThrowException(exception);
-    ASSERT_NOT_REACHED();
+    Dart_SetReturnValue(args, Dart_Null());
 }
 {% endmacro %}
 

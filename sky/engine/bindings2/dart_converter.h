@@ -20,7 +20,7 @@ struct DartConverter {};
 
 template<>
 struct DartConverter<bool> {
-  static Dart_Handle ToDart(DartState* state, bool val) {
+  static Dart_Handle ToDart(bool val) {
     return Dart_NewBoolean(val);
   }
 
@@ -28,7 +28,7 @@ struct DartConverter<bool> {
     Dart_SetBooleanReturnValue(args, val);
   }
 
-  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     bool result = false;
     Dart_Handle handle = Dart_GetNativeBooleanArgument(args, index, &result);
     if (Dart_IsError(handle))
@@ -39,7 +39,7 @@ struct DartConverter<bool> {
 
 template<typename T>
 struct DartConverterInteger {
-  static Dart_Handle ToDart(DartState* state, T val) {
+  static Dart_Handle ToDart(T val) {
     return Dart_NewInteger(val);
   }
 
@@ -47,7 +47,7 @@ struct DartConverterInteger {
     Dart_SetIntegerReturnValue(args, val);
   }
 
-  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     int64_t result = 0;
     Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
     if (Dart_IsError(handle))
@@ -67,7 +67,7 @@ struct DartConverter<long long> : public DartConverterInteger<long long> { };
 
 template<>
 struct DartConverter<unsigned long long> {
-  static Dart_Handle ToDart(DartState* state, unsigned long long val) {
+  static Dart_Handle ToDart(unsigned long long val) {
     // FIXME: WebIDL unsigned long long is guaranteed to fit into 64-bit unsigned,
     // so we need a dart API for constructing an integer from uint64_t.
     DCHECK(val <= 0x7fffffffffffffffLL);
@@ -80,7 +80,7 @@ struct DartConverter<unsigned long long> {
     Dart_SetIntegerReturnValue(args, val);
   }
 
-  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     int64_t result = 0;
     Dart_Handle handle = Dart_GetNativeIntegerArgument(args, index, &result);
     if (Dart_IsError(handle))
@@ -91,7 +91,7 @@ struct DartConverter<unsigned long long> {
 
 template<>
 struct DartConverter<double> {
-  static Dart_Handle ToDart(DartState* state, double val) {
+  static Dart_Handle ToDart(double val) {
     return Dart_NewDouble(val);
   }
 
@@ -99,7 +99,7 @@ struct DartConverter<double> {
     Dart_SetDoubleReturnValue(args, val);
   }
 
-  static bool FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
+  static bool FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception) {
     double result = 0;
     Dart_Handle handle = Dart_GetNativeDoubleArgument(args, index, &result);
     if (Dart_IsError(handle))
@@ -145,7 +145,7 @@ struct DartConverter<String> {
     return ExternalizeDartString(handle);
   }
 
-  static String FromAguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static String FromArguments(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     void* peer = nullptr;
     Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);
@@ -156,7 +156,7 @@ struct DartConverter<String> {
     return ExternalizeDartString(handle);
   }
 
-  static String FromAgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
+  static String FromArgumentsWithNullCheck(Dart_NativeArguments args, int index, Dart_Handle& exception, bool auto_scope = true) {
     // TODO(abarth): What should we do with auto_scope?
     void* peer = nullptr;
     Dart_Handle handle = Dart_GetNativeStringArgument(args, index, &peer);

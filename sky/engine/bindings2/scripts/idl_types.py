@@ -326,7 +326,7 @@ class IdlNullableType(IdlTypeBase):
 
     @property
     def name(self):
-        return self.inner_type.name + 'OrNull'
+        return self.inner_type.name
 
     def resolve_typedefs(self, typedefs):
         self.inner_type = self.inner_type.resolve_typedefs(typedefs)

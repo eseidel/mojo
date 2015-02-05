@@ -194,6 +194,8 @@ class SkyDebugger(object):
         self.pids['sky_command_port'] = args.command_port
 
         if is_android:
+            # TODO(eseidel): This should move into a helper method and handle
+            # failures with nice messages explaining how to get root.
             subprocess.check_call([ADB_PATH, 'root'])
 
             # We could make installing conditional on an argument.

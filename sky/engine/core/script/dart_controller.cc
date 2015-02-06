@@ -43,11 +43,6 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
   DartIsolateScope isolate_scope(core_dart_state_->isolate());
   DartApiScope dart_api_scope;
 
-  // TODO(eseidel): This belongs in isolate creation!
-  Dart_Handle blink = Dart_LookupLibrary(Dart_NewStringFromCString("dart:blink"));
-  ASSERT(!Dart_IsError(blink));
-  // Dart_SetNativeResolver(blink, blinkSnapshotResolver, blinkSnapshotSymbolizer);
-
   Dart_Handle library = Dart_LoadLibrary(
       Dart_NewStringFromCString(module.url().utf8().data()),
       Dart_NewStringFromCString(source.utf8().data()),

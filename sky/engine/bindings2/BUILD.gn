@@ -39,8 +39,6 @@ source_set("bindings2") {
   include_dirs = [ "..", "$root_build_dir" ]
 }
 
-blink_dartium_path = "$bindings_output_dir/_blink_dartium.dart"
-
 action("generate_snapshot_bin") {
   deps = [
     "//dart/runtime/bin:gen_snapshot($host_toolchain)",
@@ -64,8 +62,6 @@ action("generate_snapshot_bin") {
                      "root_out_dir")
   script = "//dart/runtime/tools/create_snapshot_bin.py"
 
-  dartium_path = rebase_path(blink_dartium_path)
-
   args = [
     "--executable",
     rebase_path("$gen_snapshot_dir/gen_snapshot"),
@@ -77,7 +73,6 @@ action("generate_snapshot_bin") {
     rebase_path(output, root_build_dir),
     "--target_os",
     os,
-    "--url_mapping=dart:blink,$dartium_path",
     "--url_mapping=dart:sky,$sky_path",
     "--url_mapping=dart:sky_builtin,$builtin_path",
   ]
@@ -265,90 +260,6 @@ idl_compiler("compile_idls") {
   output_dir = bindings_output_dir
 }
 
-action("generate_dart_bindings") {
-  sources = core_idl_files + core_dependency_idl_files
-  script = "$bindings_scripts_dir/generate_dart_bindings.py"
-  output_file = "$bindings_output_dir/DartWebkitClassIds.h"
-
-  file_list = "$target_gen_dir/${target_name}_file_list.txt"
-  write_file(file_list, rebase_path(sources, root_build_dir))
-
-  # TODO(eseidel): Use depfile instead of this manual list.
-  inputs = [ "$bindings_scripts_dir/utilities.py" ] + sources
-
-  # TODO(eseidel): There are a ton of other outputs. :(
-  outputs = [
-    file_list,
-    output_file,
-  ]
-
-  args = [
-    rebase_path(file_list, root_build_dir),
-    rebase_path(interfaces_info_overall_path, root_build_dir),
-    rebase_path(bindings_output_dir, root_build_dir),
-  ]
-
-  deps = [
-    ":compute_interfaces_info_overall",
-  ]
-}
-
-action("generate_dart_globals") {
-  sources = core_idl_files
-  script = "$bindings_scripts_dir/compiler.py"
-
-  file_list = "$target_gen_dir/${target_name}_file_list.txt"
-  write_file(file_list, rebase_path(sources, root_build_dir))
-
-  # TODO(eseidel): Use depfile instead of this manual list.
-  inputs = [ "$bindings_scripts_dir/utilities.py" ] + sources
-
-  # TODO(eseidel): There are other outputs. :(
-  outputs = [
-    file_list,
-  ]
-
-  args = [
-    "--output-directory",
-    rebase_path(bindings_output_dir, root_build_dir),
-    "--generate-globals",
-    rebase_path(bindings_output_dir, root_build_dir),
-    rebase_path(file_list, root_build_dir),
-  ]
-}
-
-# The magic trampoline.
-action("generate_dart_blink") {
-  sources = core_idl_files
-  script = "$bindings_scripts_dir/compiler.py"
-  output_file = blink_dartium_path
-
-  file_list = "$target_gen_dir/${target_name}_file_list.txt"
-  write_file(file_list, rebase_path(sources, root_build_dir))
-
-  # TODO(eseidel): Use depfile instead of this manual list.
-  inputs = [ "$bindings_scripts_dir/utilities.py" ] + sources
-
-  # TODO(eseidel): There are other outputs. :(
-  outputs = [
-    file_list,
-    output_file,
-  ]
-
-  args = [
-    "--output-directory",
-    rebase_path(bindings_output_dir, root_build_dir),
-    "--generate-dart-blink",
-    rebase_path(bindings_output_dir, root_build_dir),
-    rebase_path(file_list, root_build_dir),
-  ]
-  deps = [
-    ":compile_idls",
-    ":generate_dart_globals",
-    ":generate_dart_bindings",
-  ]
-}
-
 source_set("generated_bindings") {
   deps = [
     "//base",
@@ -374,7 +285,7 @@ source_set("generated_bindings") {
     "//third_party/qcms",
     "//third_party/zlib",
     "//url",
-    ":generate_dart_blink",
+    ":compile_idls",
   ]
 
   include_dirs = [

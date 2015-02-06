@@ -348,7 +348,9 @@ action("generate_dart_blink") {
     rebase_path(file_list, root_build_dir),
   ]
   deps = [
+    ":compile_idls",
     ":generate_dart_globals",
+    ":generate_dart_bindings",
   ]
 }
 
@@ -377,8 +379,6 @@ source_set("generated_bindings") {
     "//third_party/qcms",
     "//third_party/zlib",
     "//url",
-    ":compile_idls",
-    ":generate_dart_bindings",
     ":generate_dart_blink",
   ]
 

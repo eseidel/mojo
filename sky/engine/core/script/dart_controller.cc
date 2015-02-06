@@ -41,11 +41,21 @@ bool LogIfError(Dart_Handle handle) {
   return false;
 }
 
+// TODO(eseidel): These should be defined in DartWebKitClassIds.cpp, but I appear to have broken it.
+// extern Dart_NativeFunction blinkSnapshotResolver(Dart_Handle name, int argumentCount, bool* autoSetupScope);
+// extern const uint8_t* blinkSnapshotSymbolizer(Dart_NativeFunction);
+
+
 void DartController::ExecuteModuleScript(AbstractModule& module,
                                          const String& source,
                                          const TextPosition& textPosition) {
   DartIsolateScope isolate_scope(core_dart_state_->isolate());
   DartApiScope dart_api_scope;
+
+  // TODO(eseidel): This belongs in isolate creation!
+  Dart_Handle blink = Dart_LookupLibrary(Dart_NewStringFromCString("dart:blink"));
+  ASSERT(!Dart_IsError(blink));
+  // Dart_SetNativeResolver(blink, blinkSnapshotResolver, blinkSnapshotSymbolizer);
 
   Dart_Handle library = Dart_LoadLibrary(
       Dart_NewStringFromCString(module.url().utf8().data()),
@@ -100,9 +110,6 @@ static Dart_Isolate IsolateCreateCallback(const char* script_uri,
   DartState* parent_dart_state = static_cast<DartState*>(callback_data);
   DCHECK(parent_dart_state);
   // TODO(dart)
-
-  Dart_Handle blink = Dart_LookupLibrary(Dart_NewStringFromCString("dart:_blink"));
-  LogIfError(blink);
   return nullptr;
 }
 

@@ -5,6 +5,10 @@
 source_set("tonic") {
   sources = [
     "dart_api_scope.h",
+    "dart_error.cc",
+    "dart_error.h",
+    "dart_class_provider.cc",
+    "dart_class_provider.h",
     "dart_class_library.cc",
     "dart_class_library.h",
     "dart_converter.cc",

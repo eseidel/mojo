@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/bindings2/builtin_natives.h"
+#include "sky/engine/bindings2/builtin_sky.h"
 #include "sky/engine/core/app/AbstractModule.h"
 #include "sky/engine/core/app/Module.h"
 #include "sky/engine/core/dom/Element.h"
@@ -15,9 +16,10 @@
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
 #include "sky/engine/core/script/core_dart_state.h"
 #include "sky/engine/tonic/dart_api_scope.h"
+#include "sky/engine/tonic/dart_class_library.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
 #include "sky/engine/tonic/dart_state.h"
-#include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/wtf/text/TextPosition.h"
 
 namespace blink {
@@ -28,14 +30,6 @@ DartController::DartController() {
 }
 
 DartController::~DartController() {
-}
-
-bool LogIfError(Dart_Handle handle) {
-  if (Dart_IsError(handle)) {
-    LOG(ERROR) << Dart_GetError(handle);
-    return true;
-  }
-  return false;
 }
 
 // TODO(eseidel): These should be defined in DartWebKitClassIds.cpp, but I appear to have broken it.
@@ -150,7 +144,8 @@ void DartController::SetDocument(Document* document) {
   Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
   BuiltinNatives::Init();
 
-  Builtin::SetNativeResolver(Builtin::kSkyLibrary);
+  builtin_sky_ = adoptPtr(new BuiltinSky(core_dart_state_.get()));
+  core_dart_state_->class_library().set_provider(builtin_sky_.get());
 }
 
 void DartController::ClearForClose() {

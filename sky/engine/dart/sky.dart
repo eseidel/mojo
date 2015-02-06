@@ -4,7 +4,9 @@
 
 library dart.sky;
 
-abstract class Node {
+import "dart:nativewrappers";
+
+abstract class Node extends NativeFieldWrapperClass2 {
   Node get firstChild native "Node_firstChild_Getter";
   Node get lastChild native "Node_lastChild_Getter";
   Node get nextSibling native "Node_nextSibling_Getter";
@@ -12,6 +14,7 @@ abstract class Node {
 }
 
 abstract class CharacterData extends Node {
+  String get data native "CharacterData_data_Getter";
 }
 
 class Text extends CharacterData {

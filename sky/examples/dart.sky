@@ -7,8 +7,8 @@ import "dart:sky" as sky;
 
 main() {
   var text = new sky.Text("Hello");
-  print('yay!');
-  print(text.firstChild);
+  print(text.data);
+  // print(text.firstChild);
 }
 
 </script>

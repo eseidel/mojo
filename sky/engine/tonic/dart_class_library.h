@@ -7,16 +7,23 @@
 
 #include "dart/runtime/include/dart_api.h"
 
+#include "sky/engine/tonic/dart_class_provider.h"
+#include "sky/engine/wtf/HashMap.h"
+
 namespace blink {
+struct DartWrapperInfo;
 
 class DartClassLibrary {
  public:
-  DartClassLibrary();
+  explicit DartClassLibrary();
   ~DartClassLibrary();
 
-  Dart_PersistentHandle GetClassById(intptr_t class_id);
+  void set_provider(DartClassProvider* provider) { provider_ = provider; }
+  Dart_PersistentHandle GetClass(const DartWrapperInfo& info);
 
  private:
+  DartClassProvider* provider_;
+  HashMap<const DartWrapperInfo*, Dart_PersistentHandle> cache_;
 };
 
 }  // namespace blink

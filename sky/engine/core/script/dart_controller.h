@@ -12,6 +12,7 @@
 
 namespace blink {
 class AbstractModule;
+class BuiltinSky;
 class CoreDartState;
 class Document;
 
@@ -30,6 +31,7 @@ class DartController {
 
  private:
   OwnPtr<CoreDartState> core_dart_state_;
+  OwnPtr<BuiltinSky> builtin_sky_;
 };
 
 }

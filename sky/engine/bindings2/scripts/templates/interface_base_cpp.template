@@ -23,7 +23,7 @@ static void DerefObject(DartWrappable* impl) {
 }
 
 static const DartWrapperInfo kDartWrapperInfo = {
-  {{dart_class}}::dart_class_id,
+  "{{interface_name}}",
   sizeof({{cpp_class}}),
   &RefObject,
   &DerefObject,

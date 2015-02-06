@@ -14,21 +14,19 @@ DartPersistentValue::DartPersistentValue() : value_(nullptr) {
 }
 
 DartPersistentValue::DartPersistentValue(DartState* dart_state,
-                                         Dart_Handle value) {
-  dart_state_ = dart_state->GetWeakPtr();
-  value_ = Dart_NewPersistentHandle(value);
+                                         Dart_Handle value)
+    : value_(nullptr) {
+  Set(dart_state, value);
 }
 
 DartPersistentValue::~DartPersistentValue() {
   Clear();
 }
 
-Dart_Handle DartPersistentValue::Release() {
-  if (!value_)
-    return nullptr;
-  Dart_Handle local = Dart_HandleFromPersistent(value_);
-  Clear();
-  return local;
+void DartPersistentValue::Set(DartState* dart_state, Dart_Handle value) {
+  DCHECK(is_empty());
+  dart_state_ = dart_state->GetWeakPtr();
+  value_ = Dart_NewPersistentHandle(value);
 }
 
 void DartPersistentValue::Clear() {
@@ -39,5 +37,13 @@ void DartPersistentValue::Clear() {
   Dart_DeletePersistentHandle(value_);
   dart_state_ = base::WeakPtr<DartState>();
   value_ = nullptr;
+}
+
+Dart_Handle DartPersistentValue::Release() {
+  if (!value_)
+    return nullptr;
+  Dart_Handle local = Dart_HandleFromPersistent(value_);
+  Clear();
+  return local;
 }
 }

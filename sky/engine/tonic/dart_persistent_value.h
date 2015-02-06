@@ -27,6 +27,7 @@ class DartPersistentValue {
   Dart_PersistentHandle value() const { return value_; }
   bool is_empty() const { return !value_; }
 
+  void Set(DartState* dart_state, Dart_Handle value);
   void Clear();
   Dart_Handle Release();
 

@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_BINDINGS2_EXCEPTION_STATE_H_
 #define SKY_ENGINE_BINDINGS2_EXCEPTION_STATE_H_
 
-#include "sky/engine/bindings2/dart_persistent_value.h"
+#include "sky/engine/tonic/dart_persistent_value.h"
 #include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/text/WTFString.h"
 

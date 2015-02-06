@@ -37,7 +37,7 @@
 #include "gen/sky/core/EventTargetInterfaces.h"
 #include "gen/sky/core/EventTargetNames.h"
 #include "gen/sky/core/EventTypeNames.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/events/EventListenerMap.h"
 #include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/wtf/text/AtomicString.h"

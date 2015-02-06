@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_WEBGLCOMPRESSEDTEXTUREETC1_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_WEBGLCOMPRESSEDTEXTUREETC1_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/html/canvas/WebGLExtension.h"
 #include "sky/engine/wtf/PassRefPtr.h"
 

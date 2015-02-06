@@ -26,7 +26,7 @@
 #define SKY_ENGINE_CORE_DOM_RANGE_H_
 
 #include "sky/engine/bindings2/exception_state_placeholder.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/dom/RangeBoundaryPoint.h"
 #include "sky/engine/platform/geometry/FloatRect.h"
 #include "sky/engine/platform/geometry/IntRect.h"

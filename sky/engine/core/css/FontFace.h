@@ -32,7 +32,7 @@
 #define SKY_ENGINE_CORE_CSS_FONTFACE_H_
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/css/CSSValue.h"
 #include "sky/engine/core/dom/DOMException.h"
 #include "sky/engine/platform/fonts/FontTraits.h"

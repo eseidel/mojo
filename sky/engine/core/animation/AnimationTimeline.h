@@ -31,7 +31,7 @@
 #ifndef SKY_ENGINE_CORE_ANIMATION_ANIMATIONTIMELINE_H_
 #define SKY_ENGINE_CORE_ANIMATION_ANIMATIONTIMELINE_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/animation/AnimationEffect.h"
 #include "sky/engine/core/animation/AnimationPlayer.h"
 #include "sky/engine/core/dom/Element.h"

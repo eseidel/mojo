@@ -27,7 +27,7 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_WEBGLUNIFORMLOCATION_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_WEBGLUNIFORMLOCATION_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/html/canvas/WebGLProgram.h"
 #include "sky/engine/wtf/PassRefPtr.h"
 #include "sky/engine/wtf/RefCounted.h"

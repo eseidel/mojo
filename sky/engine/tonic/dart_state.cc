@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "sky/engine/config.h"
-#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/tonic/dart_state.h"
 
-#include "sky/engine/bindings2/dart_class_library.h"
-#include "sky/engine/bindings2/dart_string_cache.h"
+#include "sky/engine/tonic/dart_class_library.h"
+#include "sky/engine/tonic/dart_string_cache.h"
 #include "sky/engine/wtf/PassOwnPtr.h"
 
 namespace blink {

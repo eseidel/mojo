@@ -32,7 +32,7 @@
 #define SKY_ENGINE_CORE_ANIMATION_ANIMATIONEFFECT_H_
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/wtf/PassOwnPtr.h"
 #include "sky/engine/wtf/RefCounted.h"
 

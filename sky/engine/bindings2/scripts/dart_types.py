@@ -277,7 +277,7 @@ INCLUDES_FOR_TYPE = {
     'NodeList': set(['core/dom/NodeList.h',
                      'core/dom/StaticNodeList.h']),
     'Promise': set(['bindings/core/dart/DartScriptPromise.h']),
-    'ScriptValue': set(['bindings2/dart_value.h']),
+    'ScriptValue': set(['tonic/dart_value.h']),
 }
 
 

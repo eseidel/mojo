@@ -22,7 +22,7 @@
 #define SKY_ENGINE_CORE_CSS_CSSSTYLEDECLARATION_H_
 
 #include "gen/sky/core/CSSPropertyNames.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/wtf/Forward.h"
 #include "sky/engine/wtf/Noncopyable.h"
 

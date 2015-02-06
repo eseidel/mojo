@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "sky/engine/config.h"
-#include "sky/engine/bindings2/dart_isolate_scope.h"
+#include "sky/engine/tonic/dart_isolate_scope.h"
 
 namespace blink {
 

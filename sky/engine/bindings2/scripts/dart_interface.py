@@ -53,8 +53,8 @@ INTERFACE_H_INCLUDES = frozenset([
 
 
 INTERFACE_CPP_INCLUDES = frozenset([
-    'sky/engine/bindings2/dart_converter.h',
-    'sky/engine/bindings2/dart_wrappable.h',
+    'sky/engine/tonic/dart_converter.h',
+    'sky/engine/tonic/dart_wrappable.h',
     'sky/engine/bindings2/exception_state.h',
     'sky/engine/core/script/core_dart_state.h',
     'sky/engine/wtf/GetPtr.h',

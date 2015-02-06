@@ -21,7 +21,7 @@
 #ifndef SKY_ENGINE_CORE_CSS_RECT_H_
 #define SKY_ENGINE_CORE_CSS_RECT_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/css/CSSPrimitiveValue.h"
 #include "sky/engine/wtf/RefPtr.h"
 #include "sky/engine/wtf/text/StringBuilder.h"

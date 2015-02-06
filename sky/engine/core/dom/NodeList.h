@@ -24,7 +24,7 @@
 #ifndef SKY_ENGINE_CORE_DOM_NODELIST_H_
 #define SKY_ENGINE_CORE_DOM_NODELIST_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/wtf/RefCounted.h"
 
 namespace blink {

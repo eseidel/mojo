@@ -6,7 +6,7 @@
 #define SKY_ENGINE_BINDINGS2_DART_CALLBACK_H_
 
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/bindings2/dart_persistent_value.h"
+#include "sky/engine/tonic/dart_persistent_value.h"
 
 namespace blink {
 

@@ -6,8 +6,8 @@
 #define SKY_ENGINE_BINDINGS2_SCHEDULED_ACTION_H_
 
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/bindings2/dart_persistent_value.h"
-#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/tonic/dart_persistent_value.h"
+#include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/RefPtr.h"
 
 namespace blink {

@@ -27,7 +27,7 @@
 #ifndef SKY_ENGINE_CORE_DOM_DOMURL_H_
 #define SKY_ENGINE_CORE_DOM_DOMURL_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/dom/DOMURLUtils.h"
 #include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/platform/weborigin/KURL.h"

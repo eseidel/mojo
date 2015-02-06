@@ -5,7 +5,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_callback.h"
 
-#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/tonic/dart_state.h"
 
 namespace blink {
 

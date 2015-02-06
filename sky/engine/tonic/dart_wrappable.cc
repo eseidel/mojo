@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "sky/engine/config.h"
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 
-#include "sky/engine/bindings2/dart_class_library.h"
-#include "sky/engine/bindings2/dart_state.h"
-#include "sky/engine/bindings2/dart_wrapper_info.h"
+#include "sky/engine/tonic/dart_class_library.h"
+#include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_wrapper_info.h"
 
 namespace blink {
 namespace {

@@ -27,7 +27,7 @@
 #ifndef SKY_ENGINE_CORE_DOM_CLIENTRECTLIST_H_
 #define SKY_ENGINE_CORE_DOM_CLIENTRECTLIST_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/platform/geometry/FloatQuad.h"
 #include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/wtf/PassRefPtr.h"

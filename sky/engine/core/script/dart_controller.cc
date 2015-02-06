@@ -7,16 +7,16 @@
 
 #include "base/logging.h"
 #include "sky/engine/bindings2/builtin.h"
-#include "sky/engine/bindings2/dart_api_scope.h"
-#include "sky/engine/bindings2/dart_isolate_scope.h"
-#include "sky/engine/bindings2/dart_state.h"
-#include "sky/engine/bindings2/dart_state.h"
 #include "sky/engine/core/app/AbstractModule.h"
 #include "sky/engine/core/app/Module.h"
 #include "sky/engine/core/dom/Element.h"
 #include "sky/engine/core/html/imports/HTMLImport.h"
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
 #include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/tonic/dart_api_scope.h"
+#include "sky/engine/tonic/dart_isolate_scope.h"
+#include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/text/TextPosition.h"
 
 namespace mojo {

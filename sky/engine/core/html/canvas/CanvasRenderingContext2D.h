@@ -26,7 +26,7 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_CANVASRENDERINGCONTEXT2D_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_CANVASRENDERINGCONTEXT2D_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/css/CSSFontSelectorClient.h"
 #include "sky/engine/core/html/canvas/Canvas2DContextAttributes.h"
 #include "sky/engine/core/html/canvas/CanvasPathMethods.h"

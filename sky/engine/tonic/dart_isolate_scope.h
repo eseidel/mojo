@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKY_ENGINE_BINDINGS2_DART_ISOLATE_SCOPE_H_
-#define SKY_ENGINE_BINDINGS2_DART_ISOLATE_SCOPE_H_
+#ifndef SKY_ENGINE_TONIC_DART_ISOLATE_SCOPE_H_
+#define SKY_ENGINE_TONIC_DART_ISOLATE_SCOPE_H_
 
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
@@ -25,4 +25,4 @@ class DartIsolateScope {
 };
 }
 
-#endif  // SKY_ENGINE_BINDINGS2_DART_ISOLATE_SCOPE_H_
+#endif  // SKY_ENGINE_TONIC_DART_ISOLATE_SCOPE_H_

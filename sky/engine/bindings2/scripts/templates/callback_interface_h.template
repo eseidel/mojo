@@ -12,7 +12,7 @@
 #include "{{filename}}"
 {% endfor %}
 
-#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/PassOwnPtr.h"
 
 namespace blink {

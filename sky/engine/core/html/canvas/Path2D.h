@@ -28,7 +28,7 @@
 #ifndef SKY_ENGINE_CORE_HTML_CANVAS_PATH2D_H_
 #define SKY_ENGINE_CORE_HTML_CANVAS_PATH2D_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/html/canvas/CanvasPathMethods.h"
 #include "sky/engine/platform/heap/Handle.h"
 #include "sky/engine/platform/transforms/AffineTransform.h"

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "sky/engine/config.h"
-#include "sky/engine/bindings2/dart_string.h"
+#include "sky/engine/tonic/dart_string.h"
 
 #include "base/logging.h"
 

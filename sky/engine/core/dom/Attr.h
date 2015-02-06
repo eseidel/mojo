@@ -25,7 +25,7 @@
 #ifndef SKY_ENGINE_CORE_DOM_ATTR_H_
 #define SKY_ENGINE_CORE_DOM_ATTR_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/dom/QualifiedName.h"
 #include "sky/engine/wtf/RefCounted.h"
 #include "sky/engine/wtf/text/AtomicString.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKY_ENGINE_BINDINGS2_DART_VALUE_H_
-#define SKY_ENGINE_BINDINGS2_DART_VALUE_H_
+#ifndef SKY_ENGINE_TONIC_DART_VALUE_H_
+#define SKY_ENGINE_TONIC_DART_VALUE_H_
 
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/bindings2/dart_persistent_value.h"
-#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/tonic/dart_persistent_value.h"
+#include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/RefPtr.h"
 
@@ -57,4 +57,4 @@ class DartValue : public RefCounted<DartValue> {
 
 }  // namespace blink
 
-#endif  // SKY_ENGINE_BINDINGS2_DART_VALUE_H_
+#endif  // SKY_ENGINE_TONIC_DART_VALUE_H_

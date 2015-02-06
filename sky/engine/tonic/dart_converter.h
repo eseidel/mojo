@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_
-#define SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_
+#ifndef SKY_ENGINE_TONIC_DART_CONVERTER_H_
+#define SKY_ENGINE_TONIC_DART_CONVERTER_H_
 
-#include "sky/engine/bindings2/dart_state.h"
-#include "sky/engine/bindings2/dart_string.h"
-#include "sky/engine/bindings2/dart_string_cache.h"
-#include "sky/engine/bindings2/dart_value.h"
+#include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_string.h"
+#include "sky/engine/tonic/dart_string_cache.h"
+#include "sky/engine/tonic/dart_value.h"
 #include "sky/engine/wtf/text/WTFString.h"
 
 namespace blink {
@@ -280,4 +280,4 @@ inline Dart_Handle VectorToDart(const Vector<T>& val) {
 
 }  // namespace blink
 
-#endif  // SKY_ENGINE_BINDINGS2_DART_CONVERTER_H_
+#endif  // SKY_ENGINE_TONIC_DART_CONVERTER_H_

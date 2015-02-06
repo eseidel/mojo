@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_CORE_FRAME_IMAGEBITMAP_H_
 #define SKY_ENGINE_CORE_FRAME_IMAGEBITMAP_H_
 
-#include "sky/engine/bindings2/dart_wrappable.h"
+#include "sky/engine/tonic/dart_wrappable.h"
 #include "sky/engine/core/html/HTMLImageElement.h"
 #include "sky/engine/core/html/canvas/CanvasImageSource.h"
 #include "sky/engine/platform/geometry/IntRect.h"

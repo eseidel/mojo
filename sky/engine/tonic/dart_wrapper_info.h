@@ -10,11 +10,13 @@
 namespace blink {
 class DartWrappable;
 
+typedef void (*DartWrappableAccepter)(DartWrappable*);
+
 struct DartWrapperInfo {
   const intptr_t class_id;
   const size_t size_in_bytes;
-  const void (*ref_object)(DartWrappable*);
-  const void (*deref_object)(DartWrappable*);
+  const DartWrappableAccepter ref_object;
+  const DartWrappableAccepter deref_object;
 
  private:
   WTF_MAKE_NONCOPYABLE(DartWrapperInfo);

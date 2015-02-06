@@ -10,6 +10,7 @@
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/tonic/dart_converter.h"
 #include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_wrapper_info.h"
 
 namespace blink {
 struct DartWrapperInfo;
@@ -43,7 +44,13 @@ class DartWrappable {
   Dart_WeakPersistentHandle dart_wrapper_;
 };
 
-#define DEFINE_WRAPPERTYPEINFO()
+#define DEFINE_WRAPPERTYPEINFO()                                               \
+ public:                                                                       \
+  const DartWrapperInfo& GetDartWrapperInfo() const override {                 \
+    return dart_wrapper_info_;                                                 \
+  }                                                                            \
+ private:                                                                      \
+  static const DartWrapperInfo& dart_wrapper_info_
 
 template <typename T>
 struct DartConverter<

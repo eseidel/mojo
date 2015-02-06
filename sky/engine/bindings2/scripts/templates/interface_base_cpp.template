@@ -14,6 +14,23 @@
 
 namespace blink {
 
+static void RefObject(DartWrappable* impl) {
+  static_cast<{{cpp_class}}*>(impl)->ref();
+}
+
+static void DerefObject(DartWrappable* impl) {
+  static_cast<{{cpp_class}}*>(impl)->deref();
+}
+
+static const DartWrapperInfo kDartWrapperInfo = {
+  {{dart_class}}::dart_class_id,
+  sizeof({{cpp_class}}),
+  &RefObject,
+  &DerefObject,
+};
+
+const DartWrapperInfo& {{cpp_class}}::dart_wrapper_info_ = kDartWrapperInfo;
+
 namespace {{dart_class}}Internal {
 
 {% from 'methods_cpp.template' import generate_constructor, generate_event_constructor, generate_method, method_callback, overload_resolution_method with context %}

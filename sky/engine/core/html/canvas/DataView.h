@@ -35,7 +35,6 @@ namespace blink {
 class ExceptionState;
 
 class DataView final : public ArrayBufferView, public DartWrappable {
-    DEFINE_WRAPPERTYPEINFO();
 public:
     static PassRefPtr<DataView> create(unsigned length);
     static PassRefPtr<DataView> create(PassRefPtr<ArrayBuffer>, unsigned byteOffset, unsigned byteLength);

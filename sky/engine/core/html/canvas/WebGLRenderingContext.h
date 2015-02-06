@@ -32,7 +32,6 @@
 namespace blink {
 
 class WebGLRenderingContext final : public WebGLRenderingContextBase, public DartWrappable {
-    DEFINE_WRAPPERTYPEINFO();
 public:
     static PassOwnPtr<WebGLRenderingContext> create(HTMLCanvasElement*, WebGLContextAttributes*);
     virtual ~WebGLRenderingContext();

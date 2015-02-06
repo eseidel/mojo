@@ -16,7 +16,6 @@ class Application;
 class AbstractModule : public RefCounted<AbstractModule>,
                        public EventTargetWithInlineData,
                        public ContextLifecycleObserver {
-  DEFINE_WRAPPERTYPEINFO();
   REFCOUNTED_EVENT_TARGET(AbstractModule);
  public:
   virtual ~AbstractModule();

@@ -11,7 +11,6 @@ namespace blink {
 class Application;
 
 class Module : public AbstractModule {
-  DEFINE_WRAPPERTYPEINFO();
 public:
   static PassRefPtr<Module> create(ExecutionContext* context,
                                    Application* application,

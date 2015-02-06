@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdio.h>
+#include "sky/engine/config.h"
+#include "sky/engine/bindings2/builtin.h"
 
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/bindings2/builtin.h"
 
-namespace mojo {
-namespace dart {
+namespace blink {
 
 Builtin::builtin_lib_props Builtin::builtin_libraries_[] = {
     /* { url_, has_natives_, native_symbol_, native_resolver_ } */
@@ -44,5 +43,4 @@ Dart_Handle Builtin::LoadAndCheckLibrary(BuiltinLibraryId id) {
   return library;
 }
 
-}  // namespace dart
-}  // namespace mojo
+}  // namespace blink

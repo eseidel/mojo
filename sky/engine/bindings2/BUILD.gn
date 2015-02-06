@@ -9,7 +9,7 @@ source_set("bindings2") {
   sources = [
     "builtin.cc",
     "builtin.h",
-    "buitin_natives.cc",
+    "builtin_natives.cc",
     "dart_callback.cc",
     "dart_callback.h",
     "dart_event_listener.cc",

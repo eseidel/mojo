@@ -19,17 +19,9 @@
 #include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/text/TextPosition.h"
 
-namespace mojo {
-namespace dart {
-
-extern const uint8_t* snapshot_buffer;
-
-const char* kInternalLibURL = "dart:_internal";
-
-}
-}
-
 namespace blink {
+
+extern const uint8_t* kDartSnapshotBuffer;
 
 DartController::DartController() {
 }
@@ -145,8 +137,7 @@ void DartController::SetDocument(Document* document) {
   char* error = nullptr;
   core_dart_state_ = adoptPtr(new CoreDartState(document));
   Dart_Isolate isolate = Dart_CreateIsolate(
-      document->url().string().utf8().data(), "main",
-      mojo::dart::snapshot_buffer,
+      document->url().string().utf8().data(), "main", kDartSnapshotBuffer,
       static_cast<DartState*>(core_dart_state_.get()), &error);
   CHECK(isolate) << error;
   core_dart_state_->set_isolate(isolate);
@@ -156,12 +147,11 @@ void DartController::SetDocument(Document* document) {
 
   // Setup the native resolvers for the builtin libraries as they are not set
   // up when the snapshot is read.
-  CHECK(mojo::dart::snapshot_buffer != nullptr);
-  mojo::dart::Builtin::SetNativeResolver(mojo::dart::Builtin::kBuiltinLibrary);
+  CHECK(kDartSnapshotBuffer);
+  Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
 
   // The builtin library is part of the snapshot and is already available.
-  Dart_Handle builtin_lib =
-      mojo::dart::Builtin::LoadAndCheckLibrary(mojo::dart::Builtin::kBuiltinLibrary);
+  Dart_Handle builtin_lib = Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
   DART_CHECK_VALID(builtin_lib);
 
   // Setup the internal library's 'internalPrint' function.
@@ -170,7 +160,7 @@ void DartController::SetDocument(Document* document) {
                                   0,
                                   nullptr);
   DART_CHECK_VALID(print);
-  Dart_Handle url = Dart_NewStringFromCString(mojo::dart::kInternalLibURL);
+  Dart_Handle url = Dart_NewStringFromCString("dart:_internal");
   DART_CHECK_VALID(url);
   Dart_Handle internal_lib = Dart_LookupLibrary(url);
   DART_CHECK_VALID(internal_lib);

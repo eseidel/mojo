@@ -12,8 +12,7 @@
 #include "base/macros.h"
 #include "dart/runtime/include/dart_api.h"
 
-namespace mojo {
-namespace dart {
+namespace blink {
 
 #define REGISTER_FUNCTION(name, count)                                         \
   { "" #name, name, count },
@@ -56,7 +55,6 @@ class Builtin {
   DISALLOW_IMPLICIT_CONSTRUCTORS(Builtin);
 };
 
-}  // namespace dart
-}  // namespace mojo
+}  // namespace blink
 
 #endif  // SKY_ENGINE_BINDINGS2_BUILTIN_H_

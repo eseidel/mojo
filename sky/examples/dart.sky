@@ -1,8 +1,7 @@
 #!mojo mojo:sky_viewer
-<div>
+<sky>
 <import src="dart-library.sky" as="library" />
 <script>
-
 import "dart:sky" as sky;
 
 main() {
@@ -10,6 +9,5 @@ main() {
   print(text.data);
   // print(text.firstChild);
 }
-
 </script>
-</div>
+</sky>

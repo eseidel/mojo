@@ -6,18 +6,5 @@ library dart.sky;
 
 import "dart:nativewrappers";
 
-abstract class Node extends NativeFieldWrapperClass2 {
-  Node get firstChild native "Node_firstChild_Getter";
-  Node get lastChild native "Node_lastChild_Getter";
-  Node get nextSibling native "Node_nextSibling_Getter";
-  Node get previousSibling native "Node_previousSibling_Getter";
-}
-
-abstract class CharacterData extends Node {
-  String get data native "CharacterData_data_Getter";
-}
-
-class Text extends CharacterData {
-  static Text _constructor(String data) native "Text_constructorCallback";
-  factory Text(String data) => _constructor(data);
-}
+part "events.dart";
+part "dom.dart";

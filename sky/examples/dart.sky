@@ -3,12 +3,12 @@
 <import src="dart-library.sky" as="library" />
 <script>
 
-import "dart:blink";
+import "dart:sky" as sky;
 
 main() {
-  var node = new BlinkNode();
+  var text = new sky.Text("Hello");
   print('yay!');
-  print(BlinkNode.firstChild_Getter(node));
+  print(text.firstChild);
 }
 
 </script>

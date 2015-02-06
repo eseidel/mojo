@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "sky/engine/bindings2/builtin.h"
+#include "sky/engine/bindings2/builtin_natives.h"
 #include "sky/engine/core/app/AbstractModule.h"
 #include "sky/engine/core/app/Module.h"
 #include "sky/engine/core/dom/Element.h"
@@ -134,6 +135,7 @@ static void GcEpilogue() {
 
 void DartController::SetDocument(Document* document) {
   DCHECK(document);
+  CHECK(kDartSnapshotBuffer);
   char* error = nullptr;
   core_dart_state_ = adoptPtr(new CoreDartState(document));
   Dart_Isolate isolate = Dart_CreateIsolate(
@@ -145,29 +147,10 @@ void DartController::SetDocument(Document* document) {
 
   DartApiScope apiScope;
 
-  // Setup the native resolvers for the builtin libraries as they are not set
-  // up when the snapshot is read.
-  CHECK(kDartSnapshotBuffer);
   Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
+  BuiltinNatives::Init();
 
-  // The builtin library is part of the snapshot and is already available.
-  Dart_Handle builtin_lib = Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
-  DART_CHECK_VALID(builtin_lib);
-
-  // Setup the internal library's 'internalPrint' function.
-  Dart_Handle print = Dart_Invoke(builtin_lib,
-                                  Dart_NewStringFromCString("_getPrintClosure"),
-                                  0,
-                                  nullptr);
-  DART_CHECK_VALID(print);
-  Dart_Handle url = Dart_NewStringFromCString("dart:_internal");
-  DART_CHECK_VALID(url);
-  Dart_Handle internal_lib = Dart_LookupLibrary(url);
-  DART_CHECK_VALID(internal_lib);
-  Dart_Handle result_handle = Dart_SetField(internal_lib,
-                         Dart_NewStringFromCString("_printClosure"),
-                         print);
-  DART_CHECK_VALID(result_handle);
+  Builtin::SetNativeResolver(Builtin::kSkyLibrary);
 }
 
 void DartController::ClearForClose() {

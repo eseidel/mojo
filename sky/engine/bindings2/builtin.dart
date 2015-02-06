@@ -9,10 +9,8 @@ void _print(arg) {
   _Logger._printString(arg.toString());
 }
 
-
 class _Logger {
   static void _printString(String s) native "Logger_PrintString";
 }
-
 
 _getPrintClosure() => _print;

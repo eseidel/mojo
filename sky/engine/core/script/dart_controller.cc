@@ -6,22 +6,26 @@
 #include "sky/engine/core/script/dart_controller.h"
 
 #include "base/logging.h"
-#include "sky/engine/bindings2/dart_state.h"
-#include "sky/engine/core/app/AbstractModule.h"
-#include "sky/engine/core/app/Module.h"
-#include "sky/engine/core/html/imports/HTMLImport.h"
-#include "sky/engine/wtf/text/TextPosition.h"
-#include "sky/engine/core/html/imports/HTMLImportChild.h"
-#include "sky/engine/core/dom/Element.h"
-#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/bindings2/dart_api_scope.h"
 #include "sky/engine/bindings2/dart_isolate_scope.h"
 #include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/bindings2/dart_state.h"
+#include "sky/engine/core/app/AbstractModule.h"
+#include "sky/engine/core/app/Module.h"
+#include "sky/engine/core/dom/Element.h"
+#include "sky/engine/core/html/imports/HTMLImport.h"
+#include "sky/engine/core/html/imports/HTMLImportChild.h"
+#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/wtf/text/TextPosition.h"
 
 namespace mojo {
 namespace dart {
 
 extern const uint8_t* snapshot_buffer;
+
+const char* kInternalLibURL = "dart:_internal";
+
 }
 }
 
@@ -95,11 +99,6 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
       Dart_Invoke(library, Dart_NewStringFromCString("main"), 0, nullptr);
   if (LogIfError(invoke_result))
     return;
-
-  Dart_Handle str = Dart_ToString(invoke_result);
-  const char* xyz = "invalid";
-  Dart_StringToCString(str, &xyz);
-  LOG(INFO) << xyz;
 }
 
 static Dart_Isolate IsolateCreateCallback(const char* script_uri,
@@ -152,6 +151,33 @@ void DartController::SetDocument(Document* document) {
   CHECK(isolate) << error;
   core_dart_state_->set_isolate(isolate);
   Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
+
+  DartApiScope apiScope;
+
+  // Setup the native resolvers for the builtin libraries as they are not set
+  // up when the snapshot is read.
+  CHECK(mojo::dart::snapshot_buffer != nullptr);
+  mojo::dart::Builtin::SetNativeResolver(mojo::dart::Builtin::kBuiltinLibrary);
+
+  // The builtin library is part of the snapshot and is already available.
+  Dart_Handle builtin_lib =
+      mojo::dart::Builtin::LoadAndCheckLibrary(mojo::dart::Builtin::kBuiltinLibrary);
+  DART_CHECK_VALID(builtin_lib);
+
+  // Setup the internal library's 'internalPrint' function.
+  Dart_Handle print = Dart_Invoke(builtin_lib,
+                                  Dart_NewStringFromCString("_getPrintClosure"),
+                                  0,
+                                  nullptr);
+  DART_CHECK_VALID(print);
+  Dart_Handle url = Dart_NewStringFromCString(mojo::dart::kInternalLibURL);
+  DART_CHECK_VALID(url);
+  Dart_Handle internal_lib = Dart_LookupLibrary(url);
+  DART_CHECK_VALID(internal_lib);
+  Dart_Handle result_handle = Dart_SetField(internal_lib,
+                         Dart_NewStringFromCString("_printClosure"),
+                         print);
+  DART_CHECK_VALID(result_handle);
 }
 
 void DartController::ClearForClose() {

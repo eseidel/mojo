@@ -7,6 +7,9 @@ import("//sky/engine/core/core.gni")
 
 source_set("bindings2") {
   sources = [
+    "builtin.cc",
+    "builtin.h",
+    "buitin_natives.cc",
     "dart_api_scope.h",
     "dart_callback.cc",
     "dart_callback.h",
@@ -60,11 +63,14 @@ action("generate_snapshot_bin") {
   inputs = [
     "snapshot.dart",
     "//dart/runtime/tools/create_snapshot_bin.py",
+    "//sky/engine/bindings2/builtin.dart",
   ]
   output = "$target_gen_dir/snapshot_gen.bin"
   outputs = [
     output,
   ]
+
+  builtin_path = rebase_path("//sky/engine/bindings2/builtin.dart")
 
   gen_snapshot_dir =
       get_label_info("//dart/runtime/bin:gen_snapshot($host_toolchain)",
@@ -85,6 +91,7 @@ action("generate_snapshot_bin") {
     "--target_os",
     os,
     "--url_mapping=dart:blink,$dartium_path",
+    "--url_mapping=dart:sky_builtin,$builtin_path",
   ]
 }
 

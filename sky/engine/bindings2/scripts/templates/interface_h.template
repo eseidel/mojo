@@ -12,13 +12,9 @@
 #include "{{filename}}"
 {% endfor %}
 
-#include "gen/sky/bindings/DartWebkitClassIds.h"
-
 namespace blink {
 
 struct {{dart_class}} {
-  static const int dart_class_id = {{interface_name}}ClassId;
-
   static bool hasInstance(Dart_Handle handle) {
     // TODO(abarth): Need to look up the class_id from |handle| and compare with |dart_class_id|.
     return false;

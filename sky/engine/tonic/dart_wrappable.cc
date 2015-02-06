@@ -41,8 +41,8 @@ Dart_Handle DartWrappable::Wrap(DartState* dart_state) {
   DCHECK(!LogIfError(type));
 
   intptr_t native_fields[kNumberOfNativeFields];
-  native_fields[kWrapperInfoIndex] = reinterpret_cast<intptr_t>(&info);
   native_fields[kPeerIndex] = reinterpret_cast<intptr_t>(this);
+  native_fields[kWrapperInfoIndex] = reinterpret_cast<intptr_t>(&info);
   Dart_Handle wrapper =
       Dart_AllocateWithNativeFields(type, kNumberOfNativeFields, native_fields);
   DCHECK(!LogIfError(wrapper));

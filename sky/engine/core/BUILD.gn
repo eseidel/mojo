@@ -26,6 +26,7 @@ source_set("libraries") {
     "//mojo/services/view_manager/public/cpp",
     "//skia",
     "//sky/engine/wtf",
+    "//sky/engine/tonic:tonic",
     "//third_party/angle:translator",
     "//third_party/iccjpeg",
     "//third_party/libpng",

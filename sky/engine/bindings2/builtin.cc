@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
+#include "gen/sky/bindings/DartGlobal.h"
 #include "sky/engine/bindings2/builtin_natives.h"
 #include "sky/engine/bindings2/builtin_sky.h"
 
@@ -23,7 +24,7 @@ struct LibraryDescriptor {
 const LibraryDescriptor kBuiltinLibraries[] = {
     /* { url_, has_natives_, native_symbol_, native_resolver_ } */
     {"dart:sky_builtin", true, BuiltinNatives::NativeSymbol, BuiltinNatives::NativeLookup},
-    {"dart:sky", true, BuiltinSky::NativeSymbol, BuiltinSky::NativeLookup},
+    {"dart:sky", true, skySnapshotSymbolizer, skySnapshotResolver},
 };
 
 }  // namespace

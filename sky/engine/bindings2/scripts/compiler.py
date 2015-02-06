@@ -109,8 +109,8 @@ class IdlCompilerDart(IdlCompiler):
                 idl_file_list = sorted([line.rstrip('\n')
                                         for line in input_file])
             expanded_global_entries.append((directory, idl_file_list))
-        global_header_filename = os.path.join(self.output_directory, 'DartWebkitClassIds.h')
-        global_cpp_filename = os.path.join(self.output_directory, 'DartWebkitClassIds.cpp')
+        global_header_filename = os.path.join(self.output_directory, 'DartGlobal.h')
+        global_cpp_filename = os.path.join(self.output_directory, 'DartGlobal.cpp')
         self.generate_global_and_write(expanded_global_entries,
                                        (global_header_filename, global_cpp_filename))
 

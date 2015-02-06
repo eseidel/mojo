@@ -36,7 +36,10 @@ source_set("bindings2") {
     ":generated_bindings",
     ":snapshot_cc",
   ]
-  include_dirs = [ "..", "$root_build_dir" ]
+  include_dirs = [
+    "..",
+    "$root_build_dir",
+  ]
 }
 
 action("generate_snapshot_bin") {
@@ -262,6 +265,33 @@ idl_compiler("compile_idls") {
   output_dir = bindings_output_dir
 }
 
+action("generate_dart_globals") {
+  sources = core_idl_files
+  script = "$bindings_scripts_dir/compiler.py"
+
+  file_list = "$target_gen_dir/${target_name}_file_list.txt"
+  write_file(file_list, rebase_path(sources, root_build_dir))
+
+  inputs = sources + idl_compiler_files + idl_template_files
+
+  outputs = [
+    file_list,
+    "$bindings_output_dir/DartGlobal.h",
+    "$bindings_output_dir/DartGlobal.cpp",
+  ]
+
+  args = [
+    "--output-directory",
+    rebase_path(bindings_output_dir, root_build_dir),
+    "--generate-globals",
+    rebase_path(bindings_output_dir, root_build_dir),
+    rebase_path(file_list, root_build_dir),
+  ]
+  deps = [
+    ":compile_idls",
+  ]
+}
+
 source_set("generated_bindings") {
   deps = [
     "//base",
@@ -287,7 +317,7 @@ source_set("generated_bindings") {
     "//third_party/qcms",
     "//third_party/zlib",
     "//url",
-    ":compile_idls",
+    ":generate_dart_globals",
   ]
 
   include_dirs = [
@@ -295,6 +325,6 @@ source_set("generated_bindings") {
     "$root_build_dir",
   ]
 
-  # Uncomment this line to build the generated files.
   sources = get_target_outputs(":compile_idls")
+  sources += get_target_outputs(":generate_dart_globals")
 }

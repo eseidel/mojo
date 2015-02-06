@@ -17,12 +17,6 @@ class BuiltinSky : public DartClassProvider {
   explicit BuiltinSky(DartState* dart_state);
   ~BuiltinSky();
 
-  static Dart_NativeFunction NativeLookup(Dart_Handle name,
-                                          int argument_count,
-                                          bool* auto_setup_scope);
-
-  static const uint8_t* NativeSymbol(Dart_NativeFunction nf);
-
   // DartClassProvider:
   Dart_Handle GetClassByName(const char* class_name) override;
 

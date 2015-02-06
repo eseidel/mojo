@@ -15,5 +15,6 @@ abstract class CharacterData extends Node {
 }
 
 class Text extends CharacterData {
-  factory Text(String data) native "Text_constructorCallback";
+  static Text _constructor(String data) native "Text_constructorCallback";
+  factory Text(String data) => _constructor(data);
 }

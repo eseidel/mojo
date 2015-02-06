@@ -36,6 +36,7 @@ source_set("bindings2") {
     ":generated_bindings",
     ":snapshot_cc",
   ]
+  include_dirs = [ "..", "$root_build_dir" ]
 }
 
 blink_dartium_path = "$bindings_output_dir/_blink_dartium.dart"
@@ -45,9 +46,10 @@ action("generate_snapshot_bin") {
     "//dart/runtime/bin:gen_snapshot($host_toolchain)",
   ]
   inputs = [
-    "snapshot.dart",
     "//dart/runtime/tools/create_snapshot_bin.py",
     "//sky/engine/bindings2/builtin.dart",
+    "//sky/engine/dart/sky.dart",
+    "snapshot.dart",
   ]
   output = "$target_gen_dir/snapshot_gen.bin"
   outputs = [

@@ -273,11 +273,10 @@ INCLUDES_FOR_TYPE = {
     'CompareHow': set(),
     'EventHandler': set(),
     'EventListener': set(),
-    'MediaQueryListListener': set(['core/css/MediaQueryListListener.h']),
-    'NodeList': set(['core/dom/NodeList.h',
-                     'core/dom/StaticNodeList.h']),
-    'Promise': set(['bindings/core/dart/DartScriptPromise.h']),
-    'ScriptValue': set(['tonic/dart_value.h']),
+    'MediaQueryListListener': set(['sky/engine/core/css/MediaQueryListListener.h']),
+    'NodeList': set(['sky/engine/core/dom/NodeList.h',
+                     'sky/engine/core/dom/StaticNodeList.h']),
+    'ScriptValue': set(['sky/engine/tonic/dart_value.h']),
 }
 
 

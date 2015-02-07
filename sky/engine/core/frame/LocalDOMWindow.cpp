@@ -222,7 +222,7 @@ PassRefPtr<Document> LocalDOMWindow::installNewDocument(const DocumentInit& init
     m_document = Document::create(init);
     m_application = Application::create(m_document.get(), m_document.get(), m_document->url().string());
     m_eventQueue = DOMWindowEventQueue::create(m_document.get());
-    m_frame->dart().SetDocument(m_document.get());
+    m_frame->dart().CreateIsolateFor(m_document.get());
     m_document->attach();
 
     return m_document;

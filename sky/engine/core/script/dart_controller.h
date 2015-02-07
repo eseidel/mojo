@@ -27,7 +27,7 @@ class DartController {
                            const String& source,
                            const TextPosition& textPosition);
   void ClearForClose();
-  void SetDocument(Document*);
+  void CreateIsolateFor(Document*);
 
  private:
   OwnPtr<CoreDartState> core_dart_state_;

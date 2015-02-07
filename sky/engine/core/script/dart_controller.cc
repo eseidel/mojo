@@ -122,7 +122,7 @@ static void GcEpilogue() {
   Dart_ExitScope();
 }
 
-void DartController::SetDocument(Document* document) {
+void DartController::CreateIsolateFor(Document* document) {
   DCHECK(document);
   CHECK(kDartSnapshotBuffer);
   char* error = nullptr;

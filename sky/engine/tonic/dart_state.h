@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/OwnPtr.h"
@@ -22,7 +23,7 @@ class DartClassLibrary;
 // reference to a DartState instance, please hold a base::WeakPtr<DartState>.
 //
 // DartState is analogous to gin::PerIsolateData and JSC::ExecState.
-class DartState {
+class DartState : public base::SupportsUserData {
   WTF_MAKE_NONCOPYABLE(DartState);
 
  public:
@@ -34,6 +35,7 @@ class DartState {
 
   virtual ~DartState();
 
+  static DartState* From(Dart_Isolate isolate);
   static DartState* Current();
 
   base::WeakPtr<DartState> GetWeakPtr();

@@ -5,10 +5,12 @@
 #ifndef SKY_ENGINE_TONIC_DART_CONVERTER_H_
 #define SKY_ENGINE_TONIC_DART_CONVERTER_H_
 
+#include <string>
 #include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/tonic/dart_string.h"
 #include "sky/engine/tonic/dart_string_cache.h"
 #include "sky/engine/tonic/dart_value.h"
+#include "sky/engine/wtf/text/StringUTF8Adaptor.h"
 #include "sky/engine/wtf/text/WTFString.h"
 
 namespace blink {
@@ -17,6 +19,9 @@ namespace blink {
 // parameter |T| determines what kind of type conversion to perform.
 template <typename T, typename Enable = void>
 struct DartConverter {};
+
+////////////////////////////////////////////////////////////////////////////////
+// Boolean
 
 template <>
 struct DartConverter<bool> {
@@ -40,6 +45,9 @@ struct DartConverter<bool> {
     return result;
   }
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Numbers
 
 template <typename T>
 struct DartConverterInteger {
@@ -133,6 +141,9 @@ struct DartConverter<float> : public DartConverterFloatingPoint<float> {};
 template <>
 struct DartConverter<double> : public DartConverterFloatingPoint<double> {};
 
+////////////////////////////////////////////////////////////////////////////////
+// Strings
+
 template <>
 struct DartConverter<String> {
   static Dart_Handle ToDart(DartState* state, const String& val) {
@@ -211,6 +222,9 @@ struct DartConverter<AtomicString> {
   }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Collections
+
 template <typename T>
 struct DartConverter<Vector<T>> {
   static Dart_Handle ToDart(const Vector<T>& val) {
@@ -250,6 +264,9 @@ struct DartConverter<Vector<T>> {
   }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// DartValue
+
 template <>
 struct DartConverter<DartValue> {
   static Dart_Handle ToDart(DartState* state, DartValue* val) {
@@ -260,6 +277,9 @@ struct DartConverter<DartValue> {
     Dart_SetReturnValue(args, val->dart_value());
   }
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Convience wrappers for commonly used conversions
 
 inline Dart_Handle StringToDart(DartState* state, const String& val) {
   return DartConverter<String>::ToDart(state, val);
@@ -273,9 +293,26 @@ inline String StringFromDart(Dart_Handle handle) {
   return DartConverter<String>::FromDart(handle);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Convience wrappers using type inference for ease of code generation
+
 template <typename T>
 inline Dart_Handle VectorToDart(const Vector<T>& val) {
   return DartConverter<Vector<T>>::ToDart(val);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// std::string support (slower, but more convienent for some clients)
+
+inline Dart_Handle StdStringToDart(const std::string& val) {
+  return Dart_NewStringFromUTF8(reinterpret_cast<const uint8_t*>(val.data()),
+                                val.length());
+}
+
+inline std::string StdStringFromDart(Dart_Handle handle) {
+  String string = StringFromDart(handle);
+  StringUTF8Adaptor utf8(string);
+  return std::string(utf8.data(), utf8.length());
 }
 
 }  // namespace blink

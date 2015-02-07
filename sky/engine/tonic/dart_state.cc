@@ -27,6 +27,10 @@ DartState::DartState()
 DartState::~DartState() {
 }
 
+DartState* DartState::From(Dart_Isolate isolate) {
+  return static_cast<DartState*>(Dart_IsolateData(isolate));
+}
+
 DartState* DartState::Current() {
   return static_cast<DartState*>(Dart_CurrentIsolateData());
 }

@@ -36,7 +36,6 @@ mojo_native_application("viewer") {
 
   deps = [
     ":bindings",
-    "//gin",
     "//mojo/application",
     "//mojo/common",
     "//mojo/common:tracing_impl",
@@ -60,6 +59,7 @@ mojo_native_application("viewer") {
     "//skia",
     "//sky/compositor",
     "//sky/engine",
+    "//sky/engine/tonic",
     "//sky/services/inspector:bindings",
     "//sky/services/testing:bindings",
     "//third_party/icu",

@@ -6,7 +6,6 @@
 #define SKY_ENGINE_TONIC_DART_CLASS_LIBRARY_H_
 
 #include "dart/runtime/include/dart_api.h"
-
 #include "sky/engine/tonic/dart_class_provider.h"
 #include "sky/engine/wtf/HashMap.h"
 

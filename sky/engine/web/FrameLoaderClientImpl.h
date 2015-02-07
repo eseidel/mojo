@@ -77,6 +77,7 @@ public:
     virtual void didLoseWebGLContext(int arbRobustnessContextLostReason) override;
 
     virtual void dispatchDidChangeManifest() override;
+    virtual void didCreateIsolate(Dart_Isolate isolate) override;
 
 private:
     virtual bool isFrameLoaderClientImpl() const override { return true; }

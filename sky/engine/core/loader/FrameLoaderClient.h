@@ -38,6 +38,8 @@
 #include "sky/engine/wtf/Forward.h"
 #include "sky/engine/wtf/Vector.h"
 
+typedef struct _Dart_Isolate* Dart_Isolate;
+
 namespace mojo {
 class View;
 }
@@ -112,6 +114,7 @@ namespace blink {
         virtual void dispatchDidChangeManifest() { }
 
         virtual bool isFrameLoaderClientImpl() const { return false; }
+        virtual void didCreateIsolate(Dart_Isolate isolate) {}
     };
 
 } // namespace blink

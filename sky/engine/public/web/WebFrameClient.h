@@ -40,6 +40,8 @@
 #include "sky/engine/public/web/WebNavigationType.h"
 #include "sky/engine/public/web/WebTextDirection.h"
 
+typedef struct _Dart_Isolate* Dart_Isolate;
+
 namespace mojo {
 class View;
 }
@@ -85,6 +87,7 @@ public:
     // Called when a watched CSS selector matches or stops matching.
     virtual void didMatchCSS(WebLocalFrame*, const WebVector<WebString>& newlyMatchingSelectors, const WebVector<WebString>& stoppedMatchingSelectors) { }
 
+    virtual void didCreateIsolate(WebLocalFrame*, Dart_Isolate isolate) {}
 
     // Console messages ----------------------------------------------------
 

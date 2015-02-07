@@ -12,14 +12,16 @@
 #include "sky/engine/core/app/AbstractModule.h"
 #include "sky/engine/core/app/Module.h"
 #include "sky/engine/core/dom/Element.h"
+#include "sky/engine/core/frame/LocalFrame.h"
 #include "sky/engine/core/html/imports/HTMLImport.h"
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
+#include "sky/engine/core/loader/FrameLoaderClient.h"
 #include "sky/engine/core/script/core_dart_state.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_class_library.h"
+#include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
 #include "sky/engine/tonic/dart_state.h"
-#include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/wtf/text/TextPosition.h"
 
 namespace blink {
@@ -141,6 +143,8 @@ void DartController::CreateIsolateFor(Document* document) {
 
   builtin_sky_ = adoptPtr(new BuiltinSky(core_dart_state_.get()));
   core_dart_state_->class_library().set_provider(builtin_sky_.get());
+
+  document->frame()->loaderClient()->didCreateIsolate(isolate);
 }
 
 void DartController::ClearForClose() {

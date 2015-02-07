@@ -252,4 +252,9 @@ void FrameLoaderClientImpl::dispatchDidChangeManifest()
         m_webFrame->client()->didChangeManifest(m_webFrame);
 }
 
+void FrameLoaderClientImpl::didCreateIsolate(Dart_Isolate isolate) {
+  if (m_webFrame->client())
+    m_webFrame->client()->didCreateIsolate(m_webFrame, isolate);
+}
+
 } // namespace blink

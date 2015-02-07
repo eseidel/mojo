@@ -86,6 +86,8 @@ class DocumentView : public blink::ServiceProvider,
       const blink::WebString& source_name,
       unsigned source_line,
       const blink::WebString& stack_trace) override;
+  void didCreateIsolate(blink::WebLocalFrame* frame,
+                        Dart_Isolate isolate) override;
 
   // WebViewClient methods:
   blink::ServiceProvider* services() override;

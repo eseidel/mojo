@@ -258,6 +258,11 @@ void DocumentView::didAddMessageToConsole(
     const blink::WebString& stack_trace) {
 }
 
+void DocumentView::didCreateIsolate(blink::WebLocalFrame* frame,
+                                    Dart_Isolate isolate) {
+  // TODO(abarth): Create the internals object.
+}
+
 blink::ServiceProvider& DocumentView::services() {
   return *this;
 }

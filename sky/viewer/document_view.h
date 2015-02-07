@@ -32,7 +32,6 @@ class View;
 namespace sky {
 class Rasterizer;
 class RasterizerBitmap;
-class ScriptRunner;
 class Layer;
 class LayerHost;
 
@@ -130,7 +129,6 @@ class DocumentView : public blink::ServiceProvider,
   scoped_ptr<LayerHost> layer_host_;
   scoped_refptr<Layer> root_layer_;
   RasterizerBitmap* bitmap_rasterizer_;  // Used for pixel tests.
-  scoped_ptr<ScriptRunner> script_runner_;
 
   base::WeakPtrFactory<DocumentView> weak_factory_;
 

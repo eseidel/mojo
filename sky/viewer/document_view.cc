@@ -39,7 +39,6 @@
 #include "sky/viewer/internals.h"
 #include "sky/viewer/platform/weburlloader_impl.h"
 #include "sky/viewer/runtime_flags.h"
-#include "sky/viewer/script/script_runner.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkDevice.h"

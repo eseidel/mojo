@@ -236,29 +236,6 @@ IdlType.set_implemented_as_interfaces = classmethod(
         cls.implemented_as_interfaces.update(new_implemented_as_interfaces))
 
 
-# [GarbageCollected]
-IdlType.garbage_collected_types = set()
-
-IdlTypeBase.is_garbage_collected = False
-IdlType.is_garbage_collected = property(
-    lambda self: self.base_type in IdlType.garbage_collected_types)
-
-IdlType.set_garbage_collected_types = classmethod(
-    lambda cls, new_garbage_collected_types:
-        cls.garbage_collected_types.update(new_garbage_collected_types))
-
-
-# [WillBeGarbageCollected]
-IdlType.will_be_garbage_collected_types = set()
-
-IdlTypeBase.is_will_be_garbage_collected = False
-IdlType.is_will_be_garbage_collected = property(
-    lambda self: self.base_type in IdlType.will_be_garbage_collected_types)
-
-IdlType.set_will_be_garbage_collected_types = classmethod(
-    lambda cls, new_will_be_garbage_collected_types:
-        cls.will_be_garbage_collected_types.update(new_will_be_garbage_collected_types))
-
 
 ################################################################################
 # Includes

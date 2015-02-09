@@ -107,14 +107,6 @@ class CodeGeneratorDart(object):
             (interface_name, interface_info['implemented_as'])
             for interface_name, interface_info in interfaces_info.iteritems()
             if interface_info['implemented_as']))
-        IdlType.set_garbage_collected_types(set(
-            interface_name
-            for interface_name, interface_info in interfaces_info.iteritems()
-            if 'GarbageCollected' in interface_info['inherited_extended_attributes']))
-        IdlType.set_will_be_garbage_collected_types(set(
-            interface_name
-            for interface_name, interface_info in interfaces_info.iteritems()
-            if 'WillBeGarbageCollected' in interface_info['inherited_extended_attributes']))
         dart_types.set_component_dirs(dict(
             (interface_name, interface_info['component_dir'])
             for interface_name, interface_info in interfaces_info.iteritems()))
@@ -156,26 +148,6 @@ class CodeGeneratorDart(object):
         template_contents['header_includes'].add(interface_info['include_path'])
         template_contents['header_includes'] = sorted(template_contents['header_includes'])
         includes.update(interface_info.get('dependencies_include_paths', []))
-
-        # Remove includes that are not needed for Dart and trigger fatal
-        # compile warnings if included. These IDL files need to be
-        # imported by Dart to generate the list of events but the
-        # associated header files do not contain any code used by Dart.
-        includes.discard('core/dom/GlobalEventHandlers.h')
-        includes.discard('core/frame/DOMWindowEventHandlers.h')
-
-        # Remove v8 usages not needed.
-        includes.discard('core/frame/UseCounter.h')
-        includes.discard('bindings/core/v8/V8ScriptState.h')
-        includes.discard('bindings/core/v8/V8DOMActivityLogger.h')
-        includes.discard('bindings/core/v8/V8DOMConfiguration.h')
-        includes.discard('bindings/core/v8/V8ExceptionState.h')
-        includes.discard('bindings/core/v8/V8HiddenValue.h')
-        includes.discard('bindings/core/v8/V8ObjectConstructor.h')
-        includes.discard('core/dom/ContextFeatures.h')
-        includes.discard('core/dom/Document.h')
-        includes.discard('platform/RuntimeEnabledFeatures.h')
-        includes.discard('platform/TraceEvent.h')
 
         template_contents['cpp_includes'] = sorted(includes)
 

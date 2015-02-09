@@ -115,7 +115,6 @@ def argument_context(interface, method, argument, index):
     extended_attributes = argument.extended_attributes
     idl_type = argument.idl_type
     this_cpp_value = cpp_value(interface, method, index)
-    use_heap_vector_type = context['is_variadic_wrapper_type'] and idl_type.is_will_be_garbage_collected
     auto_scope = not 'DartNoAutoScope' in extended_attributes
     arg_index = index + 1 if not (method.is_static or method.is_constructor) else index
     preprocessed_type = str(idl_type.preprocessed_type)
@@ -133,7 +132,7 @@ def argument_context(interface, method, argument, index):
     context.update({
         'cpp_type': idl_type.cpp_type_args(extended_attributes=extended_attributes,
                                            raw_type=True,
-                                           used_in_cpp_sequence=use_heap_vector_type),
+                                           used_in_cpp_sequence=False),
         'implemented_as': idl_type.implemented_as,
         'cpp_value': this_cpp_value,
         'local_cpp_type': local_cpp_type,
@@ -143,7 +142,7 @@ def argument_context(interface, method, argument, index):
         'preprocessed_type': preprocessed_type,
         'is_array_or_sequence_type': not not idl_type.native_array_element_type,
         'is_strict_type_checking': 'DartStrictTypeChecking' in extended_attributes,
-        'vector_type': 'WillBeHeapVector' if use_heap_vector_type else 'Vector',
+        'vector_type': 'Vector',
         'dart_set_return_value_for_main_world': dart_set_return_value(interface.name, method,
                                                                       this_cpp_value, for_main_world=True),
         'dart_set_return_value': dart_set_return_value(interface.name, method, this_cpp_value),
@@ -245,11 +244,6 @@ def dart_value_to_local_cpp_value(interface, has_type_checking_interface,
     extended_attributes = argument.extended_attributes
     idl_type = argument.idl_type
     name = argument.name
-    # TODO(terry): Variadic arguments are not handled but treated as one argument.
-    #    if argument.is_variadic:
-    #        vector_type = 'WillBeHeapVector' if idl_type.is_will_be_garbage_collected else 'Vector'
-    #        return 'V8TRYCATCH_VOID({vector_type}<{cpp_type}>, {name}, toNativeArguments<{cpp_type}>(info, {index}))'.format(
-    #                cpp_type=idl_type.cpp_type, name=name, index=index, vector_type=vector_type)
 
     # FIXME: V8 has some special logic around the addEventListener and
     # removeEventListener methods that should be added in somewhere.

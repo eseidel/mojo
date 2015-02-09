@@ -42,7 +42,6 @@ idl_compiler_files = [
 
   # The dart files depend on the v8 files. :(
   "scripts/v8_attributes.py",
-  "scripts/v8_callback_interface.py",
   "scripts/v8_globals.py",
   "scripts/v8_interface.py",
   "scripts/v8_methods.py",

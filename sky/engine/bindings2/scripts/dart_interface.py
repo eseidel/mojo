@@ -173,8 +173,6 @@ def interface_context(interface):
         'conditional_string': DartUtilities.conditional_string(interface),  # [Conditional]
         'cpp_class': DartUtilities.cpp_name(interface),
         'header_includes': header_includes,
-        'is_garbage_collected': False,
-        'is_will_be_garbage_collected': False,
         'measure_as': DartUtilities.measure_as(interface),  # [MeasureAs]
         'pass_cpp_type': dart_types.cpp_template_type('PassRefPtr',
             DartUtilities.cpp_name(interface)),

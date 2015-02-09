@@ -24,6 +24,9 @@ void BuiltinSky::InstallWindow(CoreDartState* dart_state) {
   CHECK(!LogIfError(Dart_SetField(library_.value(),
     Dart_NewStringFromCString("window"),
     ToDart(dart_state->CurrentWindow()))));
+  CHECK(!LogIfError(Dart_SetField(library_.value(),
+    Dart_NewStringFromCString("document"),
+    ToDart(dart_state->CurrentDocument()))));
 }
 
 Dart_Handle BuiltinSky::GetClassByName(const char* class_name) {

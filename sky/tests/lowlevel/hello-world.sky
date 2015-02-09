@@ -1,4 +1,5 @@
 <foo>
-<import src="../resources/dump-as-render-tree.sky" />
+<import src="../resources/dump-as-render-tree.sky" as="harness" />
 Hello World!
+<script>main() { harness.init(); }</script>
 </foo>

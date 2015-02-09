@@ -207,6 +207,39 @@ class Document extends Node {
   List<Node> querySelectorAll(String selectors) native "Document_querySelectorAll_Callback";
 }
 
-class Window extends EventTarget {
+abstract class Window extends EventTarget {
   Document get document native "Window_document_Getter";
+}
+
+abstract class HTMLAnchorElement extends Element {
+}
+
+abstract class HTMLCanvasElement extends Element {
+}
+
+abstract class HTMLContentElement extends Element {
+}
+
+abstract class HTMLIFrameElement extends Element {
+}
+
+abstract class HTMLImageElement extends Element {
+}
+
+abstract class HTMLImportElement extends Element {
+}
+
+abstract class HTMLScriptElement extends Element {
+}
+
+abstract class HTMLStyleElement extends Element {
+}
+
+abstract class HTMLTElement extends Element {
+}
+
+abstract class HTMLTemplateElement extends Element {
+}
+
+abstract class HTMLTitleElement extends Element {
 }

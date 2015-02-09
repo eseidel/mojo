@@ -9,4 +9,4 @@ import "dart:nativewrappers";
 part "dom.dart";
 
 Window window;
-Document document;
+Document get document => window.document;

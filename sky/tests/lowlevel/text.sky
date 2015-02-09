@@ -1,6 +1,7 @@
 <html>
-<import src="../resources/dump-as-text.sky" />
+<import src="../resources/dump-as-text.sky" as="harness" />
 <body>
 This is a dump-as-text test.
+<script>main() { harness.init(); }</script>
 </body>
 </html>

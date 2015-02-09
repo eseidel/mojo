@@ -5,6 +5,10 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_event_listener.h"
 
+#include "sky/engine/core/events/Event.h"
+#include "sky/engine/tonic/dart_api_scope.h"
+#include "sky/engine/tonic/dart_isolate_scope.h"
+
 namespace blink {
 
 PassRefPtr<DartEventListener> DartEventListener::FromDart(Dart_Handle handle) {
@@ -12,24 +16,39 @@ PassRefPtr<DartEventListener> DartEventListener::FromDart(Dart_Handle handle) {
     return nullptr;
   void* peer = nullptr;
   CHECK(!Dart_IsError(Dart_GetPeer(handle, &peer)));
-  DartEventListener* listener = static_cast<DartEventListener*>(peer);
-  if (listener)
+  if (DartEventListener* listener = static_cast<DartEventListener*>(peer))
     return listener;
-  return adoptRef(new DartEventListener(handle));
+  RefPtr<DartEventListener> listener = adoptRef(new DartEventListener(handle));
+  listener->data_state_ = DartState::Current()->GetWeakPtr();
+  DCHECK(Dart_IsClosure(handle));
+  listener->ref();  // Balanced in Finalize
+  listener->closure_ = Dart_NewPrologueWeakPersistentHandle(
+      handle, listener.get(), sizeof(*listener), &DartEventListener::Finalize);
+  CHECK(!Dart_IsError(Dart_SetPeer(handle, listener.get())));
+  return listener.release();
 }
 
-DartEventListener::DartEventListener(Dart_Handle handle) {
-  DCHECK(Dart_IsClosure(handle));
-  ref();  // Balanced in Finalize
-  closure_ = Dart_NewPrologueWeakPersistentHandle(handle, this, sizeof(*this),
-                                                  &DartEventListener::Finalize);
-  CHECK(!Dart_IsError(Dart_SetPeer(handle, this)));
+DartEventListener::DartEventListener(Dart_Handle handle) : closure_(nullptr) {
 }
 
 DartEventListener::~DartEventListener() {
 }
 
-void DartEventListener::handleEvent(ExecutionContext*, Event*) {
+void DartEventListener::handleEvent(ExecutionContext* context, Event* event) {
+  if (!closure_ || !data_state_)
+    return;
+
+  DartIsolateScope scope(data_state_->isolate());
+  DartApiScope api_scope;
+
+  // Notice that we protect ourselves as well as the closure object in the VM.
+  RefPtr<DartEventListener> protect(this);
+  Dart_Handle closure_handle = Dart_HandleFromWeakPersistent(closure_);
+  Dart_Handle event_handle = ToDart(event);
+  DCHECK(event_handle);
+
+  Dart_Handle parameters[] = {event_handle};
+  Dart_InvokeClosure(closure_handle, arraysize(parameters), parameters);
 }
 
 void DartEventListener::Finalize(void* isolate_callback_data,

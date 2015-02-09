@@ -30,6 +30,7 @@ class DartEventListener : public EventListener {
                        Dart_WeakPersistentHandle handle,
                        void* peer);
 
+  base::WeakPtr<DartState> data_state_;
   Dart_WeakPersistentHandle closure_;
 };
 

@@ -7,9 +7,11 @@ part of dart.sky;
 abstract class Event extends NativeFieldWrapperClass2 {
 }
 
+typedef void EventListener(Event b);
+
 abstract class EventTarget extends NativeFieldWrapperClass2 {
-  void addEventListener(String type, EventListener listener, bool useCapture) native "EventTarget_addEventListener_Callback";
-  void removeEventListener(String type, EventListener listener, bool useCapture) native "EventTarget_removeEventListener_Callback";
+  void addEventListener(String type, EventListener listener, [bool useCapture = false]) native "EventTarget_addEventListener_Callback";
+  void removeEventListener(String type, EventListener listener, [bool useCapture = false]) native "EventTarget_removeEventListener_Callback";
   bool dispatchEvent(Event event) native "EventTarget_dispatchEvent_Callback";
 }
 

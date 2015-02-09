@@ -22,7 +22,6 @@ idl_lexer_parser_files = [
 
 idl_compiler_files = [
   "scripts/compiler.py",
-  "scripts/idl_compiler.py",
 
   # Blink IDL front end (ex-lexer/parser)
   "scripts/idl_definitions.py",
@@ -37,7 +36,6 @@ idl_compiler_files = [
   "scripts/dart_compiler.py",
   "scripts/dart_interface.py",
   "scripts/dart_methods.py",
-  "scripts/dart_tests.py",
   "scripts/dart_types.py",
   "scripts/dart_utilities.py",
   "scripts/code_generator_dart.py",
@@ -45,13 +43,11 @@ idl_compiler_files = [
   # The dart files depend on the v8 files. :(
   "scripts/v8_attributes.py",
   "scripts/v8_callback_interface.py",
-  "scripts/v8_dictionary.py",
   "scripts/v8_globals.py",
   "scripts/v8_interface.py",
   "scripts/v8_methods.py",
   "scripts/v8_types.py",
   "scripts/v8_utilities.py",
-  "scripts/code_generator_v8.py",
 ]
 
 idl_template_files = [

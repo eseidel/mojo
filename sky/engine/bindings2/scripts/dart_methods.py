@@ -134,6 +134,7 @@ def argument_context(interface, method, argument, index):
         'cpp_type': idl_type.cpp_type_args(extended_attributes=extended_attributes,
                                            raw_type=True,
                                            used_in_cpp_sequence=use_heap_vector_type),
+        'implemented_as': idl_type.implemented_as,
         'cpp_value': this_cpp_value,
         'local_cpp_type': local_cpp_type,
         # FIXME: check that the default value's type is compatible with the argument's

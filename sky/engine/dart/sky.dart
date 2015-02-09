@@ -6,7 +6,6 @@ library dart.sky;
 
 import "dart:nativewrappers";
 
-part "events.dart";
 part "dom.dart";
 
 Window window;

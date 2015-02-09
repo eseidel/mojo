@@ -50,7 +50,6 @@ action("generate_snapshot_bin") {
     "//dart/runtime/tools/create_snapshot_bin.py",
     "//sky/engine/bindings2/builtin.dart",
     "//sky/engine/dart/dom.dart",
-    "//sky/engine/dart/events.dart",
     "//sky/engine/dart/sky.dart",
     "snapshot.dart",
   ]

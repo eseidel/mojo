@@ -73,8 +73,8 @@
     //  90 is when rotated counter clockwise.
     [RuntimeEnabled=OrientationEvent, MeasureAs=WindowOrientation] readonly attribute long orientation;
 
-    [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(RequestAnimationFrameCallback callback);
-    void cancelAnimationFrame(long id);
+    // [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(RequestAnimationFrameCallback callback);
+    // void cancelAnimationFrame(long id);
 
     [Replaceable] readonly attribute CSS CSS;
 

@@ -197,10 +197,10 @@ if (UNLIKELY(argCount <= {{argument.arg_index}})) {
 {% if argument.is_optional %}
 {{argument.local_cpp_type}} {{argument.name}};
 if (argCount > {{argument.arg_index}}) {
-    {{argument.name}} = Dart{{argument.idl_type}}::createWithNullCheck(args, {{argument.arg_index}}, exception);
+    {{argument.name}} = DartConverter<{{argument.implemented_as}}>::FromArgumentsWithNullCheck(args, {{argument.arg_index}}, exception);
 }
 {% else %}{# argument.is_optional #}
-{{argument.local_cpp_type}} {{argument.name}} = Dart{{argument.idl_type}}::createWithNullCheck(args, {{argument.arg_index}}, exception);
+{{argument.local_cpp_type}} {{argument.name}} = DartConverter<{{argument.implemented_as}}>::FromArgumentsWithNullCheck(args, {{argument.arg_index}}, exception);
 {% endif %}{# argument.is_optional #}
 {% else %}{# argument.is_callback_interface #}
 {% if argument.is_optional and argument.has_default -%}

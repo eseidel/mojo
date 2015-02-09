@@ -4,6 +4,15 @@
 
 part of dart.sky;
 
+abstract class Event extends NativeFieldWrapperClass2 {
+}
+
+abstract class EventTarget extends NativeFieldWrapperClass2 {
+  void addEventListener(String type, EventListener listener, bool useCapture) native "EventTarget_addEventListener_Callback";
+  void removeEventListener(String type, EventListener listener, bool useCapture) native "EventTarget_removeEventListener_Callback";
+  bool dispatchEvent(Event event) native "EventTarget_dispatchEvent_Callback";
+}
+
 abstract class Node extends EventTarget {
   Node get parentNode native "Node_parentNode_Getter";
   Node get firstChild native "Node_firstChild_Getter";

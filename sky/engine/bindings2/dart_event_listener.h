@@ -7,22 +7,14 @@
 
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/core/events/EventListener.h"
+#include "sky/engine/wtf/PassRefPtr.h"
+#include "sky/engine/tonic/dart_converter.h"
 
 namespace blink {
 
 class DartEventListener : public EventListener {
  public:
-  static EventListener* create(Dart_NativeArguments args,
-                               int index,
-                               Dart_Handle& exception) {
-    return nullptr;
-  }
-
-  static EventListener* createWithNullCheck(Dart_NativeArguments args,
-                                            int idx,
-                                            Dart_Handle& exception) {
-    return nullptr;
-  }
+  static PassRefPtr<DartEventListener> FromDart(Dart_Handle handle);
 
   ~DartEventListener() override;
 
@@ -32,7 +24,36 @@ class DartEventListener : public EventListener {
   void handleEvent(ExecutionContext*, Event*) override;
 
  private:
-  DartEventListener();
+  explicit DartEventListener(Dart_Handle handle);
+
+  static void Finalize(void* isolate_callback_data,
+                       Dart_WeakPersistentHandle handle,
+                       void* peer);
+
+  Dart_WeakPersistentHandle closure_;
+};
+
+template <>
+struct DartConverter<EventListener> {
+  static PassRefPtr<EventListener> FromDart(Dart_Handle handle) {
+    return DartEventListener::FromDart(handle);
+  }
+
+  static PassRefPtr<EventListener> FromArguments(Dart_NativeArguments args,
+                                                 int index,
+                                                 Dart_Handle& exception) {
+    return FromDart(Dart_GetNativeArgument(args, index));
+  }
+
+  static PassRefPtr<EventListener> FromArgumentsWithNullCheck(
+      Dart_NativeArguments args,
+      int index,
+      Dart_Handle& exception) {
+    Dart_Handle handle = Dart_GetNativeArgument(args, index);
+    if (Dart_IsNull(handle))
+      return nullptr;
+    return FromDart(handle);
+  }
 };
 
 }  // namespace blink

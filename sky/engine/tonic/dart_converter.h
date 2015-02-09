@@ -301,6 +301,11 @@ inline Dart_Handle VectorToDart(const Vector<T>& val) {
   return DartConverter<Vector<T>>::ToDart(val);
 }
 
+template<typename T>
+Dart_Handle ToDart(const T& object) {
+  return DartConverter<T>::ToDart(object);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // std::string support (slower, but more convienent for some clients)
 

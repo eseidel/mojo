@@ -52,7 +52,7 @@ class DartWrappable {
  private:                                                                      \
   static const DartWrapperInfo& dart_wrapper_info_
 
-template <typename T>
+template<typename T>
 struct DartConverter<
     T*,
     typename base::enable_if<
@@ -110,14 +110,14 @@ struct DartConverter<
   }
 };
 
-template <typename T>
+template<typename T>
 struct DartConverter<RefPtr<T>> {
   static Dart_Handle ToDart(RefPtr<T> val) {
     return DartConverter<T*>::ToDart(val.get());
   }
 };
 
-template <typename T>
+template<typename T>
 static T* GetReceiver(Dart_NativeArguments args) {
   intptr_t receiver;
   Dart_Handle result = Dart_GetNativeReceiver(args, &receiver);

@@ -126,6 +126,7 @@ void DartController::CreateIsolateFor(Document* document) {
 
   builtin_sky_ = adoptPtr(new BuiltinSky(core_dart_state_.get()));
   core_dart_state_->class_library().set_provider(builtin_sky_.get());
+  builtin_sky_->InstallWindow(core_dart_state_.get());
 
   document->frame()->loaderClient()->didCreateIsolate(isolate);
 }

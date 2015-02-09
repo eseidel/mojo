@@ -11,11 +11,14 @@
 #include "sky/engine/tonic/dart_persistent_value.h"
 
 namespace blink {
+class CoreDartState;
 
 class BuiltinSky : public DartClassProvider {
  public:
-  explicit BuiltinSky(DartState* dart_state);
+  explicit BuiltinSky(CoreDartState* dart_state);
   ~BuiltinSky();
+
+  void InstallWindow(CoreDartState* dart_state);
 
   // DartClassProvider:
   Dart_Handle GetClassByName(const char* class_name) override;

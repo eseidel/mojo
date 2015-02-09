@@ -195,3 +195,7 @@ class Document extends Node {
   Element querySelector(String selectors) native "Document_querySelector_Callback";
   List<Node> querySelectorAll(String selectors) native "Document_querySelectorAll_Callback";
 }
+
+class Window extends EventTarget {
+  Document get document native "Window_document_Getter";
+}

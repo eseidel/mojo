@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<import src="../resources/dump-as-render-tree.sky" as="harness" />
+<import src="../resources/dump-as-render-tree.sky" />
 <title>Adam Barth</title>
 <style>
 html {
@@ -82,6 +82,5 @@ a {
 <div class="photograph-credit">
 Photograph by <a href="http://www.flickr.com/photos/lesphotosdejerome/">Jérôme</a>
 </div>
-<script>main() { harness.init(); }</script>
 </body>
 </html>

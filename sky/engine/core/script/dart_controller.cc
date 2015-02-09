@@ -73,6 +73,8 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
   if (!module.isApplication()) {
     static_cast<Module*>(&module)
         ->setExports(DartValue::Create(core_dart_state_.get(), library));
+
+    Dart_Invoke(library, Dart_NewStringFromCString("init"), 0, nullptr);
     return;
   }
 

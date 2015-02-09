@@ -1,5 +1,5 @@
 <sky>
-    <import src="../resources/dump-as-render-tree.sky" as="harness"/>
+    <import src="../resources/dump-as-render-tree.sky"/>
     <iframe id="removeMe" src="text.sky">Should not render</iframe>
     <div>This is an <iframe style="border-style: solid; border-width: 20px" src="abarth.sky">iframe</iframe> element.</div>
     <div style="height: 200px">Placeholder.</div>
@@ -9,8 +9,6 @@
     import "dart:sky";
 
     void main() {
-        harness.init();
-
         document.getElementById("removeMe").remove();
     }
     </script>

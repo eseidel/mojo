@@ -263,8 +263,8 @@ void DocumentView::didCreateIsolate(blink::WebLocalFrame* frame,
   Internals::Create(isolate, this);
 }
 
-blink::ServiceProvider& DocumentView::services() {
-  return *this;
+blink::ServiceProvider* DocumentView::services() {
+  return this;
 }
 
 mojo::NavigatorHost* DocumentView::NavigatorHost() {

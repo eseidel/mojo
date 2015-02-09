@@ -85,17 +85,6 @@ void DartController::ExecuteModuleScript(AbstractModule& module,
     return;
 }
 
-static Dart_Isolate IsolateCreateCallback(const char* script_uri,
-                                          const char* main,
-                                          const char* package_root,
-                                          void* callback_data,
-                                          char** error) {
-  DartState* parent_dart_state = static_cast<DartState*>(callback_data);
-  DCHECK(parent_dart_state);
-  // TODO(dart)
-  return nullptr;
-}
-
 static void UnhandledExceptionCallback(Dart_Handle error) {
   // TODO(dart)
 }
@@ -104,12 +93,6 @@ static void IsolateShutdownCallback(void* callback_data) {
   DartState* dart_state = static_cast<DartState*>(callback_data);
   DCHECK(dart_state);
   // TODO(dart)
-}
-
-static Dart_Isolate ServiceIsolateCreateCallback(void* callback_data,
-                                                 char** error) {
-  // TODO(dart)
-  return nullptr;
 }
 
 static void GcPrologue() {
@@ -155,12 +138,11 @@ void DartController::ClearForClose() {
 
 void DartController::InitVM() {
   CHECK(Dart_SetVMFlags(0, NULL));
-  CHECK(Dart_Initialize(IsolateCreateCallback,
+  CHECK(Dart_Initialize(nullptr,
                         nullptr,  // Isolate interrupt callback.
                         UnhandledExceptionCallback, IsolateShutdownCallback,
                         // File IO callbacks.
-                        nullptr, nullptr, nullptr, nullptr, nullptr,
-                        ServiceIsolateCreateCallback));
+                        nullptr, nullptr, nullptr, nullptr, nullptr));
 }
 
 } // namespace blink

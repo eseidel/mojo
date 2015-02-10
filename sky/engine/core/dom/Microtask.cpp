@@ -69,11 +69,12 @@ static MicrotaskQueue& microtaskQueue()
 
 void Microtask::performCheckpoint()
 {
-    MicrotaskQueue local;
-    while(microtaskQueue().size() > 0) {
-        swap(microtaskQueue(), local);
-        for (size_t i = 0; i < local.size(); i++)
-            local[i]->run();
+    MicrotaskQueue& queue = microtaskQueue();
+    while(!queue.isEmpty()) {
+        MicrotaskQueue local;
+        swap(queue, local);
+        for (const auto& task : local)
+            task->run();
     }
 }
 

@@ -13,4 +13,7 @@ class _Logger {
   static void _printString(String s) native "Logger_PrintString";
 }
 
+void _scheduleMicrotask(void callback()) native "ScheduleMicrotask";
+
 _getPrintClosure() => _print;
+_getScheduleMicrotaskClosure() => _scheduleMicrotask;

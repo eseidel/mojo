@@ -9,10 +9,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/bindings2/builtin.h"
+#include "sky/engine/core/dom/Microtask.h"
+#include "sky/engine/tonic/dart_api_scope.h"
+#include "sky/engine/tonic/dart_error.h"
+#include "sky/engine/tonic/dart_isolate_scope.h"
+#include "sky/engine/tonic/dart_state.h"
+#include "sky/engine/tonic/dart_value.h"
 #include "sky/engine/wtf/text/WTFString.h"
 
 namespace blink {
@@ -24,8 +31,9 @@ namespace blink {
 
 // Lists the native functions implementing basic functionality in
 // the Mojo embedder dart, such as printing, and file I/O.
-#define BUILTIN_NATIVE_LIST(V)                                                 \
-  V(Logger_PrintString, 1)
+#define BUILTIN_NATIVE_LIST(V) \
+  V(Logger_PrintString, 1)     \
+  V(ScheduleMicrotask, 1)
 
 BUILTIN_NATIVE_LIST(DECLARE_FUNCTION);
 
@@ -66,15 +74,11 @@ const uint8_t* BuiltinNatives::NativeSymbol(Dart_NativeFunction native_function)
   return nullptr;
 }
 
-void BuiltinNatives::Init() {
-  Dart_Handle builtin_lib = Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
-  DART_CHECK_VALID(builtin_lib);
-
+static void InitPrintClosure(Dart_Handle builtin_library) {
   // Setup the internal library's 'internalPrint' function.
-  Dart_Handle print = Dart_Invoke(builtin_lib,
-                                  Dart_NewStringFromCString("_getPrintClosure"),
-                                  0,
-                                  nullptr);
+  Dart_Handle print =
+      Dart_Invoke(builtin_library,
+                  Dart_NewStringFromCString("_getPrintClosure"), 0, nullptr);
   DART_CHECK_VALID(print);
   Dart_Handle url = Dart_NewStringFromCString("dart:_internal");
   DART_CHECK_VALID(url);
@@ -84,6 +88,27 @@ void BuiltinNatives::Init() {
                          Dart_NewStringFromCString("_printClosure"),
                          print);
   DART_CHECK_VALID(result_handle);
+}
+
+static void InitAyncLibrary(Dart_Handle builtin_library) {
+  Dart_Handle schedule_microtask = Dart_Invoke(
+      builtin_library,
+      Dart_NewStringFromCString("_getScheduleMicrotaskClosure"), 0, nullptr);
+  DART_CHECK_VALID(schedule_microtask);
+  Dart_Handle async_library =
+      Dart_LookupLibrary(Dart_NewStringFromCString("dart:async"));
+  DART_CHECK_VALID(async_library);
+  DART_CHECK_VALID(Dart_Invoke(
+      async_library, Dart_NewStringFromCString("_setScheduleImmediateClosure"),
+      1, &schedule_microtask));
+}
+
+void BuiltinNatives::Init() {
+  Dart_Handle builtin_library =
+      Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
+  DART_CHECK_VALID(builtin_library);
+  InitPrintClosure(builtin_library);
+  InitAyncLibrary(builtin_library);
 }
 
 // Implementation of native functions which are used for some
@@ -107,6 +132,24 @@ void Logger_PrintString(Dart_NativeArguments args) {
 
   }
   fflush(stdout);
+}
+
+static void ExecuteMicrotask(base::WeakPtr<DartState> dart_state,
+                             RefPtr<DartValue> callback) {
+  if (!dart_state)
+    return;
+  DartIsolateScope scope(dart_state->isolate());
+  DartApiScope api_scope;
+  Dart_InvokeClosure(callback->dart_value(), 0, nullptr);
+}
+
+void ScheduleMicrotask(Dart_NativeArguments args) {
+  DartState* dart_state = DartState::Current();
+  Dart_Handle closure = Dart_GetNativeArgument(args, 0);
+  if (LogIfError(closure) || !Dart_IsClosure(closure))
+    return;
+  Microtask::enqueueMicrotask(base::Bind(&ExecuteMicrotask,
+    dart_state->GetWeakPtr(), DartValue::Create(dart_state, closure)));
 }
 
 }  // namespace blink

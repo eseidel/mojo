@@ -58,6 +58,8 @@ struct DartConverter<
     typename base::enable_if<
         base::is_convertible<T*, DartWrappable*>::value>::type> {
   static Dart_Handle ToDart(DartWrappable* val) {
+    if (!val)
+      return Dart_Null();
     if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
       return Dart_HandleFromWeakPersistent(wrapper);
     return val->Wrap(DartState::Current());
@@ -66,7 +68,9 @@ struct DartConverter<
   static void SetReturnValue(Dart_NativeArguments args,
                              DartWrappable* val,
                              bool auto_scope = true) {
-    if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
+    if (!val)
+      Dart_SetReturnValue(args, Dart_Null());
+    else if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
       Dart_SetWeakHandleReturnValue(args, wrapper);
     else
       Dart_SetReturnValue(args, val->Wrap(DartState::Current()));

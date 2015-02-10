@@ -26,6 +26,7 @@ class CoreDartState : public DartState {
   static LocalFrame* CurrentFrame();
   static LocalDOMWindow* CurrentWindow();
 
+  Document* document() const { return document_.get(); }
   DartLoader& loader() const { return *loader_; }
 
  private:

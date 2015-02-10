@@ -9,6 +9,7 @@
 #include "sky/engine/tonic/dart_persistent_value.h"
 #include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/RefPtr.h"
+#include "sky/engine/wtf/PassOwnPtr.h"
 
 namespace blink {
 
@@ -16,13 +17,19 @@ class ExecutionContext;
 
 class ScheduledAction {
  public:
-  ScheduledAction(DartState* dart_state, Dart_Handle action);
+  static PassOwnPtr<ScheduledAction> Create(DartState* dart_state,
+                                            Dart_Handle closure) {
+    return adoptPtr(new ScheduledAction(dart_state, closure));
+  }
+
   ~ScheduledAction();
 
   void Execute(ExecutionContext*);
 
  private:
-  DartPersistentValue action_;
+  ScheduledAction(DartState* dart_state, Dart_Handle closure);
+
+  DartPersistentValue closure_;
 };
 
 }  // namespace blink

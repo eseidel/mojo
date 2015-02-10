@@ -15,6 +15,7 @@
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/core/dom/Microtask.h"
+#include "sky/engine/core/script/core_dart_state.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
@@ -33,7 +34,9 @@ namespace blink {
 // the Mojo embedder dart, such as printing, and file I/O.
 #define BUILTIN_NATIVE_LIST(V) \
   V(Logger_PrintString, 1)     \
-  V(ScheduleMicrotask, 1)
+  V(ScheduleMicrotask, 1)      \
+  V(Timer_create, 3)           \
+  V(Timer_cancel, 1)
 
 BUILTIN_NATIVE_LIST(DECLARE_FUNCTION);
 
@@ -74,41 +77,48 @@ const uint8_t* BuiltinNatives::NativeSymbol(Dart_NativeFunction native_function)
   return nullptr;
 }
 
-static void InitPrintClosure(Dart_Handle builtin_library) {
-  // Setup the internal library's 'internalPrint' function.
-  Dart_Handle print =
-      Dart_Invoke(builtin_library,
-                  Dart_NewStringFromCString("_getPrintClosure"), 0, nullptr);
-  DART_CHECK_VALID(print);
-  Dart_Handle url = Dart_NewStringFromCString("dart:_internal");
-  DART_CHECK_VALID(url);
-  Dart_Handle internal_lib = Dart_LookupLibrary(url);
-  DART_CHECK_VALID(internal_lib);
-  Dart_Handle result_handle = Dart_SetField(internal_lib,
-                         Dart_NewStringFromCString("_printClosure"),
-                         print);
-  DART_CHECK_VALID(result_handle);
+static Dart_Handle GetClosure(Dart_Handle builtin_library, const char* name) {
+  Dart_Handle getter_name = Dart_NewStringFromCString(name);
+  Dart_Handle closure = Dart_Invoke(builtin_library, getter_name, 0, nullptr);
+  DART_CHECK_VALID(closure);
+  return closure;
 }
 
-static void InitAyncLibrary(Dart_Handle builtin_library) {
-  Dart_Handle schedule_microtask = Dart_Invoke(
-      builtin_library,
-      Dart_NewStringFromCString("_getScheduleMicrotaskClosure"), 0, nullptr);
-  DART_CHECK_VALID(schedule_microtask);
-  Dart_Handle async_library =
-      Dart_LookupLibrary(Dart_NewStringFromCString("dart:async"));
+static void InitDartInternal(Dart_Handle builtin_library) {
+  Dart_Handle print = GetClosure(builtin_library, "_getPrintClosure");
+  Dart_Handle timer = GetClosure(builtin_library, "_getCreateTimerClosure");
+
+  Dart_Handle internal_name = Dart_NewStringFromCString("dart:_internal");
+  Dart_Handle internal_library = Dart_LookupLibrary(internal_name);
+  DART_CHECK_VALID(internal_library);
+
+  DART_CHECK_VALID(Dart_SetField(
+      internal_library, Dart_NewStringFromCString("_printClosure"), print));
+
+  Dart_Handle vm_hooks_name = Dart_NewStringFromCString("VMLibraryHooks");
+  Dart_Handle vm_hooks = Dart_GetClass(internal_library, vm_hooks_name);
+  DART_CHECK_VALID(vm_hooks);
+  Dart_Handle timer_name = Dart_NewStringFromCString("timerFactory");
+  DART_CHECK_VALID(Dart_SetField(vm_hooks, timer_name, timer));
+}
+
+static void InitAsync(Dart_Handle builtin_library) {
+  Dart_Handle schedule_microtask =
+      GetClosure(builtin_library, "_getScheduleMicrotaskClosure");
+  Dart_Handle async_name = Dart_NewStringFromCString("dart:async");
+  Dart_Handle async_library = Dart_LookupLibrary(async_name);
   DART_CHECK_VALID(async_library);
-  DART_CHECK_VALID(Dart_Invoke(
-      async_library, Dart_NewStringFromCString("_setScheduleImmediateClosure"),
-      1, &schedule_microtask));
+  Dart_Handle set_schedule_microtask =
+      Dart_NewStringFromCString("_setScheduleImmediateClosure");
+  DART_CHECK_VALID(Dart_Invoke(async_library, set_schedule_microtask, 1,
+                               &schedule_microtask));
 }
 
 void BuiltinNatives::Init() {
-  Dart_Handle builtin_library =
-      Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
-  DART_CHECK_VALID(builtin_library);
-  InitPrintClosure(builtin_library);
-  InitAyncLibrary(builtin_library);
+  Dart_Handle builtin = Builtin::LoadAndCheckLibrary(Builtin::kBuiltinLibrary);
+  DART_CHECK_VALID(builtin);
+  InitDartInternal(builtin);
+  InitAsync(builtin);
 }
 
 // Implementation of native functions which are used for some
@@ -150,6 +160,31 @@ void ScheduleMicrotask(Dart_NativeArguments args) {
     return;
   Microtask::enqueueMicrotask(base::Bind(&ExecuteMicrotask,
     dart_state->GetWeakPtr(), DartValue::Create(dart_state, closure)));
+}
+
+void Timer_create(Dart_NativeArguments args) {
+  int64_t milliseconds = 0;
+  DART_CHECK_VALID(Dart_GetNativeIntegerArgument(args, 0, &milliseconds));
+  Dart_Handle closure = Dart_GetNativeArgument(args, 1);
+  DART_CHECK_VALID(closure);
+  CHECK(Dart_IsClosure(closure));
+  bool repeating = false;
+  DART_CHECK_VALID(Dart_GetNativeBooleanArgument(args, 2, &repeating));
+
+  CoreDartState* state = CoreDartState::Current();
+  int timer_id = DOMTimer::install(state->document(),
+                                   ScheduledAction::Create(state, closure),
+                                   milliseconds,
+                                   !repeating);
+  Dart_SetIntegerReturnValue(args, timer_id);
+}
+
+void Timer_cancel(Dart_NativeArguments args) {
+  int64_t timer_id = 0;
+  DART_CHECK_VALID(Dart_GetNativeIntegerArgument(args, 0, &timer_id));
+
+  CoreDartState* state = CoreDartState::Current();
+  DOMTimer::removeByID(state->document(), timer_id);
 }
 
 }  // namespace blink

@@ -23,9 +23,6 @@ public:
 
   Application* application() const { return application_.get(); }
 
-  void setExports(PassRefPtr<DartValue> exports);
-  DartValue* exports() const;
-
 private:
   Module(ExecutionContext* context,
          Application* application,
@@ -36,7 +33,6 @@ private:
   Application* GetApplication() override;
 
   RefPtr<Application> application_;
-  mutable RefPtr<DartValue> exports_;
 };
 
 } // namespace blink

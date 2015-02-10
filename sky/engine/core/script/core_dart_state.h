@@ -11,6 +11,7 @@
 #include "sky/engine/wtf/RefPtr.h"
 
 namespace blink {
+class DartLoader;
 class LocalFrame;
 class LocalDOMWindow;
 
@@ -25,8 +26,11 @@ class CoreDartState : public DartState {
   static LocalFrame* CurrentFrame();
   static LocalDOMWindow* CurrentWindow();
 
+  DartLoader& loader() const { return *loader_; }
+
  private:
   RefPtr<Document> document_;
+  OwnPtr<DartLoader> loader_;
 };
 
 }

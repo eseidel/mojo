@@ -6,11 +6,12 @@
 #include "sky/engine/core/script/core_dart_state.h"
 
 #include "sky/engine/core/dom/Document.h"
+#include "sky/engine/core/script/dart_loader.h"
 
 namespace blink {
 
 CoreDartState::CoreDartState(Document* document)
-    : document_(document) {
+    : document_(document), loader_(adoptPtr(new DartLoader(this))) {
   DCHECK(document_);
 }
 

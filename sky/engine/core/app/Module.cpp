@@ -29,14 +29,4 @@ Application* Module::GetApplication() {
   return application();
 }
 
-void Module::setExports(PassRefPtr<DartValue> exports) {
-  exports_ = exports;
-}
-
-DartValue* Module::exports() const {
-  if (exports_->is_empty())
-    exports_ = DartValue::Create();
-  return exports_.get();
-}
-
 } // namespace blink

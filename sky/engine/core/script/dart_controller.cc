@@ -5,6 +5,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/script/dart_controller.h"
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/bindings2/builtin_natives.h"
@@ -17,6 +18,8 @@
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
 #include "sky/engine/core/loader/FrameLoaderClient.h"
 #include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/core/script/dart_dependency_catcher.h"
+#include "sky/engine/core/script/dart_loader.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_class_library.h"
 #include "sky/engine/tonic/dart_error.h"
@@ -28,67 +31,84 @@ namespace blink {
 
 extern const uint8_t* kDartSnapshotBuffer;
 
-DartController::DartController() {
+DartController::DartController() : weak_factory_(this) {
 }
 
 DartController::~DartController() {
 }
 
-// TODO(eseidel): These should be defined in DartWebKitClassIds.cpp, but I appear to have broken it.
-// extern Dart_NativeFunction blinkSnapshotResolver(Dart_Handle name, int argumentCount, bool* autoSetupScope);
-// extern const uint8_t* blinkSnapshotSymbolizer(Dart_NativeFunction);
-
-
-void DartController::ExecuteModuleScript(AbstractModule& module,
-                                         const String& source,
-                                         const TextPosition& textPosition) {
-  DartIsolateScope isolate_scope(core_dart_state_->isolate());
+void DartController::LoadModule(RefPtr<AbstractModule> module,
+                                const String& source,
+                                const TextPosition& textPosition) {
+  DartIsolateScope isolate_scope(dart_state()->isolate());
   DartApiScope dart_api_scope;
 
+  DartDependencyCatcher dependency_catcher(dart_state()->loader());
+
   Dart_Handle library = Dart_LoadLibrary(
-      Dart_NewStringFromCString(module.url().utf8().data()),
-      Dart_NewStringFromCString(source.utf8().data()),
-      textPosition.m_line.zeroBasedInt(), textPosition.m_column.zeroBasedInt());
+      StringToDart(dart_state(), module->url()),
+      StringToDart(dart_state(), source), textPosition.m_line.zeroBasedInt(),
+      textPosition.m_column.zeroBasedInt());
+
   if (LogIfError(library))
     return;
 
-  Dart_FinalizeLoading(true);
-
-  if (HTMLImport* parent = module.document()->import()) {
+  if (HTMLImport* parent = module->document()->import()) {
     for (HTMLImportChild* child = static_cast<HTMLImportChild*>(parent->firstChild());
          child; child = static_cast<HTMLImportChild*>(child->next())) {
       if (Element* link = child->link()) {
           String name = link->getAttribute(HTMLNames::asAttr);
 
         Module* childModule = child->module();
-        if (childModule && !childModule->exports()->is_empty()) {
-          Dart_Handle importResult = Dart_LibraryImportLibrary(library, childModule->exports()->dart_value(), Dart_NewStringFromCString(name.utf8().data()));
-          if (LogIfError(importResult))
+        if (childModule && !childModule->library()->is_empty()) {
+          if (LogIfError(Dart_LibraryImportLibrary(
+                  library, childModule->library()->dart_value(),
+                  StringToDart(dart_state(), name))))
             return;
         }
       }
     }
   }
 
-  if (!module.isApplication()) {
-    static_cast<Module*>(&module)
-        ->setExports(DartValue::Create(core_dart_state_.get(), library));
+  module->set_library(DartValue::Create(dart_state(), library));
+  const auto& dependencies = dependency_catcher.dependencies();
 
-    Dart_Invoke(library, Dart_NewStringFromCString("init"), 0, nullptr);
-    return;
+  if (dependencies.isEmpty()) {
+    ExecuteModule(module);
+  } else {
+    dart_state()->loader().WaitForDependencies(
+        dependencies, base::Bind(&DartController::ExecuteModule,
+                                 weak_factory_.GetWeakPtr(), module));
   }
+}
 
-  // TODO(dart): This will throw an API error if main() is absent. It would be
-  // better to test whether main() is present first, then attempt to invoke it
-  // so as to capture & report other errors.
-  Dart_Handle invoke_result =
-      Dart_Invoke(library, Dart_NewStringFromCString("main"), 0, nullptr);
-  if (LogIfError(invoke_result))
-    return;
+void DartController::ExecuteModule(RefPtr<AbstractModule> module) {
+  DCHECK(Dart_CurrentIsolate() == dart_state()->isolate());
+  DartApiScope dart_api_scope;
+
+  LogIfError(Dart_FinalizeLoading(true));
+  Dart_Handle library = module->library()->dart_value();
+  const char* name = module->isApplication() ? "main" : "init";
+  Dart_Handle closure_name = Dart_NewStringFromCString(name);
+  Dart_Handle result = Dart_Invoke(library, closure_name, 0, nullptr);
+
+  if (module->isApplication()) {
+    // TODO(dart): This will throw an API error if main() is absent. It would be
+    // better to test whether main() is present first, then attempt to invoke it
+    // so as to capture & report other errors.
+    LogIfError(result);
+  }
 }
 
 static void UnhandledExceptionCallback(Dart_Handle error) {
   // TODO(dart)
+}
+
+static Dart_Handle LibraryTagHandler(Dart_LibraryTag tag,
+                                     Dart_Handle library,
+                                     Dart_Handle url) {
+  CoreDartState* dart_state = CoreDartState::Current();
+  return dart_state->loader().HandleLibraryTag(tag, library, url);
 }
 
 static void IsolateShutdownCallback(void* callback_data) {
@@ -120,6 +140,7 @@ void DartController::CreateIsolateFor(Document* document) {
   CHECK(isolate) << error;
   core_dart_state_->set_isolate(isolate);
   Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
+  CHECK(!LogIfError(Dart_SetLibraryTagHandler(LibraryTagHandler)));
 
   {
     DartApiScope apiScope;
@@ -127,9 +148,9 @@ void DartController::CreateIsolateFor(Document* document) {
     Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
     BuiltinNatives::Init();
 
-    builtin_sky_ = adoptPtr(new BuiltinSky(core_dart_state_.get()));
-    core_dart_state_->class_library().set_provider(builtin_sky_.get());
-    builtin_sky_->InstallWindow(core_dart_state_.get());
+    builtin_sky_ = adoptPtr(new BuiltinSky(dart_state()));
+    dart_state()->class_library().set_provider(builtin_sky_.get());
+    builtin_sky_->InstallWindow(dart_state());
 
     document->frame()->loaderClient()->didCreateIsolate(isolate);
   }

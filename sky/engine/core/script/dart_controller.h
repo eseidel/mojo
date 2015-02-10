@@ -5,6 +5,8 @@
 #ifndef SKY_ENGINE_CORE_SCRIPT_DART_CONTROLLER_H_
 #define SKY_ENGINE_CORE_SCRIPT_DART_CONTROLLER_H_
 
+#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/wtf/OwnPtr.h"
 #include "sky/engine/wtf/text/AtomicString.h"
@@ -23,15 +25,23 @@ class DartController {
 
   static void InitVM();
 
-  void ExecuteModuleScript(AbstractModule& module,
-                           const String& source,
-                           const TextPosition& textPosition);
+  void LoadModule(RefPtr<AbstractModule> module,
+                  const String& source,
+                  const TextPosition& textPosition);
   void ClearForClose();
   void CreateIsolateFor(Document*);
 
+  CoreDartState* dart_state() const { return core_dart_state_.get(); }
+
  private:
+  void ExecuteModule(RefPtr<AbstractModule> module);
+
   OwnPtr<CoreDartState> core_dart_state_;
   OwnPtr<BuiltinSky> builtin_sky_;
+
+  base::WeakPtrFactory<DartController> weak_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartController);
 };
 
 }

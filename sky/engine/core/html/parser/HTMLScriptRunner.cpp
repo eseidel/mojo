@@ -5,6 +5,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/core/html/parser/HTMLScriptRunner.h"
 
+#include "sky/engine/core/app/AbstractModule.h"
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/dom/Microtask.h"
 #include "sky/engine/core/frame/LocalFrame.h"
@@ -58,11 +59,8 @@ void HTMLScriptRunner::executeScript(PassRefPtr<HTMLScriptElement> element, Text
     ASSERT(!m_isExecutingScript);
     TemporaryChange<bool> executingScript(m_isExecutingScript, true);
 
-    contextDocument->pushCurrentScript(element);
     ASSERT(sourceDocument.module());
-    frame->dart().ExecuteModuleScript(*sourceDocument.module(), source,
-                                      textPosition);
-    contextDocument->popCurrentScript();
+    frame->dart().LoadModule(sourceDocument.module(), source, textPosition);
 }
 
 }

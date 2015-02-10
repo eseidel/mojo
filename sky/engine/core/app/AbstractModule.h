@@ -25,6 +25,10 @@ class AbstractModule : public RefCounted<AbstractModule>,
 
   virtual bool isApplication() const { return false; }
 
+  void set_library(RefPtr<DartValue> library) { library_ = library; }
+
+  DartValue* library() const { return library_.get(); }
+
  protected:
   AbstractModule(ExecutionContext*, PassRefPtr<Document>, const String& url);
 
@@ -35,6 +39,7 @@ class AbstractModule : public RefCounted<AbstractModule>,
 
   RefPtr<Document> document_;
   String url_;
+  RefPtr<DartValue> library_;
 };
 
 } // namespace blink

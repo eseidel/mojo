@@ -134,12 +134,6 @@ def _measure_as(definition_or_member):
 
 def _generate_native_entry(interface_name, name, kind, is_static, arity):
 
-    def mkPublic(s):
-        if s.startswith("_") or s.startswith("$"):
-            return "$" + s
-        return s
-
-    arity_str = ""
     if kind == 'Getter':
         suffix = "_Getter"
     elif kind == 'Setter':
@@ -147,20 +141,15 @@ def _generate_native_entry(interface_name, name, kind, is_static, arity):
     elif kind == 'Constructor':
         name = "constructor"
         suffix = "Callback"
-        arity_str = "_" + str(arity)
     elif kind == 'Method':
         suffix = "_Callback"
-        arity_str = "_" + str(arity)
 
     tag = "%s%s" % (name, suffix)
-    blink_entry = mkPublic(tag + arity_str)
     native_entry = "_".join([interface_name, tag])
 
     argument_names = ['__arg_%d' % i for i in range(0, arity)]
-    if not is_static and kind != 'Constructor':
-        argument_names.insert(0, "mthis")
 
-    return {'blink_entry': blink_entry,
+    return {'blink_entry': name,
             'argument_names': argument_names,
             'resolver_string': native_entry}
 

@@ -33,37 +33,11 @@ Design doc: http://www.chromium.org/developers/design-documents/idl-compiler
 """
 
 import abc
-from optparse import OptionParser
-import os
+import os.path
 import cPickle as pickle
 
 from idl_reader import IdlReader
 from utilities import write_file
-
-
-# TODO(terry): Temporary whitelist of IDL files to skip code generating. e.g.,
-#              adding 'Animation.idl' to this list will skip that IDL file.
-SKIP_IDL_FILES = ['']
-
-
-def parse_options():
-    parser = OptionParser()
-    parser.add_option('--idl-attributes-file',
-                      help="location of bindings/IDLExtendedAttributes.txt")
-    parser.add_option('--output-directory')
-    parser.add_option('--interfaces-info-file')
-    parser.add_option('--write-file-only-if-changed', type='int')
-    # ensure output comes last, so command line easy to parse via regexes
-    parser.disable_interspersed_args()
-
-    options, args = parser.parse_args()
-    if options.output_directory is None:
-        parser.error('Must specify output directory using --output-directory.')
-    options.write_file_only_if_changed = bool(options.write_file_only_if_changed)
-    if len(args) != 1:
-        parser.error('Must specify exactly 1 input file as argument, but %d given.' % len(args))
-    idl_filename = os.path.realpath(args[0])
-    return options, idl_filename
 
 
 def idl_filename_to_interface_name(idl_filename):
@@ -112,13 +86,8 @@ class IdlCompiler(object):
                                                              idl_pickle_filename,
                                                              self.only_if_changed)
 
-        # TODO(terry): Temporary to disable code generating an IDL.
-        base_idl_filename = os.path.basename(idl_filename)
-        if base_idl_filename in SKIP_IDL_FILES:
-            print "----- Skipping %s -----" % base_idl_filename
-        else:
-            for output_code, output_filename in zip(output_code_list, output_filenames):
-                write_file(output_code, output_filename, self.only_if_changed)
+        for output_code, output_filename in zip(output_code_list, output_filenames):
+            write_file(output_code, output_filename, self.only_if_changed)
 
     def generate_global_and_write(self, global_entries, output_filenames):
         output_code_list = self.code_generator.generate_globals(global_entries)

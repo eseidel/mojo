@@ -495,6 +495,51 @@ def preprocess_idl_type_and_value(idl_type, cpp_value, extended_attributes):
     return idl_type, cpp_value
 
 
+IDL_TO_DART_TYPE = {
+    'DOMString': 'String',
+    'void': 'void',
+    'boolean': 'bool',
+}
+
+def idl_type_to_dart_type(idl_type):
+    preprocessed_type = str(idl_type.preprocessed_type)
+    dart_type = IDL_TO_DART_TYPE.get(preprocessed_type)
+    if dart_type:
+        return dart_type
+    if idl_type.is_integer_type:
+        return 'int'
+    if idl_type.is_numeric_type:
+        return 'double'
+    native_array_element_type = idl_type.native_array_element_type
+    if native_array_element_type:
+        return 'List<%s>' % native_array_element_type
+    assert preprocessed_type
+    assert idl_type.is_interface_type, "Missing dart type mapping for '%s'" % preprocessed_type
+    return preprocessed_type
+
+
+DART_DEFAULT_VALUES_BY_TYPE = {
+    'String': '""',
+    'int': '0',
+    'double': '0',
+    'bool': 'false',
+}
+
+def dart_default_value(dart_type, argument=None):
+    # TODO(eseidel): Maybe take the idl_type instead?
+    if argument.default_value:
+        return argument.default_value
+    default_value = DART_DEFAULT_VALUES_BY_TYPE.get(dart_type)
+    if default_value:
+        return default_value
+    idl_type = argument.idl_type
+    if idl_type.is_interface_type:
+        return 'None'
+    if idl_type.native_array_element_type:
+        return 'None'
+    assert default_value, "Missing default value mapping for '%s'" % dart_type
+
+
 def dart_conversion_type(idl_type, extended_attributes):
     """Returns Dart conversion type, adding any additional includes.
 
@@ -753,11 +798,6 @@ CPP_DEFAULT_VALUE_FOR_CPP_TYPE = {
     'unsigned long': '0',
     'long long': '0',
     'unsigned long long': '0',
-    'ScriptValue': 'DartUtilities::dartToScriptValueWithNullCheck(Dart_Null())',
-    'MediaQueryListListener': 'nullptr',
-    'NodeFilter': 'nullptr',
-    'SerializedScriptValue': 'nullptr',
-    'XPathNSResolver': 'nullptr',
 }
 
 

@@ -57,8 +57,6 @@ def method_context(interface, method):
     if idl_type.union_arguments and len(idl_type.union_arguments) > 0:
         this_cpp_type = []
         for cpp_type in idl_type.member_types:
-            # FIXMEDART: we shouldn't just assume RefPtr. We should append
-            # WillBeGC as appropriate.
             this_cpp_type.append("RefPtr<%s>" % cpp_type)
     else:
         this_cpp_type = idl_type.cpp_type
@@ -80,6 +78,7 @@ def method_context(interface, method):
         'arguments': arguments_data,
         'cpp_type': this_cpp_type,
         'cpp_value': this_cpp_value,
+        'dart_type': dart_types.idl_type_to_dart_type(idl_type),
         'dart_name': extended_attributes.get('DartName'),
         'deprecate_as': DartUtilities.deprecate_as(method),  # [DeprecateAs]
         'do_not_check_signature': not(context['is_static'] or
@@ -123,21 +122,19 @@ def argument_context(interface, method, argument, index):
     if context['has_default']:
         default_value = (argument.default_cpp_value or
             dart_types.default_cpp_value_for_cpp_type(idl_type))
-    # FIXMEDART: handle the drift between preprocessed type names in 1847 and
-    # 1985 dartium builds in a more generic way.
-    if preprocessed_type == 'unrestricted float':
-        preprocessed_type = 'float'
-    if preprocessed_type == 'unrestricted double':
-        preprocessed_type = 'double'
+    dart_type = dart_types.idl_type_to_dart_type(idl_type)
+    dart_default_value = dart_types.dart_default_value(dart_type, argument)
     context.update({
         'cpp_type': idl_type.cpp_type_args(extended_attributes=extended_attributes,
                                            raw_type=True,
                                            used_in_cpp_sequence=False),
+        'dart_type': dart_type,
         'implemented_as': idl_type.implemented_as,
         'cpp_value': this_cpp_value,
         'local_cpp_type': local_cpp_type,
         # FIXME: check that the default value's type is compatible with the argument's
         'default_value': default_value,
+        'dart_default_value': dart_default_value,
         'enum_validation_expression': idl_type.enum_validation_expression,
         'preprocessed_type': preprocessed_type,
         'is_array_or_sequence_type': not not idl_type.native_array_element_type,

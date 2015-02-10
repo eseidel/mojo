@@ -2,8 +2,11 @@
 import "dart:sky" as sky;
 import "dart:sky.internals" as internals;
 
+void handleLoadEvent(event) {
+    internals.notifyTestComplete(internals.contentAsText());
+}
+
 void init() {
-  sky.window.addEventListener('load', (_) =>
-    internals.notifyTestComplete(internals.contentAsText()));  
+  sky.window.addEventListener('load', handleLoadEvent);
 }
 </script>

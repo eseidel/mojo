@@ -39,21 +39,6 @@ def read_file_to_list(filename):
         return [line.rstrip('\n') for line in f]
 
 
-def resolve_cygpath(cygdrive_names):
-    if not cygdrive_names:
-        return []
-    cmd = ['cygpath', '-f', '-', '-wa']
-    process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    idl_file_names = []
-    for file_name in cygdrive_names:
-        process.stdin.write('%s\n' % file_name)
-        process.stdin.flush()
-        idl_file_names.append(process.stdout.readline().rstrip())
-    process.stdin.close()
-    process.wait()
-    return idl_file_names
-
-
 def read_idl_files_list_from_file(filename):
     """Similar to read_file_to_list, but also resolves cygpath."""
     with open(filename) as input_file:

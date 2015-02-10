@@ -45,12 +45,11 @@ source_set("bindings2") {
 action("generate_snapshot_bin") {
   deps = [
     "//dart/runtime/bin:gen_snapshot($host_toolchain)",
+    ":generate_sky_core_dart",
   ]
   inputs = [
     "//dart/runtime/tools/create_snapshot_bin.py",
     "//sky/engine/bindings2/builtin.dart",
-    "//sky/engine/dart/dom.dart",
-    "//sky/engine/dart/sky.dart",
     "snapshot.dart",
   ]
   output = "$target_gen_dir/snapshot_gen.bin"
@@ -59,7 +58,7 @@ action("generate_snapshot_bin") {
   ]
 
   builtin_path = rebase_path("//sky/engine/bindings2/builtin.dart")
-  sky_path = rebase_path("//sky/engine/dart/sky.dart")
+  sky_core_path = rebase_path("$bindings_output_dir/sky_core.dart")
 
   gen_snapshot_dir =
       get_label_info("//dart/runtime/bin:gen_snapshot($host_toolchain)",
@@ -77,7 +76,7 @@ action("generate_snapshot_bin") {
     rebase_path(output, root_build_dir),
     "--target_os",
     os,
-    "--url_mapping=dart:sky,$sky_path",
+    "--url_mapping=dart:sky,$sky_core_path",
     "--url_mapping=dart:sky_builtin,$builtin_path",
   ]
 }
@@ -211,7 +210,18 @@ template("idl_compiler") {
     # really expressible in GN now).
     script = "$bindings_scripts_dir/compiler.py"
 
-    inputs = idl_lexer_parser_files + idl_compiler_files + idl_template_files
+    inputs = idl_lexer_parser_files + idl_compiler_files
+    inputs += [
+      "scripts/templates/attributes_cpp.template",
+      "scripts/templates/callback_interface_cpp.template",
+      "scripts/templates/callback_interface_dart.template",
+      "scripts/templates/callback_interface_h.template",
+      "scripts/templates/interface_base_cpp.template",
+      "scripts/templates/interface_cpp.template",
+      "scripts/templates/interface_dart.template",
+      "scripts/templates/interface_h.template",
+      "scripts/templates/methods_cpp.template",
+    ]
     inputs += [
       "$bindings_output_dir/lextab.py",
       "$bindings_output_dir/parsetab.pickle",
@@ -239,6 +249,7 @@ template("idl_compiler") {
     outputs = [
       "$output_dir/Dart{{source_name_part}}.cpp",
       "$output_dir/Dart{{source_name_part}}.h",
+      "$output_dir/{{source_name_part}}.dart",
     ]
 
     args = [
@@ -271,7 +282,11 @@ action("generate_dart_globals") {
   file_list = "$target_gen_dir/${target_name}_file_list.txt"
   write_file(file_list, rebase_path(sources, root_build_dir))
 
-  inputs = sources + idl_compiler_files + idl_template_files
+  inputs = sources + idl_compiler_files
+  inputs += [
+    "scripts/templates/global_cpp.template",
+    "scripts/templates/global_h.template",
+  ]
 
   outputs = [
     file_list,
@@ -286,6 +301,35 @@ action("generate_dart_globals") {
     rebase_path(bindings_output_dir, root_build_dir),
     rebase_path(file_list, root_build_dir),
   ]
+
+  deps = [
+    ":compile_idls",
+  ]
+}
+
+action("generate_sky_core_dart") {
+  sources = core_idl_files
+  script = "$bindings_scripts_dir/compiler.py"
+
+  file_list = "$target_gen_dir/${target_name}_file_list.txt"
+  write_file(file_list, rebase_path(sources, root_build_dir))
+
+  inputs =
+      sources + idl_compiler_files + [ "scripts/templates/dart_blink.template" ]
+
+  outputs = [
+    file_list,
+    "$bindings_output_dir/sky_core.dart",
+  ]
+
+  args = [
+    "--output-directory",
+    rebase_path(bindings_output_dir, root_build_dir),
+    "--generate-dart-blink",
+    rebase_path(bindings_output_dir, root_build_dir),
+    rebase_path(file_list, root_build_dir),
+  ]
+
   deps = [
     ":compile_idls",
   ]

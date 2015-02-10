@@ -236,10 +236,7 @@ def interface_context(interface):
                       # Skip attributes in the IGNORE_MEMBERS list or if an
                       # extended attribute is in the IGNORE_EXTENDED_ATTRIBUTES.
                       if (not _suppress_attribute(interface.name, attribute.name) and
-                          not v8_attributes.is_constructor_attribute(attribute) and
-                          not _suppress_extended_attributes(attribute.extended_attributes) and
-                          not ('DartSuppress' in attribute.extended_attributes and
-                           attribute.extended_attributes.get('DartSuppress') == None))]
+                          not v8_attributes.is_constructor_attribute(attribute))]
     context.update({
         'attributes': attributes,
         'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
@@ -355,12 +352,9 @@ def generate_method_native_entries(interface, methods, kind):
     for method in methods:
         native_entries = []
         arg_count = method['number_of_arguments']
-        min_arg_count = method['number_of_required_arguments']
-        lb = min_arg_count - 2 if min_arg_count > 2 else 0
-        for x in range(lb, arg_count + 3):
-            native_entry = \
-                generate_method_native_entry(interface, method, x, kind)
-            native_entries.append(native_entry)
+        native_entry = \
+            generate_method_native_entry(interface, method, arg_count, kind)
+        native_entries.append(native_entry)
 
         method.update({'native_entries': native_entries})
 

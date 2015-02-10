@@ -70,11 +70,6 @@ module_pyname = os.path.splitext(module_filename)[0] + '.py'
 # after path[0] == invoking script dir
 sys.path.insert(1, third_party_dir)
 
-# Add the base compiler scripts to the path here as in compiler.py
-dart_script_path = os.path.dirname(os.path.abspath(__file__))
-script_path = os.path.join(os.path.dirname(os.path.dirname(dart_script_path)),
-                          'scripts')
-sys.path.extend([script_path])
 
 import jinja2
 
@@ -113,7 +108,7 @@ class CodeGeneratorDart(object):
 
     def generate_code(self, definitions, interface_name, idl_pickle_filename,
                       only_if_changed):
-        """Returns .h/.cpp code as (header_text, cpp_text)."""
+        """Returns .h/.cpp/.dart code as (header_text, cpp_text, dart_text)."""
         try:
             interface = definitions.interfaces[interface_name]
         except KeyError:
@@ -131,13 +126,16 @@ class CodeGeneratorDart(object):
         if interface.is_callback:
             header_template_filename = 'callback_interface_h.template'
             cpp_template_filename = 'callback_interface_cpp.template'
+            dart_template_filename = 'callback_interface_dart.template'
             generate_contents = dart_callback_interface.generate_callback_interface
         else:
             header_template_filename = 'interface_h.template'
             cpp_template_filename = 'interface_cpp.template'
+            dart_template_filename = 'interface_dart.template'
             generate_contents = dart_interface.interface_context
         header_template = self.jinja_env.get_template(header_template_filename)
         cpp_template = self.jinja_env.get_template(cpp_template_filename)
+        dart_template = self.jinja_env.get_template(dart_template_filename)
 
         # Generate contents (input parameters for Jinja)
         template_contents = generate_contents(interface)
@@ -182,7 +180,8 @@ class CodeGeneratorDart(object):
         # Render Jinja templates
         header_text = header_template.render(template_contents)
         cpp_text = cpp_template.render(template_contents)
-        return header_text, cpp_text
+        dart_text = dart_template.render(template_contents)
+        return header_text, cpp_text, dart_text
 
     def load_global_pickles(self, global_entries):
         # List of all interfaces and callbacks for global code generation.

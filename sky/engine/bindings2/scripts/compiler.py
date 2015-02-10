@@ -36,11 +36,6 @@ from optparse import OptionParser
 import os
 import sys
 
-dart_script_path = os.path.dirname(os.path.abspath(__file__))
-script_path = os.path.join(os.path.dirname(os.path.dirname(dart_script_path)),
-                          'scripts')
-sys.path.extend([script_path])
-
 from dart_compiler import IdlCompiler
 from code_generator_dart import CodeGeneratorDart
 
@@ -100,7 +95,10 @@ class IdlCompilerDart(IdlCompiler):
                                        'Dart%s.h' % interface_name)
         cpp_filename = os.path.join(self.output_directory,
                                     'Dart%s.cpp' % interface_name)
-        self.compile_and_write(idl_filename, (header_filename, cpp_filename))
+        dart_filename = os.path.join(self.output_directory,
+                                       '%s.dart' % interface_name)
+        output_paths = (header_filename, cpp_filename, dart_filename)
+        self.compile_and_write(idl_filename, output_paths)
 
     def generate_global(self, global_entries):
         expanded_global_entries = []
@@ -116,7 +114,7 @@ class IdlCompilerDart(IdlCompiler):
 
     def generate_dart_blink(self, global_entries):
         global_dart_blink_filename = os.path.join(self.output_directory,
-                                                  '_blink_dartium.dart')
+                                                  'sky_core.dart')
         expanded_global_entries = []
         for (directory, file_list_file) in global_entries:
             with open(file_list_file) as input_file:

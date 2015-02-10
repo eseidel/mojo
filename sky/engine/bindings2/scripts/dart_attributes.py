@@ -34,7 +34,6 @@ Design doc: http://www.chromium.org/developers/design-documents/idl-compiler
 """
 
 import idl_types
-from dart_interface import suppress_getter, suppress_setter
 import dart_types
 from dart_utilities import DartUtilities
 from v8_globals import interfaces
@@ -57,15 +56,11 @@ def attribute_context(interface, attribute):
         base_idl_type = idl_type.inner_name
 
     # [Custom]
-    has_custom_getter = (('Custom' in extended_attributes and
-                          extended_attributes['Custom'] in [None, 'Getter']) or
-                         ('DartCustom' in extended_attributes and
-                          extended_attributes['DartCustom'] in [None, 'Getter', 'New']))
+    has_custom_getter = ('Custom' in extended_attributes and
+                          extended_attributes['Custom'] in [None, 'Getter'])
     has_custom_setter = (not attribute.is_read_only and
                          (('Custom' in extended_attributes and
-                          extended_attributes['Custom'] in [None, 'Setter']) or
-                         ('DartCustom' in extended_attributes and
-                          extended_attributes['DartCustom'] in [None, 'Setter', 'New'])))
+                          extended_attributes['Custom'] in [None, 'Setter'])))
 
     is_call_with_script_state = DartUtilities.has_extended_attribute_value(attribute, 'CallWith', 'ScriptState')
 
@@ -82,6 +77,7 @@ def attribute_context(interface, attribute):
       'auto_scope': DartUtilities.bool_to_cpp(is_auto_scope),
       'measure_as': DartUtilities.measure_as(attribute),  # [MeasureAs]
       'v8_type': dart_types.v8_type(base_idl_type),
+      'dart_type': dart_types.idl_type_to_dart_type(idl_type),
     })
 
     if v8_attributes.is_constructor_attribute(attribute):
@@ -149,15 +145,9 @@ def getter_context(interface, attribute, context):
                                        for_main_world=False,
                                        auto_scope=context['is_auto_scope'])
 
-    # TODO(terry): Should be able to eliminate suppress_getter as we move from
-    #              IGNORE_MEMBERS to DartSuppress in the IDL.
-    suppress = (suppress_getter(interface.name, attribute.name) or
-                DartUtilities.has_extended_attribute_value(attribute, 'DartSuppress', 'Getter'))
-
     context.update({
         'cpp_value': cpp_value,
         'dart_set_return_value': dart_set_return_value,
-        'is_getter_suppressed': suppress,
     })
 
 
@@ -213,15 +203,10 @@ def setter_context(interface, attribute, context):
 
     idl_type = attribute.idl_type
 
-    # TODO(terry): Should be able to eliminate suppress_setter as we move from
-    #              IGNORE_MEMBERS to DartSuppress in the IDL.
-    suppress = (suppress_setter(interface.name, attribute.name) or
-                DartUtilities.has_extended_attribute_value(attribute, 'DartSuppress', 'Setter'))
     context.update({
         'has_setter_exception_state': (
             context['is_setter_raises_exception'] or context['has_type_checking_interface'] or
             idl_type.is_integer_type),
-        'is_setter_suppressed':  suppress,
         'setter_lvalue': dart_types.check_reserved_name(attribute.name),
         'cpp_type': this_cpp_type,
         'local_cpp_type': idl_type.cpp_type_args(attribute.extended_attributes, raw_type=True),

@@ -102,7 +102,7 @@ static void {{static_method_name(method.name, overload_index)}}(Dart_NativeArgum
         }
         {% endif %}
         {% if method.is_call_with_execution_context %}
-        ExecutionContext* context = CoreDartState::CurrentDocument();
+        ExecutionContext* context = DOMDartState::CurrentDocument();
         if (!context) {
             exception = Dart_NewStringFromCString("Failed to retrieve a context");
             goto fail;
@@ -319,14 +319,14 @@ static void {{static_method_name(constructor.name, overload_index)}}(Dart_Native
 {% endif %}
     {
 {% if is_constructor_call_with_execution_context %}
-        ExecutionContext* context = CoreDartState::CurrentDocument();
+        ExecutionContext* context = DOMDartState::CurrentDocument();
         if (!context) {
             exception = Dart_NewStringFromCString("Failed to retrieve a context");
             goto fail;
         }
 {% endif %}
 {% if is_constructor_call_with_document or (constructor == named_constructor) %}
-        LocalDOMWindow* domWindow = CoreDartState::CurrentWindow();
+        LocalDOMWindow* domWindow = DOMDartState::CurrentWindow();
         if (!domWindow) {
             exception = Dart_NewStringFromCString("Failed to fetch domWindow");
             goto fail;

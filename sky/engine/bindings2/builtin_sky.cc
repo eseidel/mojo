@@ -7,12 +7,12 @@
 
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/core/frame/LocalDOMWindow.h"
-#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/core/script/dom_dart_state.h"
 #include "sky/engine/tonic/dart_error.h"
 
 namespace blink {
 
-BuiltinSky::BuiltinSky(CoreDartState* dart_state) {
+BuiltinSky::BuiltinSky(DOMDartState* dart_state) {
   Builtin::SetNativeResolver(Builtin::kSkyLibrary);
   library_.Set(dart_state, Builtin::LoadAndCheckLibrary(Builtin::kSkyLibrary));
 }
@@ -20,7 +20,7 @@ BuiltinSky::BuiltinSky(CoreDartState* dart_state) {
 BuiltinSky::~BuiltinSky() {
 }
 
-void BuiltinSky::InstallWindow(CoreDartState* dart_state) {
+void BuiltinSky::InstallWindow(DOMDartState* dart_state) {
   CHECK(!LogIfError(Dart_SetField(library_.value(),
     Dart_NewStringFromCString("window"),
     ToDart(dart_state->CurrentWindow()))));

@@ -3,34 +3,34 @@
 // found in the LICENSE file.
 
 #include "sky/engine/config.h"
-#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/core/script/dom_dart_state.h"
 
 #include "sky/engine/core/dom/Document.h"
 #include "sky/engine/core/script/dart_loader.h"
 
 namespace blink {
 
-CoreDartState::CoreDartState(Document* document)
+DOMDartState::DOMDartState(Document* document)
     : document_(document), loader_(adoptPtr(new DartLoader(this))) {
   DCHECK(document_);
 }
 
-CoreDartState::~CoreDartState() {
+DOMDartState::~DOMDartState() {
 }
 
-CoreDartState* CoreDartState::Current() {
-  return static_cast<CoreDartState*>(DartState::Current());
+DOMDartState* DOMDartState::Current() {
+  return static_cast<DOMDartState*>(DartState::Current());
 }
 
-Document* CoreDartState::CurrentDocument() {
+Document* DOMDartState::CurrentDocument() {
   return Current()->document_.get();
 }
 
-LocalFrame* CoreDartState::CurrentFrame() {
+LocalFrame* DOMDartState::CurrentFrame() {
   return Current()->document_->frame();
 }
 
-LocalDOMWindow* CoreDartState::CurrentWindow() {
+LocalDOMWindow* DOMDartState::CurrentWindow() {
   return Current()->document_->domWindow();
 }
 

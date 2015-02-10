@@ -88,8 +88,8 @@ _CALL_WITH_ARGUMENTS = {
     'ScriptState': 'state',
     'ExecutionContext': 'context',
     'ScriptArguments': 'scriptArguments.release()',
-    'ActiveWindow': 'CoreDartState::CurrentWindow()',
-    'FirstWindow': 'CoreDartState::CurrentWindow()',
+    'ActiveWindow': 'DOMDartState::CurrentWindow()',
+    'FirstWindow': 'DOMDartState::CurrentWindow()',
     'Document': 'document',
 }
 

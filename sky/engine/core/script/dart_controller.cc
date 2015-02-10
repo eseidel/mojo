@@ -17,9 +17,9 @@
 #include "sky/engine/core/html/imports/HTMLImport.h"
 #include "sky/engine/core/html/imports/HTMLImportChild.h"
 #include "sky/engine/core/loader/FrameLoaderClient.h"
-#include "sky/engine/core/script/core_dart_state.h"
 #include "sky/engine/core/script/dart_dependency_catcher.h"
 #include "sky/engine/core/script/dart_loader.h"
+#include "sky/engine/core/script/dom_dart_state.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_class_library.h"
 #include "sky/engine/tonic/dart_error.h"
@@ -107,7 +107,7 @@ static void UnhandledExceptionCallback(Dart_Handle error) {
 static Dart_Handle LibraryTagHandler(Dart_LibraryTag tag,
                                      Dart_Handle library,
                                      Dart_Handle url) {
-  CoreDartState* dart_state = CoreDartState::Current();
+  DOMDartState* dart_state = DOMDartState::Current();
   return dart_state->loader().HandleLibraryTag(tag, library, url);
 }
 
@@ -133,12 +133,12 @@ void DartController::CreateIsolateFor(Document* document) {
   DCHECK(document);
   CHECK(kDartSnapshotBuffer);
   char* error = nullptr;
-  core_dart_state_ = adoptPtr(new CoreDartState(document));
+  dom_dart_state_ = adoptPtr(new DOMDartState(document));
   Dart_Isolate isolate = Dart_CreateIsolate(
       document->url().string().utf8().data(), "main", kDartSnapshotBuffer,
-      static_cast<DartState*>(core_dart_state_.get()), &error);
+      static_cast<DartState*>(dom_dart_state_.get()), &error);
   CHECK(isolate) << error;
-  core_dart_state_->set_isolate(isolate);
+  dom_dart_state_->set_isolate(isolate);
   Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
   CHECK(!LogIfError(Dart_SetLibraryTagHandler(LibraryTagHandler)));
 
@@ -158,9 +158,9 @@ void DartController::CreateIsolateFor(Document* document) {
 }
 
 void DartController::ClearForClose() {
-  DartIsolateScope scope(core_dart_state_->isolate());
+  DartIsolateScope scope(dom_dart_state_->isolate());
   Dart_ShutdownIsolate();
-  core_dart_state_.clear();
+  dom_dart_state_.clear();
 }
 
 void DartController::InitVM() {

@@ -15,7 +15,7 @@
 namespace blink {
 class AbstractModule;
 class BuiltinSky;
-class CoreDartState;
+class DOMDartState;
 class Document;
 
 class DartController {
@@ -31,12 +31,12 @@ class DartController {
   void ClearForClose();
   void CreateIsolateFor(Document*);
 
-  CoreDartState* dart_state() const { return core_dart_state_.get(); }
+  DOMDartState* dart_state() const { return dom_dart_state_.get(); }
 
  private:
   void ExecuteModule(RefPtr<AbstractModule> module);
 
-  OwnPtr<CoreDartState> core_dart_state_;
+  OwnPtr<DOMDartState> dom_dart_state_;
   OwnPtr<BuiltinSky> builtin_sky_;
 
   base::WeakPtrFactory<DartController> weak_factory_;

@@ -15,7 +15,7 @@
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/core/dom/Microtask.h"
-#include "sky/engine/core/script/core_dart_state.h"
+#include "sky/engine/core/script/dom_dart_state.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
@@ -171,7 +171,7 @@ void Timer_create(Dart_NativeArguments args) {
   bool repeating = false;
   DART_CHECK_VALID(Dart_GetNativeBooleanArgument(args, 2, &repeating));
 
-  CoreDartState* state = CoreDartState::Current();
+  DOMDartState* state = DOMDartState::Current();
   int timer_id = DOMTimer::install(state->document(),
                                    ScheduledAction::Create(state, closure),
                                    milliseconds,
@@ -183,7 +183,7 @@ void Timer_cancel(Dart_NativeArguments args) {
   int64_t timer_id = 0;
   DART_CHECK_VALID(Dart_GetNativeIntegerArgument(args, 0, &timer_id));
 
-  CoreDartState* state = CoreDartState::Current();
+  DOMDartState* state = DOMDartState::Current();
   DOMTimer::removeByID(state->document(), timer_id);
 }
 

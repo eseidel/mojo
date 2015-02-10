@@ -534,9 +534,9 @@ def dart_default_value(dart_type, argument=None):
         return default_value
     idl_type = argument.idl_type
     if idl_type.is_interface_type:
-        return 'None'
+        return 'null'
     if idl_type.native_array_element_type:
-        return 'None'
+        return 'null'
     assert default_value, "Missing default value mapping for '%s'" % dart_type
 
 

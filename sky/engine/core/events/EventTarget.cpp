@@ -41,6 +41,7 @@
 #include "sky/engine/core/events/Event.h"
 #include "sky/engine/core/frame/LocalDOMWindow.h"
 #include "sky/engine/platform/EventDispatchForbiddenScope.h"
+#include "sky/engine/tonic/dart_gc_visitor.h"
 #include "sky/engine/wtf/StdLibExtras.h"
 #include "sky/engine/wtf/Vector.h"
 
@@ -62,6 +63,16 @@ EventTarget::EventTarget()
 
 EventTarget::~EventTarget()
 {
+}
+
+void EventTarget::AcceptDartGCVisitor(DartGCVisitor& visitor) const
+{
+    if (!visitor.have_found_set())
+        visitor.AddToSetForRoot(this, dart_wrapper());
+    EventListenerIterator iterator(this);
+    while (EventListener* listener = iterator.nextListener())
+        listener->AcceptDartGCVisitor(visitor);
+    DartWrappable::AcceptDartGCVisitor(visitor);
 }
 
 Node* EventTarget::toNode()

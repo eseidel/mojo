@@ -13,6 +13,7 @@
 #include "sky/engine/tonic/dart_wrapper_info.h"
 
 namespace blink {
+class DartGCVisitor;
 struct DartWrapperInfo;
 
 // DartWrappable is a base class that you can inherit from in order to be
@@ -27,20 +28,27 @@ class DartWrappable {
 
   DartWrappable() : dart_wrapper_(nullptr) {}
 
+  // Subclasses that wish to expose a new interface must override this function
+  // and provide information about their wrapper. There is no need to call your
+  // base class's implementation of this function.
   virtual const DartWrapperInfo& GetDartWrapperInfo() const = 0;
 
-  Dart_Handle Wrap(DartState* dart_state);
-  Dart_WeakPersistentHandle dart_wrapper() const { return dart_wrapper_; }
+  // Subclasses that wish to integrate with the Dart garbage collector should
+  // override this function. Please call your base class's AcceptDartGCVisitor
+  // at the end of your override.
+  virtual void AcceptDartGCVisitor(DartGCVisitor& visitor) const;
 
-  void set_dart_wrapper(Dart_WeakPersistentHandle dart_wrapper) {
-    DCHECK(!dart_wrapper_ || !dart_wrapper);
-    dart_wrapper_ = dart_wrapper;
-  }
+  Dart_Handle CreateDartWrapper(DartState* dart_state);
+  Dart_WeakPersistentHandle dart_wrapper() const { return dart_wrapper_; }
 
  protected:
   virtual ~DartWrappable();
 
  private:
+  static void FinalizeDartWrapper(void* isolate_callback_data,
+                                  Dart_WeakPersistentHandle wrapper,
+                                  void* peer);
+
   Dart_WeakPersistentHandle dart_wrapper_;
 
   DISALLOW_COPY_AND_ASSIGN(DartWrappable);
@@ -64,7 +72,7 @@ struct DartConverter<
       return Dart_Null();
     if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
       return Dart_HandleFromWeakPersistent(wrapper);
-    return val->Wrap(DartState::Current());
+    return val->CreateDartWrapper(DartState::Current());
   }
 
   static void SetReturnValue(Dart_NativeArguments args,
@@ -75,7 +83,7 @@ struct DartConverter<
     else if (Dart_WeakPersistentHandle wrapper = val->dart_wrapper())
       Dart_SetWeakHandleReturnValue(args, wrapper);
     else
-      Dart_SetReturnValue(args, val->Wrap(DartState::Current()));
+      Dart_SetReturnValue(args, val->CreateDartWrapper(DartState::Current()));
   }
 
   static T* FromDart(Dart_Handle handle) {

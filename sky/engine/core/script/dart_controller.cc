@@ -23,6 +23,7 @@
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_class_library.h"
 #include "sky/engine/tonic/dart_error.h"
+#include "sky/engine/tonic/dart_gc_controller.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
 #include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/wtf/text/TextPosition.h"
@@ -118,18 +119,6 @@ static void IsolateShutdownCallback(void* callback_data) {
   // TODO(dart)
 }
 
-static void GcPrologue() {
-  Dart_EnterScope();
-
-  DartState* dart_state = DartState::Current();
-  DCHECK(dart_state);
-  // TODO(dart)
-}
-
-static void GcEpilogue() {
-  Dart_ExitScope();
-}
-
 void DartController::CreateIsolateFor(Document* document) {
   DCHECK(document);
   CHECK(kDartSnapshotBuffer);
@@ -140,7 +129,7 @@ void DartController::CreateIsolateFor(Document* document) {
       static_cast<DartState*>(dom_dart_state_.get()), &error);
   CHECK(isolate) << error;
   dom_dart_state_->set_isolate(isolate);
-  Dart_SetGcCallbacks(GcPrologue, GcEpilogue);
+  Dart_SetGcCallbacks(DartGCPrologue, DartGCEpilogue);
   CHECK(!LogIfError(Dart_SetLibraryTagHandler(LibraryTagHandler)));
 
   {

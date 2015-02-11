@@ -71,6 +71,7 @@
 #include "sky/engine/platform/JSONValues.h"
 #include "sky/engine/platform/Partitions.h"
 #include "sky/engine/platform/TraceEvent.h"
+#include "sky/engine/tonic/dart_gc_visitor.h"
 #include "sky/engine/wtf/HashSet.h"
 #include "sky/engine/wtf/PassOwnPtr.h"
 #include "sky/engine/wtf/RefCountedLeakCounter.h"
@@ -315,6 +316,21 @@ void Node::clearRareData()
         delete static_cast<NodeRareData*>(m_data.m_rareData);
     m_data.m_renderer = renderer;
     clearFlag(HasRareDataFlag);
+}
+
+static const Node* rootForGC(const Node* node)
+{
+    if (node->inDocument())
+        return &node->document();
+    while (Node* parent = node->parentOrShadowHostOrTemplateHostNode())
+        node = parent;
+    return node;
+}
+
+void Node::AcceptDartGCVisitor(DartGCVisitor& visitor) const
+{
+    visitor.AddToSetForRoot(rootForGC(this), dart_wrapper());
+    EventTarget::AcceptDartGCVisitor(visitor);
 }
 
 Node* Node::toNode()

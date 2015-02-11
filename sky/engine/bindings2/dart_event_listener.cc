@@ -8,6 +8,7 @@
 #include "sky/engine/core/events/Event.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_error.h"
+#include "sky/engine/tonic/dart_gc_visitor.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
 
 namespace blink {
@@ -50,6 +51,10 @@ void DartEventListener::handleEvent(ExecutionContext* context, Event* event) {
 
   Dart_Handle params[] = {event_handle};
   LogIfError(Dart_InvokeClosure(closure_handle, arraysize(params), params));
+}
+
+void DartEventListener::AcceptDartGCVisitor(DartGCVisitor& visitor) const {
+  visitor.AddToCurrentSet(closure_);
 }
 
 void DartEventListener::Finalize(void* isolate_callback_data,

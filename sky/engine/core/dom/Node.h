@@ -441,6 +441,7 @@ public:
     unsigned short compareDocumentPosition(const Node*, ShadowTreesTreatment = TreatShadowTreesAsDisconnected) const;
 
     virtual Node* toNode() override final;
+    void AcceptDartGCVisitor(DartGCVisitor& visitor) const override;
 
     virtual const AtomicString& interfaceName() const override;
     virtual ExecutionContext* executionContext() const override final;

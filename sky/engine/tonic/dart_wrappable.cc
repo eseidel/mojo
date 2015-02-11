@@ -11,23 +11,15 @@
 #include "sky/engine/tonic/dart_wrapper_info.h"
 
 namespace blink {
-namespace {
-
-void FinalizeWrapper(void* isolate_callback_data,
-                     Dart_WeakPersistentHandle wrapper,
-                     void* peer) {
-  DartWrappable* wrappable = reinterpret_cast<DartWrappable*>(peer);
-  wrappable->set_dart_wrapper(nullptr);
-  const DartWrapperInfo& info = wrappable->GetDartWrapperInfo();
-  info.deref_object(wrappable);
-}
-}
 
 DartWrappable::~DartWrappable() {
   CHECK(!dart_wrapper_);
 }
 
-Dart_Handle DartWrappable::Wrap(DartState* dart_state) {
+void DartWrappable::AcceptDartGCVisitor(DartGCVisitor& visitor) const {
+}
+
+Dart_Handle DartWrappable::CreateDartWrapper(DartState* dart_state) {
   DCHECK(!dart_wrapper_);
   const DartWrapperInfo& info = GetDartWrapperInfo();
 
@@ -41,11 +33,20 @@ Dart_Handle DartWrappable::Wrap(DartState* dart_state) {
       Dart_AllocateWithNativeFields(type, kNumberOfNativeFields, native_fields);
   DCHECK(!LogIfError(wrapper));
 
-  info.ref_object(this);  // Balanced in FinalizeWrapper.
+  info.ref_object(this);  // Balanced in FinalizeDartWrapper.
   dart_wrapper_ = Dart_NewPrologueWeakPersistentHandle(
-      wrapper, this, info.size_in_bytes, &FinalizeWrapper);
+      wrapper, this, info.size_in_bytes, &FinalizeDartWrapper);
 
   return wrapper;
+}
+
+void DartWrappable::FinalizeDartWrapper(void* isolate_callback_data,
+                                        Dart_WeakPersistentHandle wrapper,
+                                        void* peer) {
+  DartWrappable* wrappable = reinterpret_cast<DartWrappable*>(peer);
+  wrappable->dart_wrapper_ = nullptr;
+  const DartWrapperInfo& info = wrappable->GetDartWrapperInfo();
+  info.deref_object(wrappable);  // Balanced in CreateDartWrapper.
 }
 
 }  // namespace blink

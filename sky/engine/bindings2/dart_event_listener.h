@@ -23,6 +23,8 @@ class DartEventListener : public EventListener {
   }
   void handleEvent(ExecutionContext*, Event*) override;
 
+  void AcceptDartGCVisitor(DartGCVisitor& visitor) const override;
+
  private:
   explicit DartEventListener(Dart_Handle handle);
 

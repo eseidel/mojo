@@ -97,6 +97,8 @@ public:
     void deref() { derefEventTarget(); }
 #endif
 
+    void AcceptDartGCVisitor(DartGCVisitor& visitor) const override;
+
     virtual const AtomicString& interfaceName() const = 0;
     virtual ExecutionContext* executionContext() const = 0;
 

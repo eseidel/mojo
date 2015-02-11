@@ -5,6 +5,7 @@
 #include "sky/engine/config.h"
 #include "sky/engine/bindings2/dart_callback.h"
 
+#include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_state.h"
 
 namespace blink {
@@ -31,7 +32,7 @@ Dart_Isolate DartCallback::GetIsolate() const {
 }
 
 bool DartCallback::handleEvent(int argc, Dart_Handle* argv) {
-  Dart_InvokeClosure(callback_.value(), argc, argv);
+  LogIfError(Dart_InvokeClosure(callback_.value(), argc, argv));
   return true;
 }
 

@@ -53,7 +53,7 @@ public:
     virtual String getPropertyValue(const String& propertyName) = 0;
     virtual String getPropertyShorthand(const String& propertyName) = 0;
     virtual bool isPropertyImplicit(const String& propertyName) = 0;
-    virtual void setProperty(const String& propertyName, const String& value, const String& priority, ExceptionState&) = 0;
+    virtual void setProperty(const String& propertyName, const String& value, ExceptionState&) = 0;
     virtual String removeProperty(const String& propertyName, ExceptionState&) = 0;
 
     // CSSPropertyID versions of the CSSOM functions to support bindings and editing.

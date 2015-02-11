@@ -31,6 +31,7 @@ Dart_Isolate DartCallback::GetIsolate() const {
 }
 
 bool DartCallback::handleEvent(int argc, Dart_Handle* argv) {
+  Dart_InvokeClosure(callback_.value(), argc, argv);
   return true;
 }
 

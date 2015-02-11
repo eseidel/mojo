@@ -2279,7 +2279,7 @@ bool CSSComputedStyleDeclaration::isPropertyImplicit(const String&)
     return false;
 }
 
-void CSSComputedStyleDeclaration::setProperty(const String& name, const String&, const String&, ExceptionState& exceptionState)
+void CSSComputedStyleDeclaration::setProperty(const String& name, const String&, ExceptionState& exceptionState)
 {
     exceptionState.ThrowDOMException(NoModificationAllowedError, "These styles are computed, and therefore the '" + name + "' property is read-only.");
 }

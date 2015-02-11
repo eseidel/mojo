@@ -185,7 +185,7 @@ bool AbstractPropertySetCSSStyleDeclaration::isPropertyImplicit(const String& pr
     return propertySet().isPropertyImplicit(propertyID);
 }
 
-void AbstractPropertySetCSSStyleDeclaration::setProperty(const String& propertyName, const String& value, const String& priority, ExceptionState& exceptionState)
+void AbstractPropertySetCSSStyleDeclaration::setProperty(const String& propertyName, const String& value, ExceptionState& exceptionState)
 {
     CSSPropertyID propertyID = cssPropertyID(propertyName);
     if (!propertyID)

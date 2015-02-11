@@ -35,7 +35,7 @@ class DartEventListener : public EventListener {
 };
 
 template <>
-struct DartConverter<EventListener> {
+struct DartConverter<EventListener*> {
   static PassRefPtr<EventListener> FromDart(Dart_Handle handle) {
     return DartEventListener::FromDart(handle);
   }

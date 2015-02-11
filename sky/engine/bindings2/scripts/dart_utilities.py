@@ -60,29 +60,6 @@ def _bool_to_cpp(tf):
     return "true" if tf else "false"
 
 
-# [ActivityLogging]
-def _activity_logging_world_list(member, access_type=None):
-    """Returns a set of world suffixes for which a definition member has activity logging, for specified access type.
-
-    access_type can be 'Getter' or 'Setter' if only checking getting or setting.
-    """
-    if 'ActivityLogging' not in member.extended_attributes:
-        return set()
-    activity_logging = member.extended_attributes['ActivityLogging']
-    # [ActivityLogging=For*] (no prefix, starts with the worlds suffix) means
-    # "log for all use (method)/access (attribute)", otherwise check that value
-    # agrees with specified access_type (Getter/Setter).
-    has_logging = (activity_logging.startswith('For') or
-                   (access_type and activity_logging.startswith(access_type)))
-    if not has_logging:
-        return set()
-# TODO(terry): Remove Me?
-#    includes.add('bindings/core/v8/V8DOMActivityLogger.h')
-    if activity_logging.endswith('ForIsolatedWorlds'):
-        return set([''])
-    return set(['', 'ForMainWorld'])  # endswith('ForAllWorlds')
-
-
 # [CallWith]
 _CALL_WITH_ARGUMENTS = {
     'ScriptState': 'state',
@@ -165,7 +142,6 @@ class dart_utilities_monkey():
 
 DartUtilities = dart_utilities_monkey()
 
-DartUtilities.activity_logging_world_list = _activity_logging_world_list
 DartUtilities.bool_to_cpp = _bool_to_cpp
 DartUtilities.call_with_arguments = _call_with_arguments
 DartUtilities.capitalize = v8_utilities.capitalize

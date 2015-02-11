@@ -67,8 +67,6 @@ def attribute_context(interface, attribute):
     is_auto_scope = not 'DartNoAutoScope' in extended_attributes
 
     context.update({
-      'activity_logging_world_list_for_getter': DartUtilities.activity_logging_world_list(attribute, 'Getter'),  # [ActivityLogging]
-      'activity_logging_world_list_for_setter': DartUtilities.activity_logging_world_list(attribute, 'Setter'),  # [ActivityLogging]
       'deprecate_as': DartUtilities.deprecate_as(attribute),  # [DeprecateAs]
       'has_custom_getter': has_custom_getter,
       'has_custom_setter': has_custom_setter,

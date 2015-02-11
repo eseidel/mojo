@@ -36,7 +36,6 @@
 ActiveDOMObject
 CachedAttribute=*
 CallWith=ExecutionContext|ScriptState|ScriptArguments|ActiveWindow|FirstWindow|ThisValue
-CheckSecurity=Frame|Node|Window
 Clamp
 Conditional=*
 Constructor
@@ -50,8 +49,6 @@ Default=Undefined
 DependentLifetime
 DeprecateAs=*
 DoNotCheckConstants
-DoNotCheckSecurity=|Setter
-DoNotCheckSignature
 EnforceRange
 EventConstructor
 ExposeJSAccessors
@@ -62,7 +59,6 @@ ImplementedAs=*
 InitializedByEventConstructor
 Iterable
 LegacyTreatAsPartialInterface
-LogPreviousValue
 MeasureAs=*
 NamedConstructor=*
 NoImplHeader
@@ -71,8 +67,6 @@ NotEnumerable
 NotScriptWrappable
 OverrideBuiltins
 PartialInterfaceImplementedAs=*
-PerWorldBindings
-PrimaryGlobal=|*
 PutForwards=*
 RaisesException=|Getter|Setter|Constructor
 Reflect=|*
@@ -93,4 +87,3 @@ TreatReturnedNullStringAs=Null|Undefined
 TreatUndefinedAs=NullString
 TypeChecking=Interface|Unrestricted
 URL
-Unforgeable

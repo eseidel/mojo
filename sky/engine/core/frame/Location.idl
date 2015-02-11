@@ -26,9 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-[
-    CheckSecurity=Frame,
-] interface Location {
+interface Location {
     attribute DOMString href;
 
     void assign(DOMString url);

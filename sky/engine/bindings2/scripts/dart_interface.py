@@ -260,7 +260,6 @@ def interface_context(interface):
     compute_method_overloads_context(methods)
     for method in methods:
         method['do_generate_method_configuration'] = (
-            method['do_not_check_signature'] and
             # For overloaded methods, only generate one accessor
             ('overload_index' not in method or method['overload_index'] == 1))
 

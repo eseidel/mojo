@@ -74,20 +74,14 @@ def method_context(interface, method):
     is_custom = 'Custom' in extended_attributes or 'DartCustom' in extended_attributes
 
     context.update({
-        'activity_logging_world_list': DartUtilities.activity_logging_world_list(method),  # [ActivityLogging]
         'arguments': arguments_data,
         'cpp_type': this_cpp_type,
         'cpp_value': this_cpp_value,
         'dart_type': dart_types.idl_type_to_dart_type(idl_type),
         'dart_name': extended_attributes.get('DartName'),
         'deprecate_as': DartUtilities.deprecate_as(method),  # [DeprecateAs]
-        'do_not_check_signature': not(context['is_static'] or
-            DartUtilities.has_extended_attribute(method,
-                ['DoNotCheckSecurity', 'DoNotCheckSignature', 'NotEnumerable',
-                 'ReadOnly', 'RuntimeEnabled', 'Unforgeable'])),
         'has_exception_state':
             context['is_raises_exception'] or
-            context['is_check_security_for_frame'] or
             any(argument for argument in arguments
                 if argument.idl_type.name == 'SerializedScriptValue' or
                    argument.idl_type.is_integer_type),

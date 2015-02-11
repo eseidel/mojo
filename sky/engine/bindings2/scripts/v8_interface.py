@@ -217,7 +217,6 @@ def interface_context(interface):
     # Constants
     context.update({
         'constants': constants,
-        'do_not_check_constants': 'DoNotCheckConstants' in extended_attributes,
         'has_constant_configuration': any(
             not constant['runtime_enabled_function']
             for constant in constants),
@@ -228,12 +227,11 @@ def interface_context(interface):
                   for attribute in interface.attributes]
     context.update({
         'attributes': attributes,
-        'has_accessors': any(attribute['is_expose_js_accessors'] and attribute['should_be_exposed_to_script'] for attribute in attributes),
+        'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
         'has_attribute_configuration': any(
              not (attribute['is_expose_js_accessors'] or
                   attribute['is_static'] or
                   attribute['runtime_enabled_function'])
-             and attribute['should_be_exposed_to_script']
              for attribute in attributes),
         'has_conditional_attributes': any(attribute['exposed_test'] for attribute in attributes),
         'has_constructor_attributes': any(attribute['constructor_type'] for attribute in attributes),
@@ -284,8 +282,7 @@ def interface_context(interface):
         if runtime_enabled_function or has_custom_registration:
             custom_registration_methods.append(method)
             continue
-        if method['should_be_exposed_to_script']:
-            method_configuration_methods.append(method)
+        method_configuration_methods.append(method)
 
     for method in methods:
         # The value of the Function object’s “length” property is a Number
@@ -305,8 +302,6 @@ def interface_context(interface):
     context.update({
         'conditionally_enabled_methods': conditionally_enabled_methods,
         'custom_registration_methods': custom_registration_methods,
-        'has_private_script': any(attribute['is_implemented_in_private_script'] for attribute in attributes) or
-            any(method['is_implemented_in_private_script'] for method in methods),
         'method_configuration_methods': method_configuration_methods,
         'methods': methods,
     })

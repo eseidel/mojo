@@ -482,15 +482,12 @@ def v8_value_to_local_cpp_value(idl_type, extended_attributes, v8_value, variabl
     cpp_value = v8_value_to_cpp_value(idl_type, extended_attributes, v8_value, index, isolate)
     args = [variable_name, cpp_value]
     if idl_type.base_type == 'DOMString':
-        macro = 'TOSTRING_DEFAULT' if used_in_private_script else 'TOSTRING_VOID'
+        macro = 'TOSTRING_VOID'
     elif idl_type.may_raise_exception_on_conversion:
-        macro = 'TONATIVE_DEFAULT_EXCEPTIONSTATE' if used_in_private_script else 'TONATIVE_VOID_EXCEPTIONSTATE'
+        macro = 'TONATIVE_VOID_EXCEPTIONSTATE'
         args.append('exceptionState')
     else:
-        macro = 'TONATIVE_DEFAULT' if used_in_private_script else 'TONATIVE_VOID'
-
-    if used_in_private_script:
-        args.append('false')
+        macro = 'TONATIVE_VOID'
 
     # Macros come in several variants, to minimize expensive creation of
     # v8::TryCatch.

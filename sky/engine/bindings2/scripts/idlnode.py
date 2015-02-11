@@ -476,7 +476,7 @@ class IDLExtAttrs(IDLDictNode):
             func_value = IDLExtAttrFunctionValue(None, ctor_args)
           self.setdefault('Constructor', []).append(func_value)
           continue
-  
+
         func_value = self._find_first(value, 'ExtAttrFunctionValue')
         if func_value:
           # E.g. NamedConstructor=Audio(optional DOMString src)

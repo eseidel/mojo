@@ -52,20 +52,14 @@ from v8_utilities import (capitalize, conditional_string, cpp_name,
 
 
 INTERFACE_H_INCLUDES = frozenset([
-    'bindings/core/v8/ScriptWrappable.h',
-    'bindings/core/v8/V8Binding.h',
-    'bindings/core/v8/V8DOMWrapper.h',
-    'bindings/core/v8/WrapperTypeInfo.h',
     'platform/heap/Handle.h',
 ])
+
 INTERFACE_CPP_INCLUDES = frozenset([
     'sky/engine/bindings2/exception_state.h',
-    'bindings/core/v8/V8DOMConfiguration.h',
-    'bindings/core/v8/V8HiddenValue.h',
-    'bindings/core/v8/V8ObjectConstructor.h',
     'core/dom/Document.h',
     'platform/RuntimeEnabledFeatures.h',
-    'platform/TraceEvent.h',
+    'base/trace_event/trace_event.h',
     'wtf/GetPtr.h',
     'wtf/RefPtr.h',
 ])
@@ -83,17 +77,10 @@ def interface_context(interface):
 
     is_document = inherits_interface(interface.name, 'Document')
     if is_document:
-        includes.update(['bindings/core/v8/ScriptController.h',
-                         'bindings/core/v8/WindowProxy.h',
-                         'core/frame/LocalFrame.h'])
+        includes.update(['core/frame/LocalFrame.h'])
 
     # [ActiveDOMObject]
     is_active_dom_object = 'ActiveDOMObject' in extended_attributes
-
-    # [CheckSecurity]
-    is_check_security = 'CheckSecurity' in extended_attributes
-    if is_check_security:
-        includes.add('bindings/core/v8/BindingSecurity.h')
 
     # [DependentLifetime]
     is_dependent_lifetime = 'DependentLifetime' in extended_attributes
@@ -115,8 +102,7 @@ def interface_context(interface):
     # [SetWrapperReferenceFrom]
     reachable_node_function = extended_attributes.get('SetWrapperReferenceFrom')
     if reachable_node_function:
-        includes.update(['bindings/core/v8/V8GCController.h',
-                         'core/dom/Element.h'])
+        includes.update(['core/dom/Element.h'])
 
     # [SetWrapperReferenceTo]
     set_wrapper_reference_to_list = [{
@@ -154,18 +140,11 @@ def interface_context(interface):
     context = {
         'conditional_string': conditional_string(interface),  # [Conditional]
         'cpp_class': cpp_name(interface),
-        # FIXME: Remove 'EventTarget' special handling, http://crbug.com/383699
-        'has_access_check_callbacks': (is_check_security and
-                                       interface.name != 'Window' and
-                                       interface.name != 'EventTarget'),
-        'has_custom_legacy_call_as_function': has_extended_attribute_value(interface, 'Custom', 'LegacyCallAsFunction'),  # [Custom=LegacyCallAsFunction]
-        'has_custom_to_v8': has_extended_attribute_value(interface, 'Custom', 'ToV8'),  # [Custom=ToV8]
         'has_custom_wrap': has_extended_attribute_value(interface, 'Custom', 'Wrap'),  # [Custom=Wrap]
         'has_visit_dom_wrapper': has_visit_dom_wrapper,
         'header_includes': header_includes,
         'interface_name': interface.name,
         'is_active_dom_object': is_active_dom_object,
-        'is_check_security': is_check_security,
         'is_dependent_lifetime': is_dependent_lifetime,
         'is_document': is_document,
         'is_event_target': inherits_interface(interface.name, 'EventTarget'),
@@ -326,9 +305,6 @@ def interface_context(interface):
     context.update({
         'conditionally_enabled_methods': conditionally_enabled_methods,
         'custom_registration_methods': custom_registration_methods,
-        'has_origin_safe_method_setter': any(
-            method['is_check_security_for_frame'] and not method['is_read_only']
-            for method in methods),
         'has_private_script': any(attribute['is_implemented_in_private_script'] for attribute in attributes) or
             any(method['is_implemented_in_private_script'] for method in methods),
         'method_configuration_methods': method_configuration_methods,

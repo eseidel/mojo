@@ -147,11 +147,6 @@ def interface_context(interface):
         # core/frame/LocalFrame.h here.
         includes.update(['DartDocument.h'])
 
-    if inherits_interface(interface.name, 'DataTransferItemList'):
-        # FIXME(jacobr): this is a hack.
-        includes.update(['core/html/HTMLCollection.h'])
-
-
     if inherits_interface(interface.name, 'EventTarget'):
         includes.update(['bindings2/dart_event_listener.h'])
 
@@ -272,9 +267,6 @@ def interface_context(interface):
     generate_method_native_entries(interface, methods, 'Method')
 
     context.update({
-        'has_origin_safe_method_setter': any(
-            method['is_check_security_for_frame'] and not method['is_read_only']
-            for method in methods),
         'has_method_configuration': any(method['do_generate_method_configuration'] for method in methods),
         'methods': methods,
     })

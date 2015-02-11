@@ -101,7 +101,8 @@ void DartController::ExecuteModule(RefPtr<AbstractModule> module) {
 }
 
 static void UnhandledExceptionCallback(Dart_Handle error) {
-  // TODO(dart)
+  DCHECK(!Dart_IsError(error));
+  LOG(ERROR) << Dart_GetError(error);
 }
 
 static Dart_Handle LibraryTagHandler(Dart_LibraryTag tag,

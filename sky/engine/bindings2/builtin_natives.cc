@@ -150,7 +150,7 @@ static void ExecuteMicrotask(base::WeakPtr<DartState> dart_state,
     return;
   DartIsolateScope scope(dart_state->isolate());
   DartApiScope api_scope;
-  Dart_InvokeClosure(callback->dart_value(), 0, nullptr);
+  LogIfError(Dart_InvokeClosure(callback->dart_value(), 0, nullptr));
 }
 
 void ScheduleMicrotask(Dart_NativeArguments args) {

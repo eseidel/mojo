@@ -12,8 +12,6 @@
 
 namespace blink {
 namespace {
-// TODO(abarth): Each IDL interface should generate its own DartWrapperInfo.
-DartWrapperInfo kSingletonWrapperInfo = {0, 0, nullptr, nullptr};
 
 void FinalizeWrapper(void* isolate_callback_data,
                      Dart_WeakPersistentHandle wrapper,
@@ -27,10 +25,6 @@ void FinalizeWrapper(void* isolate_callback_data,
 
 DartWrappable::~DartWrappable() {
   CHECK(!dart_wrapper_);
-}
-
-const DartWrapperInfo& DartWrappable::GetDartWrapperInfo() const {
-  return kSingletonWrapperInfo;
 }
 
 Dart_Handle DartWrappable::Wrap(DartState* dart_state) {

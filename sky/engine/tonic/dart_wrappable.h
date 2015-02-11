@@ -27,7 +27,7 @@ class DartWrappable {
 
   DartWrappable() : dart_wrapper_(nullptr) {}
 
-  virtual const DartWrapperInfo& GetDartWrapperInfo() const;
+  virtual const DartWrapperInfo& GetDartWrapperInfo() const = 0;
 
   Dart_Handle Wrap(DartState* dart_state);
   Dart_WeakPersistentHandle dart_wrapper() const { return dart_wrapper_; }

@@ -54,7 +54,7 @@ void DartStringCache::FinalizeCacheEntry(void* isolate_callback_data,
   DartStringCache& cache = state->string_cache();
 
   Dart_WeakPersistentHandle cached_handle = cache.cache_.take(string_impl);
-  ASSERT_UNUSED(handle == cached_handle, cached_handle);
+  ASSERT_UNUSED(cached_handle, handle == cached_handle);
 
   if (cache.last_dart_string_ == handle) {
     cache.last_dart_string_ = nullptr;

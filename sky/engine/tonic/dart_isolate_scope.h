@@ -7,14 +7,11 @@
 
 #include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/wtf/Noncopyable.h"
 
 namespace blink {
 
 // DartIsolateScope is a helper class for entering and exiting a given isolate.
 class DartIsolateScope {
-  WTF_MAKE_NONCOPYABLE(DartIsolateScope);
-
  public:
   explicit DartIsolateScope(Dart_Isolate isolate);
   ~DartIsolateScope();
@@ -22,7 +19,10 @@ class DartIsolateScope {
  private:
   Dart_Isolate isolate_;
   Dart_Isolate previous_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartIsolateScope);
 };
-}
+
+}  // namespace blink
 
 #endif  // SKY_ENGINE_TONIC_DART_ISOLATE_SCOPE_H_

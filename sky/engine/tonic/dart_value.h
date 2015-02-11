@@ -9,7 +9,6 @@
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/tonic/dart_persistent_value.h"
 #include "sky/engine/tonic/dart_state.h"
-#include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/RefPtr.h"
 
 namespace blink {
@@ -20,8 +19,6 @@ namespace blink {
 // VM's garbage collector cannot break cycles that involve the C++ heap, which
 // can lead to memory leaks.
 class DartValue : public RefCounted<DartValue> {
-  WTF_MAKE_NONCOPYABLE(DartValue);
-
  public:
   static PassRefPtr<DartValue> Create(DartState* dart_state,
                                       Dart_Handle value) {
@@ -53,6 +50,8 @@ class DartValue : public RefCounted<DartValue> {
   DartValue(DartState* dart_state, Dart_Handle value);
 
   DartPersistentValue dart_value_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartValue);
 };
 
 }  // namespace blink

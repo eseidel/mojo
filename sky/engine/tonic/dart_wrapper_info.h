@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_TONIC_DART_WRAPPER_INFO_H_
 #define SKY_ENGINE_TONIC_DART_WRAPPER_INFO_H_
 
-#include "sky/engine/wtf/Noncopyable.h"
+#include "base/macros.h"
 
 namespace blink {
 class DartWrappable;
@@ -19,7 +19,8 @@ struct DartWrapperInfo {
   const DartWrappableAccepter deref_object;
 
  private:
-  WTF_MAKE_NONCOPYABLE(DartWrapperInfo);
+  DartWrapperInfo(const DartWrapperInfo&) = delete;
+  DartWrapperInfo& operator=(const DartWrapperInfo&) = delete;
 };
 
 }  // namespace blink

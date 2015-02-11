@@ -5,9 +5,9 @@
 #ifndef SKY_ENGINE_TONIC_DART_PERSISTENT_VALUE_H_
 #define SKY_ENGINE_TONIC_DART_PERSISTENT_VALUE_H_
 
+#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/wtf/Noncopyable.h"
 
 namespace blink {
 class DartState;
@@ -17,8 +17,6 @@ class DartState;
 // this class instead of holding a Dart_PersistentHandle directly so that you
 // don't leak the Dart_PersistentHandle.
 class DartPersistentValue {
-  WTF_MAKE_NONCOPYABLE(DartPersistentValue);
-
  public:
   DartPersistentValue();
   DartPersistentValue(DartState* dart_state, Dart_Handle value);
@@ -36,7 +34,10 @@ class DartPersistentValue {
  private:
   base::WeakPtr<DartState> dart_state_;
   Dart_PersistentHandle value_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartPersistentValue);
 };
-}
+
+}  // namespace blink
 
 #endif  // SKY_ENGINE_TONIC_DART_PERSISTENT_VALUE_H_

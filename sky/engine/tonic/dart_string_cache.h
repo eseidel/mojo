@@ -39,6 +39,8 @@ class DartStringCache {
   StringCache cache_;
   Dart_WeakPersistentHandle last_dart_string_;
   RefPtr<StringImpl> last_string_impl_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartStringCache);
 };
 
 }  // namespace blink

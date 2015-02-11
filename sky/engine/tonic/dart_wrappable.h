@@ -42,6 +42,8 @@ class DartWrappable {
 
  private:
   Dart_WeakPersistentHandle dart_wrapper_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartWrappable);
 };
 
 #define DEFINE_WRAPPERTYPEINFO()                                               \

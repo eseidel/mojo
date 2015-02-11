@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "dart/runtime/include/dart_api.h"
-#include "sky/engine/wtf/Noncopyable.h"
 #include "sky/engine/wtf/OwnPtr.h"
 #include "sky/engine/wtf/PassRefPtr.h"
 #include "sky/engine/wtf/RefCounted.h"
@@ -24,8 +23,6 @@ class DartClassLibrary;
 //
 // DartState is analogous to gin::PerIsolateData and JSC::ExecState.
 class DartState : public base::SupportsUserData {
-  WTF_MAKE_NONCOPYABLE(DartState);
-
  public:
   class Scope {
    public:
@@ -33,6 +30,7 @@ class DartState : public base::SupportsUserData {
     ~Scope();
   };
 
+  DartState();
   virtual ~DartState();
 
   static DartState* From(Dart_Isolate isolate);
@@ -41,25 +39,22 @@ class DartState : public base::SupportsUserData {
   base::WeakPtr<DartState> GetWeakPtr();
 
   Dart_Isolate isolate() { return isolate_; }
-  DartClassLibrary& class_library() { return *class_library_; }
-  DartStringCache& string_cache() { return *string_cache_; }
-
- protected:
-  DartState();
-
- private:
   void set_isolate(Dart_Isolate isolate) {
     CHECK(!isolate_);
     isolate_ = isolate;
   }
 
+  DartClassLibrary& class_library() { return *class_library_; }
+  DartStringCache& string_cache() { return *string_cache_; }
+
+ private:
   Dart_Isolate isolate_;
   OwnPtr<DartClassLibrary> class_library_;
   OwnPtr<DartStringCache> string_cache_;
 
   base::WeakPtrFactory<DartState> weak_factory_;
 
-  friend class DartController;
+  DISALLOW_COPY_AND_ASSIGN(DartState);
 };
 
 }  // namespace blink

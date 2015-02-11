@@ -26,4 +26,4 @@ DartIsolateScope::~DartIsolateScope() {
     Dart_EnterIsolate(isolate_);
 }
 
-}
+}  // namespace blink

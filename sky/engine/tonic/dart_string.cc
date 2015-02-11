@@ -31,7 +31,8 @@ String Externalize(Dart_Handle handle, intptr_t length) {
   DCHECK(!Dart_IsError(result));
   return String(string_impl.release());
 }
-}
+
+}  // namespace
 
 Dart_Handle CreateDartString(StringImpl* string_impl) {
   if (!string_impl)

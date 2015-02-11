@@ -5,6 +5,7 @@
 #ifndef SKY_ENGINE_TONIC_DART_CLASS_LIBRARY_H_
 #define SKY_ENGINE_TONIC_DART_CLASS_LIBRARY_H_
 
+#include "base/macros.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/tonic/dart_class_provider.h"
 #include "sky/engine/wtf/HashMap.h"
@@ -23,6 +24,8 @@ class DartClassLibrary {
  private:
   DartClassProvider* provider_;
   HashMap<const DartWrapperInfo*, Dart_PersistentHandle> cache_;
+
+  DISALLOW_COPY_AND_ASSIGN(DartClassLibrary);
 };
 
 }  // namespace blink

@@ -103,7 +103,6 @@ def attribute_context(interface, attribute):
         'is_url': 'URL' in extended_attributes,
         'measure_as': v8_utilities.measure_as(attribute),  # [MeasureAs]
         'name': attribute.name,
-        'property_attributes': property_attributes(attribute),
         'put_forwards': 'PutForwards' in extended_attributes,
         'reflect_empty': extended_attributes.get('ReflectEmpty'),
         'reflect_invalid': extended_attributes.get('ReflectInvalid', ''),
@@ -130,42 +129,10 @@ def attribute_context(interface, attribute):
 ################################################################################
 
 def getter_context(interface, attribute, context):
-    idl_type = attribute.idl_type
-    base_idl_type = idl_type.base_type
-    extended_attributes = attribute.extended_attributes
-
     cpp_value = getter_expression(interface, attribute, context)
-    # Normally we can inline the function call into the return statement to
-    # avoid the overhead of using a Ref<> temporary, but for some cases
-    # (nullable types, EventHandler, [CachedAttribute], or if there are
-    # exceptions), we need to use a local variable.
-    # FIXME: check if compilers are smart enough to inline this, and if so,
-    # always use a local variable (for readability and CG simplicity).
-    release = False
-    if (idl_type.is_explicit_nullable or
-        base_idl_type == 'EventHandler' or
-        'CachedAttribute' in extended_attributes or
-        'ReflectOnly' in extended_attributes or
-        context['is_keep_alive_for_gc'] or
-        context['is_getter_raises_exception']):
-        context['cpp_value_original'] = cpp_value
-        cpp_value = 'cppValue'
-        # EventHandler has special handling
-        if base_idl_type != 'EventHandler':
-            release = idl_type.release
-
-    def v8_set_return_value_statement(for_main_world=False):
-        if context['is_keep_alive_for_gc']:
-            return 'v8SetReturnValue(info, wrapper)'
-        return idl_type.v8_set_return_value(cpp_value, extended_attributes=extended_attributes, script_wrappable='impl', release=release, for_main_world=for_main_world)
 
     context.update({
         'cpp_value': cpp_value,
-        'cpp_value_to_v8_value': idl_type.cpp_value_to_v8_value(
-            cpp_value=cpp_value, creation_context='info.Holder()',
-            extended_attributes=extended_attributes),
-        'v8_set_return_value_for_main_world': v8_set_return_value_statement(for_main_world=True),
-        'v8_set_return_value': v8_set_return_value_statement(),
     })
 
 
@@ -236,7 +203,7 @@ def is_keep_alive_for_gc(interface, attribute):
              attribute.name == 'self' or
              # FIXME: Remove these hard-coded hacks.
              base_idl_type in ['EventTarget', 'Window'] or
-             base_idl_type.startswith(('HTML', 'SVG')))))
+             base_idl_type.startswith('HTML'))))
 
 
 ################################################################################
@@ -281,49 +248,7 @@ def setter_context(interface, attribute, context):
         'is_setter_call_with_execution_context': v8_utilities.has_extended_attribute_value(
             attribute, 'SetterCallWith', 'ExecutionContext'),
         'is_setter_raises_exception': is_setter_raises_exception,
-        'v8_value_to_local_cpp_value': idl_type.v8_value_to_local_cpp_value(
-            extended_attributes, 'v8Value', 'cppValue'),
     })
-
-    # setter_expression() depends on context values we set above.
-    context['cpp_setter'] = setter_expression(interface, attribute, context)
-
-
-def setter_expression(interface, attribute, context):
-    extended_attributes = attribute.extended_attributes
-    arguments = v8_utilities.call_with_arguments(
-        extended_attributes.get('SetterCallWith') or
-        extended_attributes.get('CallWith'))
-
-    this_setter_base_name = setter_base_name(interface, attribute, arguments)
-    setter_name = scoped_name(interface, attribute, this_setter_base_name)
-
-    # Members of IDL partial interface definitions are implemented in C++ as
-    # static member functions, which for instance members (non-static members)
-    # take *impl as their first argument
-    if ('PartialInterfaceImplementedAs' in extended_attributes and
-        not attribute.is_static):
-        arguments.append('*impl')
-    idl_type = attribute.idl_type
-    if idl_type.base_type == 'EventHandler':
-        getter_name = scoped_name(interface, attribute, cpp_name(attribute))
-        context['event_handler_getter_expression'] = '%s(%s)' % (
-            getter_name, ', '.join(arguments))
-        if (interface.name in ['Window'] and
-            attribute.name == 'onerror'):
-            includes.add('bindings/core/v8/V8ErrorHandler.h')
-            arguments.append('V8EventListenerList::findOrCreateWrapper<V8ErrorHandler>(v8Value, ScriptState::current(info.GetIsolate()))')
-        else:
-            arguments.append('V8EventListenerList::getEventListener(ScriptState::current(info.GetIsolate()), v8Value, ListenerFindOrCreate)')
-    elif idl_type.is_interface_type:
-        # FIXME: should be able to eliminate WTF::getPtr in most or all cases
-        arguments.append('WTF::getPtr(cppValue)')
-    else:
-        arguments.append('cppValue')
-    if context['is_setter_raises_exception']:
-        arguments.append('exceptionState')
-
-    return '%s(%s)' % (setter_name, ', '.join(arguments))
 
 
 CONTENT_ATTRIBUTE_SETTER_NAMES = {
@@ -366,16 +291,6 @@ def setter_callback_name(interface, attribute):
     if attribute.is_read_only and 'PutForwards' not in extended_attributes:
         return '0'
     return '%sV8Internal::%sAttributeSetterCallback' % (cpp_class_name, attribute.name)
-
-
-# [NotEnumerable]
-def property_attributes(attribute):
-    extended_attributes = attribute.extended_attributes
-    property_attributes_list = []
-    if ('NotEnumerable' in extended_attributes or
-        is_constructor_attribute(attribute)):
-        property_attributes_list.append('v8::DontEnum')
-    return property_attributes_list or ['v8::None']
 
 
 # [Custom], [Custom=Getter]

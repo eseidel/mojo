@@ -75,7 +75,6 @@ def generate_callback_interface(callback_interface):
         'conditional_string': DartUtilities.conditional_string(callback_interface),
         'cpp_class': name,
         'dart_class': dart_types.dart_type(callback_interface.name),
-        'v8_class': DartUtilities.v8_class_name(callback_interface),
         'header_includes': set(CALLBACK_INTERFACE_H_INCLUDES),
         'methods': methods,
     }

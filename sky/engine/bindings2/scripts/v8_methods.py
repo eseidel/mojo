@@ -153,12 +153,9 @@ def method_context(interface, method):
         'number_of_required_or_variadic_arguments': len([
             argument for argument in arguments
             if not argument.is_optional]),
-        'property_attributes': property_attributes(method),
         'runtime_enabled_function': v8_utilities.runtime_enabled_function_name(method),  # [RuntimeEnabled]
         'union_arguments': idl_type.union_arguments,
         'use_local_result': use_local_result(method),
-        'v8_set_return_value': v8_set_return_value(interface.name, method, this_cpp_value),
-        'v8_set_return_value_for_main_world': v8_set_return_value(interface.name, method, this_cpp_value, for_main_world=True),
     }
 
 
@@ -200,9 +197,6 @@ def argument_context(interface, method, argument, index):
         'is_variadic_wrapper_type': is_variadic_wrapper_type,
         'is_wrapper_type': idl_type.is_wrapper_type,
         'name': argument.name,
-        'v8_set_return_value': v8_set_return_value(interface.name, method, this_cpp_value),
-        'v8_set_return_value_for_main_world': v8_set_return_value(interface.name, method, this_cpp_value, for_main_world=True),
-        'v8_value_to_local_cpp_value': v8_value_to_local_cpp_value(argument, index, return_promise=return_promise),
         'vector_type': 'Vector',
     }
 
@@ -261,27 +255,6 @@ def cpp_value(interface, method, number_of_arguments):
     return '%s(%s)' % (cpp_method_name, ', '.join(cpp_arguments))
 
 
-def v8_set_return_value(interface_name, method, cpp_value, for_main_world=False):
-    idl_type = method.idl_type
-    extended_attributes = method.extended_attributes
-    if not idl_type or idl_type.name == 'void':
-        # Constructors and void methods don't have a return type
-        return None
-
-    release = False
-    # [CallWith=ScriptState], [RaisesException]
-    if use_local_result(method):
-        if idl_type.is_explicit_nullable:
-            # result is of type Nullable<T>
-            cpp_value = 'result.get()'
-        else:
-            cpp_value = 'result'
-        release = idl_type.release
-
-    script_wrappable = 'impl' if inherits_interface(interface_name, 'Node') else ''
-    return idl_type.v8_set_return_value(cpp_value, extended_attributes, script_wrappable=script_wrappable, release=release, for_main_world=for_main_world)
-
-
 def v8_value_to_local_cpp_variadic_value(argument, index, return_promise):
     assert argument.is_variadic
     idl_type = argument.idl_type
@@ -317,17 +290,6 @@ def v8_value_to_local_cpp_value(argument, index, return_promise=False):
 # Auxiliary functions
 ################################################################################
 
-# [NotEnumerable]
-def property_attributes(method):
-    extended_attributes = method.extended_attributes
-    property_attributes_list = []
-    if 'NotEnumerable' in extended_attributes:
-        property_attributes_list.append('v8::DontEnum')
-    if property_attributes_list:
-        property_attributes_list.insert(0, 'v8::DontDelete')
-    return property_attributes_list
-
-
 def union_member_argument_context(idl_type, index):
     """Returns a context of union member for argument."""
     this_cpp_value = 'result%d' % index
@@ -350,9 +312,6 @@ def union_member_argument_context(idl_type, index):
         'cpp_type_initializer': this_cpp_type_initializer,
         'cpp_value': this_cpp_value,
         'null_check_value': null_check_value,
-        'v8_set_return_value': idl_type.v8_set_return_value(
-            cpp_value=cpp_return_value,
-            release=idl_type.release),
     }
 
 

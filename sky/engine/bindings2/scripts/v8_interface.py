@@ -113,7 +113,6 @@ def interface_context(interface):
         # Raw pointers faster though, and NodeFilter hacky anyway.
         'cpp_type': argument.idl_type.implemented_as + '*',
         'idl_type': argument.idl_type,
-        'v8_type': v8_types.v8_type(argument.idl_type.name),
     } for argument in extended_attributes.get('SetWrapperReferenceTo', [])]
     for set_wrapper_reference_to in set_wrapper_reference_to_list:
         set_wrapper_reference_to['idl_type'].add_includes_for_type()
@@ -166,7 +165,6 @@ def interface_context(interface):
         'runtime_enabled_function': runtime_enabled_function_name(interface),  # [RuntimeEnabled]
         'set_wrapper_reference_to_list': set_wrapper_reference_to_list,
         'special_wrap_for': special_wrap_for,
-        'v8_class': v8_utilities.v8_class_name(interface),
         'wrapper_class_id': wrapper_class_id,
     }
 
@@ -435,7 +433,6 @@ def overloads_context(overloads):
         'deprecate_all_as': common_value(overloads, 'deprecate_as'),  # [DeprecateAs]
         'exposed_test_all': common_value(overloads, 'exposed_test'),  # [Exposed]
         'has_custom_registration_all': common_value(overloads, 'has_custom_registration'),
-        'length_tests_methods': length_tests_methods(effective_overloads_by_length),
         # 1. Let maxarg be the length of the longest type list of the
         # entries in S.
         'maxarg': lengths[-1],
@@ -620,175 +617,6 @@ def distinguishing_argument_index(entries):
     return index
 
 
-def length_tests_methods(effective_overloads_by_length):
-    """Returns sorted list of resolution tests and associated methods, by length.
-
-    This builds the main data structure for the overload resolution loop.
-    For a given argument length, bindings test argument at distinguishing
-    argument index, in order given by spec: if it is compatible with
-    (optionality or) type required by an overloaded method, resolve to that
-    method.
-
-    Returns:
-        [(length, [(test, method)])]
-    """
-    return [(length, list(resolution_tests_methods(effective_overloads)))
-            for length, effective_overloads in effective_overloads_by_length]
-
-
-def resolution_tests_methods(effective_overloads):
-    """Yields resolution test and associated method, in resolution order, for effective overloads of a given length.
-
-    This is the heart of the resolution algorithm.
-    http://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
-
-    Note that a given method can be listed multiple times, with different tests!
-    This is to handle implicit type conversion.
-
-    Returns:
-        [(test, method)]
-    """
-    methods = [effective_overload[0]
-               for effective_overload in effective_overloads]
-    if len(methods) == 1:
-        # If only one method with a given length, no test needed
-        yield 'true', methods[0]
-        return
-
-    # 6. If there is more than one entry in S, then set d to be the
-    # distinguishing argument index for the entries of S.
-    index = distinguishing_argument_index(effective_overloads)
-    # (7-9 are for handling |undefined| values for optional arguments before
-    # the distinguishing argument (as “missing”), so you can specify only some
-    # optional arguments. We don’t support this, so we skip these steps.)
-    # 10. If i = d, then:
-    # (d is the distinguishing argument index)
-    # 1. Let V be argi.
-    #     Note: This is the argument that will be used to resolve which
-    #           overload is selected.
-    cpp_value = 'info[%s]' % index
-
-    # Extract argument and IDL type to simplify accessing these in each loop.
-    arguments = [method['arguments'][index] for method in methods]
-    arguments_methods = zip(arguments, methods)
-    idl_types = [argument['idl_type_object'] for argument in arguments]
-    idl_types_methods = zip(idl_types, methods)
-
-    # We can’t do a single loop through all methods or simply sort them, because
-    # a method may be listed in multiple steps of the resolution algorithm, and
-    # which test to apply differs depending on the step.
-    #
-    # Instead, we need to go through all methods at each step, either finding
-    # first match (if only one test is allowed) or filtering to matches (if
-    # multiple tests are allowed), and generating an appropriate tests.
-
-    # 2. If V is undefined, and there is an entry in S whose list of
-    # optionality values has “optional” at index i, then remove from S all
-    # other entries.
-    try:
-        method = next(method for argument, method in arguments_methods
-                      if argument['is_optional'])
-        test = '%s->IsUndefined()' % cpp_value
-        yield test, method
-    except StopIteration:
-        pass
-
-    # 3. Otherwise: if V is null or undefined, and there is an entry in S that
-    # has one of the following types at position i of its type list,
-    # • a nullable type
-    try:
-        method = next(method for idl_type, method in idl_types_methods
-                      if idl_type.is_nullable)
-        test = 'isUndefinedOrNull(%s)' % cpp_value
-        yield test, method
-    except StopIteration:
-        pass
-
-    # 4. Otherwise: if V is a platform object – but not a platform array
-    # object – and there is an entry in S that has one of the following
-    # types at position i of its type list,
-    # • an interface type that V implements
-    # (Unlike most of these tests, this can return multiple methods, since we
-    #  test if it implements an interface. Thus we need a for loop, not a next.)
-    # (We distinguish wrapper types from built-in interface types.)
-    for idl_type, method in ((idl_type, method)
-                             for idl_type, method in idl_types_methods
-                             if idl_type.is_wrapper_type):
-        test = 'V8{idl_type}::hasInstance({cpp_value}, info.GetIsolate())'.format(idl_type=idl_type.base_type, cpp_value=cpp_value)
-        yield test, method
-
-    # 8. Otherwise: if V is any kind of object except for a native Date object,
-    # a native RegExp object, and there is an entry in S that has one of the
-    # following types at position i of its type list,
-    # • an array type
-    # • a sequence type
-    # ...
-    # • a dictionary
-    try:
-        idl_type, method = next((idl_type, method)
-                                for idl_type, method in idl_types_methods
-                                if idl_type.native_array_element_type)
-        if idl_type.native_array_element_type:
-            # (We test for Array instead of generic Object to type-check.)
-            # FIXME: test for Object during resolution, then have type check for
-            # Array in overloaded method: http://crbug.com/262383
-            test = '%s->IsArray()' % cpp_value
-        else:
-            # FIXME: should be '{1}->IsObject() && !{1}->IsDate() && !{1}->IsRegExp()'.format(cpp_value)
-            # FIXME: the IsDate and IsRegExp checks can be skipped if we've
-            # already generated tests for them.
-            test = '%s->IsObject()' % cpp_value
-        yield test, method
-    except StopIteration:
-        pass
-
-    # (Check for exact type matches before performing automatic type conversion;
-    # only needed if distinguishing between primitive types.)
-    if len([idl_type.is_primitive_type for idl_type in idl_types]) > 1:
-        # (Only needed if match in step 11, otherwise redundant.)
-        if any(idl_type.is_string_type or idl_type.is_enum
-               for idl_type in idl_types):
-            # 10. Otherwise: if V is a Number value, and there is an entry in S
-            # that has one of the following types at position i of its type
-            # list,
-            # • a numeric type
-            try:
-                method = next(method for idl_type, method in idl_types_methods
-                              if idl_type.is_numeric_type)
-                test = '%s->IsNumber()' % cpp_value
-                yield test, method
-            except StopIteration:
-                pass
-
-    # (Perform automatic type conversion, in order. If any of these match,
-    # that’s the end, and no other tests are needed.) To keep this code simple,
-    # we rely on the C++ compiler's dead code elimination to deal with the
-    # redundancy if both cases below trigger.
-
-    # 11. Otherwise: if there is an entry in S that has one of the following
-    # types at position i of its type list,
-    # • DOMString
-    # • ByteString
-    # • ScalarValueString [a DOMString typedef, per definition.]
-    # • an enumeration type
-    try:
-        method = next(method for idl_type, method in idl_types_methods
-                      if idl_type.is_string_type or idl_type.is_enum)
-        yield 'true', method
-    except StopIteration:
-        pass
-
-    # 12. Otherwise: if there is an entry in S that has one of the following
-    # types at position i of its type list,
-    # • a numeric type
-    try:
-        method = next(method for idl_type, method in idl_types_methods
-                      if idl_type.is_numeric_type)
-        yield 'true', method
-    except StopIteration:
-        pass
-
-
 ################################################################################
 # Utility functions
 ################################################################################
@@ -963,7 +791,6 @@ def property_getter(getter, cpp_arguments):
         'is_raises_exception': is_raises_exception,
         'name': cpp_name(getter),
         'union_arguments': union_arguments,
-        'v8_set_return_value': idl_type.v8_set_return_value('result', extended_attributes=extended_attributes, script_wrappable='impl', release=idl_type.release),
     }
 
 
@@ -981,8 +808,6 @@ def property_setter(setter):
                                idl_type.is_integer_type,
         'is_raises_exception': is_raises_exception,
         'name': cpp_name(setter),
-        'v8_value_to_local_cpp_value': idl_type.v8_value_to_local_cpp_value(
-            extended_attributes, 'v8Value', 'propertyValue'),
     }
 
 

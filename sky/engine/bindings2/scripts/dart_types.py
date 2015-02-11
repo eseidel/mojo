@@ -203,10 +203,6 @@ def cpp_template_type(template, inner_type):
     return format_string.format(template=template, inner_type=inner_type)
 
 
-def v8_type(interface_name):
-    return 'V8' + interface_name
-
-
 def dart_type(interface_name):
     return 'Dart' + str(interface_name)
 

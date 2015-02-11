@@ -157,4 +157,3 @@ DartUtilities.runtime_enabled_function_name = v8_utilities.runtime_enabled_funct
 DartUtilities.scoped_name = _scoped_name
 DartUtilities.strip_suffix = v8_utilities.strip_suffix
 DartUtilities.uncapitalize = v8_utilities.uncapitalize
-DartUtilities.v8_class_name = v8_utilities.v8_class_name

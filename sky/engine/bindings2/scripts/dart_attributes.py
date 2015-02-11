@@ -74,7 +74,6 @@ def attribute_context(interface, attribute):
       'is_call_with_script_state': is_call_with_script_state,
       'auto_scope': DartUtilities.bool_to_cpp(is_auto_scope),
       'measure_as': DartUtilities.measure_as(attribute),  # [MeasureAs]
-      'v8_type': dart_types.v8_type(base_idl_type),
       'dart_type': dart_types.idl_type_to_dart_type(idl_type),
     })
 
@@ -239,12 +238,6 @@ def setter_expression(interface, attribute, context):
         # FIXME(vsm): Do we need to support this? If so, what's our analogue of
         # V8EventListenerList?
         arguments.append('nullptr')
-        # if (interface.name in ['Window', 'WorkerGlobalScope'] and
-        #    attribute.name == 'onerror'):
-        #    includes.add('bindings/core/v8/V8ErrorHandler.h')
-        #    arguments.append('V8EventListenerList::findOrCreateWrapper<V8ErrorHandler>(jsValue, true, info.GetIsolate())')
-        # else:
-        #    arguments.append('V8EventListenerList::getEventListener(jsValue, true, ListenerFindOrCreate)')
     else:
         attribute_name = dart_types.check_reserved_name(attribute.name)
         arguments.append(attribute_name)

@@ -159,7 +159,6 @@ def interface_context(interface):
         # Raw pointers faster though, and NodeFilter hacky anyway.
         'cpp_type': argument.idl_type.implemented_as + '*',
         'idl_type': argument.idl_type,
-        'v8_type': dart_types.v8_type(argument.idl_type.name),
     } for argument in extended_attributes.get('SetWrapperReferenceTo', [])]
     for set_wrapper_reference_to in set_wrapper_reference_to_list:
         set_wrapper_reference_to['idl_type'].add_includes_for_type()
@@ -174,7 +173,6 @@ def interface_context(interface):
         'runtime_enabled_function': DartUtilities.runtime_enabled_function_name(interface),  # [RuntimeEnabled]
          'set_wrapper_reference_to_list': set_wrapper_reference_to_list,
         'dart_class': dart_types.dart_type(interface.name),
-        'v8_class': DartUtilities.v8_class_name(interface),
     })
 
     # Constructors

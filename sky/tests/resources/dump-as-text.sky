@@ -3,7 +3,7 @@ import "dart:sky" as sky;
 import "dart:sky.internals" as internals;
 
 void handleLoadEvent(event) {
-    internals.notifyTestComplete(internals.contentAsText());
+  internals.notifyTestComplete(internals.contentAsText());
 }
 
 void init() {

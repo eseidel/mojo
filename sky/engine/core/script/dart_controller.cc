@@ -57,7 +57,7 @@ void DartController::LoadModule(RefPtr<AbstractModule> module,
     for (HTMLImportChild* child = static_cast<HTMLImportChild*>(parent->firstChild());
          child; child = static_cast<HTMLImportChild*>(child->next())) {
       if (Element* link = child->link()) {
-          String name = link->getAttribute(HTMLNames::asAttr);
+        String name = link->getAttribute(HTMLNames::asAttr);
 
         Module* childModule = child->module();
         if (childModule && !childModule->library()->is_empty()) {

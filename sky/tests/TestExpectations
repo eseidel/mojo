@@ -37,7 +37,6 @@ crbug.com/2 custom-elements/lifecycle-created-createElement-recursion.sky [ Skip
 crbug.com/2 custom-elements/lifecycle-created-createElement-reentrancy.sky [ Skip ]
 crbug.com/2 custom-elements/lifecycle-created-parser-script.sky [ Skip ]
 crbug.com/2 custom-elements/resources/document-register-fuzz.sky [ Skip ]
-crbug.com/2 dom/document-child-mutations.sky [ Skip ]
 crbug.com/2 dom/ownerScope.sky [ Skip ]
 crbug.com/2 dom/replaceChild.sky [ Skip ]
 crbug.com/2 editing/backspace.sky [ Skip ]

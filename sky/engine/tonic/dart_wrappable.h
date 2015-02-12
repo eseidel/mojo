@@ -90,8 +90,8 @@ struct DartConverter<
     intptr_t* peer = 0;
     Dart_Handle result =
         Dart_GetNativeInstanceField(handle, DartWrappable::kPeerIndex, peer);
-    // TODO(abarth): Add error checking.
-    DCHECK(!Dart_IsError(result));
+    if (Dart_IsError(result))
+      return nullptr;
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(peer));
   }
 
@@ -102,8 +102,8 @@ struct DartConverter<
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(
         args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    // TODO(abarth): Add error checking.
-    DCHECK(!Dart_IsError(result));
+    if (Dart_IsError(result))
+      return nullptr;
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(
         native_fields[DartWrappable::kPeerIndex]));
   }
@@ -115,10 +115,8 @@ struct DartConverter<
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(
         args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    if (Dart_IsNull(result))
+    if (Dart_IsNull(result) || Dart_IsError(result))
       return nullptr;
-    // TODO(abarth): Add error checking.
-    DCHECK(!Dart_IsError(result));
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(
         native_fields[DartWrappable::kPeerIndex]));
   }

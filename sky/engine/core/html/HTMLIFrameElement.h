@@ -26,8 +26,8 @@ public:
 
     mojo::View* contentView() const { return m_contentView; }
 
-    PassRefPtr<DartValue> takeServicesHandle(ScriptState*);
-    PassRefPtr<DartValue> takeExposedServicesHandle(ScriptState*);
+    PassRefPtr<DartValue> takeServicesHandle(DartState*);
+    PassRefPtr<DartValue> takeExposedServicesHandle(DartState*);
     void embedViewManagerClient(DartValue* client);
 
 private:

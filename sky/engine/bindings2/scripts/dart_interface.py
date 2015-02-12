@@ -152,11 +152,6 @@ def interface_context(interface):
                       if not v8_attributes.is_constructor_attribute(attribute)]
     context.update({
         'attributes': attributes,
-        'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
-        'has_attribute_configuration': any(
-             not (attribute['is_expose_js_accessors'] or
-                  attribute['is_static'])
-             for attribute in attributes),
         'has_constructor_attributes': any(attribute['constructor_type'] for attribute in attributes),
         'has_replaceable_attributes': any(attribute['is_replaceable'] for attribute in attributes),
     })

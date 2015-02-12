@@ -171,15 +171,12 @@ def interface_context(interface):
     has_event_constructor = 'EventConstructor' in extended_attributes
     any_type_attributes = [attribute for attribute in interface.attributes
                            if attribute.idl_type.name == 'Any']
-    if has_event_constructor and any_type_attributes:
-        includes.add('bindings/core/v8/SerializedScriptValue.h')
 
     # [NamedConstructor]
     named_constructor = named_constructor_context(interface)
 
     if (constructors or custom_constructors or has_event_constructor or
         named_constructor):
-        includes.add('bindings/core/v8/V8ObjectConstructor.h')
         includes.add('core/frame/LocalDOMWindow.h')
 
     context.update({
@@ -206,11 +203,6 @@ def interface_context(interface):
                   for attribute in interface.attributes]
     context.update({
         'attributes': attributes,
-        'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
-        'has_attribute_configuration': any(
-             not (attribute['is_expose_js_accessors'] or
-                  attribute['is_static'])
-             for attribute in attributes),
         'has_conditional_attributes': any(attribute['exposed_test'] for attribute in attributes),
         'has_constructor_attributes': any(attribute['constructor_type'] for attribute in attributes),
         'has_replaceable_attributes': any(attribute['is_replaceable'] for attribute in attributes),

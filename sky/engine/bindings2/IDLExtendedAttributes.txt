@@ -36,12 +36,11 @@
 ActiveDOMObject
 CachedAttribute=*
 CallWith=ExecutionContext|ScriptState|ScriptArguments|ActiveWindow|FirstWindow|ThisValue
-Clamp
 Constructor
 # FIXME: remove [ConstructorCallWith=Document], as can instead use
 # [ConstructorCallWith=ExecutionContext] + toDocument(executionContext)
 ConstructorCallWith=ExecutionContext|Document
-Custom=|Getter|Setter|LegacyCallAsFunction|ToV8|VisitDOMWrapper|Wrap|PropertyGetter|PropertyEnumerator|PropertyQuery
+Custom=|Getter|Setter|VisitDOMWrapper|Wrap|PropertyGetter|PropertyEnumerator|PropertyQuery
 CustomConstructor
 CustomElementCallbacks
 Default=Undefined
@@ -49,7 +48,6 @@ DependentLifetime
 DoNotCheckConstants
 EnforceRange
 EventConstructor
-ExposeJSAccessors
 Exposed=*
 Global=|*
 Immutable

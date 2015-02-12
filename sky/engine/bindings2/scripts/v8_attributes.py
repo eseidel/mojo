@@ -83,7 +83,6 @@ def attribute_context(interface, attribute):
         'is_call_with_execution_context': v8_utilities.has_extended_attribute_value(attribute, 'CallWith', 'ExecutionContext'),
         'is_call_with_script_state': v8_utilities.has_extended_attribute_value(attribute, 'CallWith', 'ScriptState'),
         'is_custom_element_callbacks': is_custom_element_callbacks,
-        'is_expose_js_accessors': 'ExposeJSAccessors' in extended_attributes,
         'is_getter_raises_exception':  # [RaisesException]
             'RaisesException' in extended_attributes and
             extended_attributes['RaisesException'] in (None, 'Getter'),

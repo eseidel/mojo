@@ -27,7 +27,6 @@
 // HTML 5 draft spec:
 // http://www.w3.org/html/wg/drafts/html/master/browsers.html#window
 [
-    Custom=ToV8,
     ImplementedAs=LocalDOMWindow,
 ] interface Window : EventTarget {
     readonly attribute Screen screen;

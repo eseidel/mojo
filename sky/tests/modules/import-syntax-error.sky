@@ -1,7 +1,7 @@
 <html>
 <import src="../resources/dump-as-text.sky" />
-<import src="resources/pass.sky" as="hello" />
-<div id="result">FAIL</div>
+<import src="resources/syntax-error.sky" as="hello" />
+<div id="result">PASS</div>
 <script>
 import "dart:sky";
 

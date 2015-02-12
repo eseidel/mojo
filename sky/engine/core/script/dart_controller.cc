@@ -68,7 +68,9 @@ void DartController::LoadModule(RefPtr<AbstractModule> module,
         String name = link->getAttribute(HTMLNames::asAttr);
 
         Module* childModule = child->module();
-        if (childModule && !childModule->library()->is_empty()) {
+        if (childModule
+            && childModule->library()
+            && !childModule->library()->is_empty()) {
           if (LogIfError(Dart_LibraryImportLibrary(
                   library, childModule->library()->dart_value(),
                   StringToDart(dart_state(), name))))

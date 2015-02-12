@@ -9,6 +9,12 @@
 
 namespace blink {
 
+namespace DartError {
+
+const char kInvalidArgument[] = "Invalid argument.";
+
+}  // namespace DartError
+
 bool LogIfError(Dart_Handle handle) {
   if (Dart_IsError(handle)) {
     LOG(ERROR) << Dart_GetError(handle);

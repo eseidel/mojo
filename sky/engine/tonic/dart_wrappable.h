@@ -9,6 +9,7 @@
 #include "base/template_util.h"
 #include "dart/runtime/include/dart_api.h"
 #include "sky/engine/tonic/dart_converter.h"
+#include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_state.h"
 #include "sky/engine/tonic/dart_wrapper_info.h"
 
@@ -102,8 +103,10 @@ struct DartConverter<
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(
         args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    if (Dart_IsError(result))
+    if (Dart_IsError(result)) {
+      exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
       return nullptr;
+    }
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(
         native_fields[DartWrappable::kPeerIndex]));
   }
@@ -112,11 +115,16 @@ struct DartConverter<
                                        int index,
                                        Dart_Handle& exception,
                                        bool auto_scope = true) {
+    Dart_Handle handle = Dart_GetNativeArgument(args, index);
+    if (Dart_IsNull(handle))
+      return nullptr;
     intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
     Dart_Handle result = Dart_GetNativeFieldsOfArgument(
         args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    if (Dart_IsNull(result) || Dart_IsError(result))
+    if (Dart_IsError(result)) {
+      exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
       return nullptr;
+    }
     return static_cast<T*>(reinterpret_cast<DartWrappable*>(
         native_fields[DartWrappable::kPeerIndex]));
   }

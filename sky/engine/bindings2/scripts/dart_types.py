@@ -523,8 +523,8 @@ DART_DEFAULT_VALUES_BY_TYPE = {
 
 def dart_default_value(dart_type, argument=None):
     # TODO(eseidel): Maybe take the idl_type instead?
-    if argument.default_value:
-        return argument.default_value
+    # if argument.default_value:
+    #     return argument.default_value
     default_value = DART_DEFAULT_VALUES_BY_TYPE.get(dart_type)
     if default_value:
         return default_value

@@ -48,9 +48,7 @@ import sys
 from utilities import get_file_contents, read_file_to_list, write_file, get_interface_extended_attributes_from_idl
 
 EXPORTED_EXTENDED_ATTRIBUTES = (
-    'Conditional',
     'ImplementedAs',
-    'RuntimeEnabled',
 )
 module_path = os.path.dirname(os.path.realpath(__file__))
 source_dir = os.path.normpath(os.path.join(module_path, os.pardir, os.pardir))
@@ -78,8 +76,6 @@ def parse_options():
 
 def write_event_interfaces_file(event_idl_files, destination_filename, only_if_changed, suffix):
     def extended_attribute_string(name, value):
-        if name == 'RuntimeEnabled':
-            value += 'Enabled'
         return name + '=' + value
 
     def interface_line(full_path):

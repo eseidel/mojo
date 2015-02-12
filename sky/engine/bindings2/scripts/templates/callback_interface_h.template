@@ -7,7 +7,6 @@
 #ifndef {{dart_class}}_h
 #define {{dart_class}}_h
 
-{% filter conditional(conditional_string) %}
 {% for filename in header_includes %}
 #include "{{filename}}"
 {% endfor %}
@@ -75,5 +74,4 @@ struct DartConverter<{{ cpp_class }}*> {
 };
 
 }  // blink
-{% endfilter %}
 #endif // {{dart_class}}_h

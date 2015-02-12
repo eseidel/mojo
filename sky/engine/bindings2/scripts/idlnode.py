@@ -643,9 +643,6 @@ class IDLInterface(IDLNode):
       lambda ast: IDLConstant(ast, self.doc_js_name))
     self.is_supplemental = 'DartSupplemental' in self.ext_attrs
     self.is_no_interface_object = 'NoInterfaceObject' in self.ext_attrs
-    # TODO(terry): Can eliminate Suppressed when we're only using blink parser.
-    self.is_fc_suppressed = 'Suppressed' in self.ext_attrs or \
-                            'DartSuppress' in self.ext_attrs
 
 
   def reset_id(self, new_id):
@@ -688,9 +685,6 @@ class IDLMember(IDLNode):
     self._convert_ext_attrs(ast)
     self._convert_annotations(ast)
     self.doc_js_interface_name = doc_js_interface_name
-    # TODO(terry): Can eliminate Suppressed when we're only using blink parser.
-    self.is_fc_suppressed = 'Suppressed' in self.ext_attrs or \
-                            'DartSuppress' in self.ext_attrs
     self.is_static = self._has(ast, 'Static')
 
 

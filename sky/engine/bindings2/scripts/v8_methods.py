@@ -113,7 +113,6 @@ def method_context(interface, method):
         'arguments': [argument_context(interface, method, argument, index)
                       for index, argument in enumerate(arguments)],
         'arguments_need_try_catch': arguments_need_try_catch,
-        'conditional_string': v8_utilities.conditional_string(method),
         'cpp_type': (v8_types.cpp_template_type('Nullable', idl_type.cpp_type)
                      if idl_type.is_explicit_nullable else idl_type.cpp_type),
         'cpp_value': this_cpp_value,
@@ -121,7 +120,6 @@ def method_context(interface, method):
         'custom_registration_extended_attributes':
             CUSTOM_REGISTRATION_EXTENDED_ATTRIBUTES.intersection(
                 extended_attributes.iterkeys()),
-        'deprecate_as': v8_utilities.deprecate_as(method),  # [DeprecateAs]
         'exposed_test': v8_utilities.exposed(method, interface),  # [Exposed]
         'function_template': function_template(),
         'has_custom_registration': is_static or
@@ -144,7 +142,6 @@ def method_context(interface, method):
         'is_raises_exception': is_raises_exception,
         'is_static': is_static,
         'is_variadic': arguments and arguments[-1].is_variadic,
-        'measure_as': v8_utilities.measure_as(method),  # [MeasureAs]
         'name': name,
         'number_of_arguments': len(arguments),
         'number_of_required_arguments': len([
@@ -153,7 +150,6 @@ def method_context(interface, method):
         'number_of_required_or_variadic_arguments': len([
             argument for argument in arguments
             if not argument.is_optional]),
-        'runtime_enabled_function': v8_utilities.runtime_enabled_function_name(method),  # [RuntimeEnabled]
         'union_arguments': idl_type.union_arguments,
         'use_local_result': use_local_result(method),
     }
@@ -163,7 +159,6 @@ def argument_context(interface, method, argument, index):
     extended_attributes = argument.extended_attributes
     idl_type = argument.idl_type
     this_cpp_value = cpp_value(interface, method, index)
-    is_variadic_wrapper_type = argument.is_variadic and idl_type.is_wrapper_type
     return_promise = (method.idl_type.name == 'Promise' if method.idl_type
                                                         else False)
 
@@ -190,14 +185,11 @@ def argument_context(interface, method, argument, index):
         'idl_type': idl_type.base_type,
         'idl_type_object': idl_type,
         'index': index,
-        'is_clamp': 'Clamp' in extended_attributes,
         'is_callback_interface': idl_type.is_callback_interface,
         'is_nullable': idl_type.is_nullable,
         'is_optional': argument.is_optional,
-        'is_variadic_wrapper_type': is_variadic_wrapper_type,
         'is_wrapper_type': idl_type.is_wrapper_type,
         'name': argument.name,
-        'vector_type': 'Vector',
     }
 
 

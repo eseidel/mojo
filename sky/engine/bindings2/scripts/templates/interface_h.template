@@ -7,7 +7,6 @@
 #ifndef GEN_SKY_BINDINGS_{{dart_class}}_H_
 #define GEN_SKY_BINDINGS_{{dart_class}}_H_
 
-{% filter conditional(conditional_string) %}
 {% for filename in header_includes %}
 #include "{{filename}}"
 {% endfor %}
@@ -51,13 +50,11 @@ namespace {{dart_class}}Internal {
   void {{attribute.name}}Getter(Dart_NativeArguments);
     {% endif %}
     {% if attribute.has_custom_setter %}
-  void {{attribute.name}}Setter(Dart_NativeArguments); 
+  void {{attribute.name}}Setter(Dart_NativeArguments);
     {% endif %}
   {% endfor %}
 }
 
 }  // namespace blink
-
-{% endfilter %}
 
 #endif // GEN_SKY_BINDINGS_{{dart_class}}_H_

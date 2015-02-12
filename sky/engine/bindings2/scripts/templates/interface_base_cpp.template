@@ -5,7 +5,6 @@
 // WARNING: Do not edit - generated code.
 
 #include "sky/engine/config.h"
-{% filter conditional(conditional_string) %}
 #include "{{dart_class}}.h"
 
 {% for filename in cpp_includes %}
@@ -52,13 +51,13 @@ namespace {{dart_class}}Internal {
        attribute_setter, attribute_setter_callback
    with context %}
 {% for attribute in attributes %}
-{% if not attribute.has_custom_getter and not attribute.is_getter_suppressed %}
+{% if not attribute.has_custom_getter %}
 {{attribute_getter(cpp_class, attribute)}}
 {% endif %}
 {# FIXME I'm disabling put_forwards for now since we didn't support it before #}
 {# https://code.google.com/p/dart/issues/detail?id=18784 #}
 {# {% if not attribute.has_custom_setter and (not attribute.is_read_only or attribute.put_forwards) %}#}
-{% if not attribute.has_custom_setter and not attribute.is_read_only and not attribute.is_setter_suppressed %}
+{% if not attribute.has_custom_setter and not attribute.is_read_only %}
 {{attribute_setter(cpp_class, attribute)}}
 {% endif %}
 {% endfor %}
@@ -144,5 +143,3 @@ const uint8_t* {{dart_class}}::Symbolizer(Dart_NativeFunction native_function)
 }
 
 }  // namespace blink
-
-{% endfilter %}

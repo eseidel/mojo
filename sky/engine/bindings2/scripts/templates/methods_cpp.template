@@ -24,8 +24,6 @@ static void {{static_method_name(overloads.name)}}Dispatcher(Dart_NativeArgument
     case {{length}}:
         {# Then resolve by testing argument #}
         {% for test, method in tests_methods %}
-        {% filter runtime_enabled(not overloads.runtime_enabled_function_all and
-                                  method.runtime_enabled_function) %}
         if ({{test}}) {
           {% if method.is_custom %}
             {{static_method_name(method.name)}}(args);
@@ -34,7 +32,6 @@ static void {{static_method_name(overloads.name)}}Dispatcher(Dart_NativeArgument
           {% endif %}
             return;
         }
-        {% endfilter %}
         {% endfor %}
         break;
     {% endfor %}
@@ -227,7 +224,7 @@ if (exception)
 
 {##############################################################################}
 {% macro static_method_name(name, overload_index) %}
-{% set name = 'constructor' if not name else name -%} 
+{% set name = 'constructor' if not name else name -%}
 {% if overload_index -%}
 {{name}}Callback_{{overload_index}}
 {%- else -%}

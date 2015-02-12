@@ -177,15 +177,13 @@ if (result.isEmpty()) {
 
 {##############################################################################}
 {% macro generate_attribute_resolver_body(dart_class, class_name, attribute) %}
-{% if not attribute.is_getter_suppressed %}
 if (argumentCount == 1 && name == "{{attribute.native_entry_getter.resolver_string}}") {
     *autoSetupScope = {{attribute.auto_scope}};
     return {{dart_class}}Internal::{{static_attribute_name(attribute, 'Getter')}};
 }
-{% endif %}
 {# FIXME Disabling PutForwards for now #}
 {#  {% if not attribute.is_read_only or attribute.put_forwards %} #}
-  {% if not attribute.is_read_only and not attribute.is_setter_suppressed %}
+  {% if not attribute.is_read_only %}
 if (argumentCount == 2 && name == "{{attribute.native_entry_setter.resolver_string}}") {
     *autoSetupScope = {{attribute.auto_scope}};
     return {{dart_class}}Internal::{{static_attribute_name(attribute, 'Setter')}};
@@ -195,12 +193,10 @@ if (argumentCount == 2 && name == "{{attribute.native_entry_setter.resolver_stri
 
 {##############################################################################}
 {% macro generate_attribute_symbolizer_body(dart_class, class_name, attribute) %}
-{% if not attribute.is_getter_suppressed %}
 if (native_function == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Getter')}}) {
     return reinterpret_cast<const uint8_t*>("{{attribute.native_entry_getter.resolver_string}}");
 }
-{% endif %}
-  {% if not attribute.is_read_only and not attribute.is_setter_suppressed %}
+  {% if not attribute.is_read_only %}
 if (native_function == {{dart_class}}Internal::{{static_attribute_name(attribute, 'Setter')}}) {
     return reinterpret_cast<const uint8_t*>("{{attribute.native_entry_setter.resolver_string}}");
 }

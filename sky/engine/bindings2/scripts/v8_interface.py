@@ -46,8 +46,8 @@ import v8_methods
 import v8_types
 from v8_types import cpp_template_type
 import v8_utilities
-from v8_utilities import (capitalize, conditional_string, cpp_name,
-                          has_extended_attribute_value, runtime_enabled_function_name,
+from v8_utilities import (capitalize, cpp_name,
+                          has_extended_attribute_value,
                           extended_attribute_value_as_list)
 
 
@@ -58,7 +58,6 @@ INTERFACE_H_INCLUDES = frozenset([
 INTERFACE_CPP_INCLUDES = frozenset([
     'sky/engine/bindings2/exception_state.h',
     'core/dom/Document.h',
-    'platform/RuntimeEnabledFeatures.h',
     'base/trace_event/trace_event.h',
     'wtf/GetPtr.h',
     'wtf/RefPtr.h',
@@ -74,10 +73,6 @@ def interface_context(interface):
     if parent_interface:
         header_includes.update(v8_types.includes_for_interface(parent_interface))
     extended_attributes = interface.extended_attributes
-
-    is_document = inherits_interface(interface.name, 'Document')
-    if is_document:
-        includes.update(['core/frame/LocalFrame.h'])
 
     # [ActiveDOMObject]
     is_active_dom_object = 'ActiveDOMObject' in extended_attributes
@@ -95,9 +90,6 @@ def interface_context(interface):
         iterator_operation.extended_attributes['CallWith'] = 'ScriptState'
         iterator_method = v8_methods.method_context(interface,
                                                     iterator_operation)
-
-    # [MeasureAs]
-    is_measure_as = 'MeasureAs' in extended_attributes
 
     # [SetWrapperReferenceFrom]
     reachable_node_function = extended_attributes.get('SetWrapperReferenceFrom')
@@ -137,7 +129,6 @@ def interface_context(interface):
     wrapper_class_id = ('NodeClassId' if inherits_interface(interface.name, 'Node') else 'ObjectClassId')
 
     context = {
-        'conditional_string': conditional_string(interface),  # [Conditional]
         'cpp_class': cpp_name(interface),
         'has_custom_wrap': has_extended_attribute_value(interface, 'Custom', 'Wrap'),  # [Custom=Wrap]
         'has_visit_dom_wrapper': has_visit_dom_wrapper,
@@ -145,10 +136,7 @@ def interface_context(interface):
         'interface_name': interface.name,
         'is_active_dom_object': is_active_dom_object,
         'is_dependent_lifetime': is_dependent_lifetime,
-        'is_document': is_document,
-        'is_event_target': inherits_interface(interface.name, 'EventTarget'),
         'is_exception': interface.is_exception,
-        'is_node': inherits_interface(interface.name, 'Node'),
         'is_script_wrappable': is_script_wrappable,
         'iterator_method': iterator_method,
         'lifetime': 'Dependent'
@@ -156,13 +144,8 @@ def interface_context(interface):
                 is_active_dom_object or
                 is_dependent_lifetime)
             else 'Independent',
-        'measure_as': v8_utilities.measure_as(interface),  # [MeasureAs]
         'parent_interface': parent_interface,
-        'pass_cpp_type': cpp_template_type(
-            'PassRefPtr',
-            cpp_name(interface)),
         'reachable_node_function': reachable_node_function,
-        'runtime_enabled_function': runtime_enabled_function_name(interface),  # [RuntimeEnabled]
         'set_wrapper_reference_to_list': set_wrapper_reference_to_list,
         'special_wrap_for': special_wrap_for,
         'wrapper_class_id': wrapper_class_id,
@@ -215,9 +198,7 @@ def interface_context(interface):
     # Constants
     context.update({
         'constants': constants,
-        'has_constant_configuration': any(
-            not constant['runtime_enabled_function']
-            for constant in constants),
+        'has_constant_configuration': True,
     })
 
     # Attributes
@@ -228,8 +209,7 @@ def interface_context(interface):
         'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
         'has_attribute_configuration': any(
              not (attribute['is_expose_js_accessors'] or
-                  attribute['is_static'] or
-                  attribute['runtime_enabled_function'])
+                  attribute['is_static'])
              for attribute in attributes),
         'has_conditional_attributes': any(attribute['exposed_test'] for attribute in attributes),
         'has_constructor_attributes': any(attribute['constructor_type'] for attribute in attributes),
@@ -267,17 +247,15 @@ def interface_context(interface):
         if 'overloads' in method:
             overloads = method['overloads']
             conditionally_exposed_function = overloads['exposed_test_all']
-            runtime_enabled_function = overloads['runtime_enabled_function_all']
             has_custom_registration = overloads['has_custom_registration_all']
         else:
             conditionally_exposed_function = method['exposed_test']
-            runtime_enabled_function = method['runtime_enabled_function']
             has_custom_registration = method['has_custom_registration']
 
         if conditionally_exposed_function:
             conditionally_enabled_methods.append(method)
             continue
-        if runtime_enabled_function or has_custom_registration:
+        if has_custom_registration:
             custom_registration_methods.append(method)
             continue
         method_configuration_methods.append(method)
@@ -317,7 +295,7 @@ def interface_context(interface):
     return context
 
 
-# [DeprecateAs], [Reflect], [RuntimeEnabled]
+# [DeprecateAs], [Reflect]
 def constant_context(constant):
     # (Blink-only) string literals are unquoted in tokenizer, must be re-quoted
     # in C++.
@@ -333,7 +311,6 @@ def constant_context(constant):
         'name': constant.name,
         # FIXME: use 'reflected_name' as correct 'name'
         'reflected_name': extended_attributes.get('Reflect', constant.name),
-        'runtime_enabled_function': runtime_enabled_function_name(constant),
         'value': value,
     }
 
@@ -404,10 +381,6 @@ def overloads_context(overloads):
     # controlled by the same runtime enabled feature, in which case there would
     # be no function object at all if it is not enabled.
     shortest_overloads = effective_overloads_by_length[0][1]
-    if (all(method.get('runtime_enabled_function')
-            for method, _, _ in shortest_overloads) and
-        not common_value(overloads, 'runtime_enabled_function')):
-        raise ValueError('Function.length of %s depends on runtime enabled features' % name)
 
     # Check and fail if overloads disagree on any of the extended attributes
     # that affect how the method should be registered.
@@ -430,15 +403,12 @@ def overloads_context(overloads):
                          % (name))
 
     return {
-        'deprecate_all_as': common_value(overloads, 'deprecate_as'),  # [DeprecateAs]
         'exposed_test_all': common_value(overloads, 'exposed_test'),  # [Exposed]
         'has_custom_registration_all': common_value(overloads, 'has_custom_registration'),
         # 1. Let maxarg be the length of the longest type list of the
         # entries in S.
         'maxarg': lengths[-1],
-        'measure_all_as': common_value(overloads, 'measure_as'),  # [MeasureAs]
         'minarg': lengths[0],
-        'runtime_enabled_function_all': common_value(overloads, 'runtime_enabled_function'),  # [RuntimeEnabled]
         'valid_arities': lengths
             # Only need to report valid arities if there is a gap in the
             # sequence of possible lengths, otherwise invalid length means

@@ -164,11 +164,8 @@ class CodeGeneratorDart(object):
                                 'name': template_contents['interface_name'],
                                 'parent_interface': template_contents['parent_interface'],
                                 'is_active_dom_object': template_contents['is_active_dom_object'],
-                                'is_event_target': template_contents['is_event_target'],
                                 'has_resolver': template_contents['interface_name'],
                                 'native_entries': sorted(template_contents['native_entries'], key=lambda(x): x['blink_entry']),
-                                'is_node': template_contents['is_node'],
-                                'conditional_string': template_contents['conditional_string'],
                                }
             idl_world['interface'] = interface_global
         else:
@@ -249,30 +246,8 @@ def initialize_jinja_env(cache_dir):
         trim_blocks=True)
     jinja_env.filters.update({
         'blink_capitalize': DartUtilities.capitalize,
-        'conditional': conditional_if_endif,
-        'runtime_enabled': runtime_enabled_if,
         })
     return jinja_env
-
-
-# [Conditional]
-def conditional_if_endif(code, conditional_string):
-    # Jinja2 filter to generate if/endif directive blocks
-    if not conditional_string:
-        return code
-    return ('#if %s\n' % conditional_string +
-            code +
-            '#endif // %s\n' % conditional_string)
-
-
-# [RuntimeEnabled]
-def runtime_enabled_if(code, runtime_enabled_function_name):
-    if not runtime_enabled_function_name:
-        return code
-    # Indent if statement to level of original code
-    indent = re.match(' *', code).group(0)
-    return ('%sif (%s())\n' % (indent, runtime_enabled_function_name) +
-            '    %s' % code)
 
 
 ################################################################################

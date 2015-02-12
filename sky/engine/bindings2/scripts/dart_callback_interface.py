@@ -72,7 +72,6 @@ def generate_callback_interface(callback_interface):
     methods = [generate_method(operation)
                for operation in callback_interface.operations]
     template_contents = {
-        'conditional_string': DartUtilities.conditional_string(callback_interface),
         'cpp_class': name,
         'dart_class': dart_types.dart_type(callback_interface.name),
         'header_includes': set(CALLBACK_INTERFACE_H_INCLUDES),

@@ -79,7 +79,6 @@ def method_context(interface, method):
         'cpp_value': this_cpp_value,
         'dart_type': dart_types.idl_type_to_dart_type(idl_type),
         'dart_name': extended_attributes.get('DartName'),
-        'deprecate_as': DartUtilities.deprecate_as(method),  # [DeprecateAs]
         'has_exception_state':
             context['is_raises_exception'] or
             any(argument for argument in arguments
@@ -95,8 +94,6 @@ def method_context(interface, method):
         'is_strict_type_checking':
             'DartStrictTypeChecking' in extended_attributes or
             'DartStrictTypeChecking' in interface.extended_attributes,
-        'measure_as': DartUtilities.measure_as(method),  # [MeasureAs]
-        'suppressed': (arguments and arguments[-1].is_variadic),  # FIXME: implement variadic
         'union_arguments': union_arguments,
         'dart_set_return_value': dart_set_return_value(interface.name, method, this_cpp_value),
     })
@@ -133,7 +130,6 @@ def argument_context(interface, method, argument, index):
         'preprocessed_type': preprocessed_type,
         'is_array_or_sequence_type': not not idl_type.native_array_element_type,
         'is_strict_type_checking': 'DartStrictTypeChecking' in extended_attributes,
-        'vector_type': 'Vector',
         'dart_set_return_value_for_main_world': dart_set_return_value(interface.name, method,
                                                                       this_cpp_value, for_main_world=True),
         'dart_set_return_value': dart_set_return_value(interface.name, method, this_cpp_value),

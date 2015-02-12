@@ -69,13 +69,11 @@ def attribute_context(interface, attribute):
     context = {
         'argument_cpp_type': idl_type.cpp_type_args(used_as_rvalue_type=True),
         'cached_attribute_validation_method': extended_attributes.get('CachedAttribute'),
-        'conditional_string': v8_utilities.conditional_string(attribute),
         'constructor_type': idl_type.constructor_type_name
                             if is_constructor_attribute(attribute) else None,
         'cpp_name': cpp_name(attribute),
         'cpp_type': idl_type.cpp_type,
         'cpp_type_initializer': idl_type.cpp_type_initializer,
-        'deprecate_as': v8_utilities.deprecate_as(attribute),  # [DeprecateAs]
         'enum_validation_expression': idl_type.enum_validation_expression,
         'exposed_test': v8_utilities.exposed(attribute, interface),  # [Exposed]
         'has_custom_getter': has_custom_getter(attribute),
@@ -101,14 +99,12 @@ def attribute_context(interface, attribute):
         'is_replaceable': 'Replaceable' in attribute.extended_attributes,
         'is_static': attribute.is_static,
         'is_url': 'URL' in extended_attributes,
-        'measure_as': v8_utilities.measure_as(attribute),  # [MeasureAs]
         'name': attribute.name,
         'put_forwards': 'PutForwards' in extended_attributes,
         'reflect_empty': extended_attributes.get('ReflectEmpty'),
         'reflect_invalid': extended_attributes.get('ReflectInvalid', ''),
         'reflect_missing': extended_attributes.get('ReflectMissing'),
         'reflect_only': extended_attribute_value_as_list(attribute, 'ReflectOnly'),
-        'runtime_enabled_function': v8_utilities.runtime_enabled_function_name(attribute),  # [RuntimeEnabled]
         'setter_callback': setter_callback_name(interface, attribute),
     }
 
@@ -320,7 +316,3 @@ idl_types.IdlType.constructor_type_name = property(
 def is_constructor_attribute(attribute):
     # FIXME: replace this with [ConstructorAttribute] extended attribute
     return attribute.idl_type.name.endswith('Constructor')
-
-
-def constructor_getter_context(interface, attribute, context):
-    context['needs_constructor_getter_callback'] = context['measure_as'] or context['deprecate_as']

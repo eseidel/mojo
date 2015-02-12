@@ -67,13 +67,11 @@ def attribute_context(interface, attribute):
     is_auto_scope = not 'DartNoAutoScope' in extended_attributes
 
     context.update({
-      'deprecate_as': DartUtilities.deprecate_as(attribute),  # [DeprecateAs]
       'has_custom_getter': has_custom_getter,
       'has_custom_setter': has_custom_setter,
       'is_auto_scope': is_auto_scope,   # Used internally (outside of templates).
       'is_call_with_script_state': is_call_with_script_state,
       'auto_scope': DartUtilities.bool_to_cpp(is_auto_scope),
-      'measure_as': DartUtilities.measure_as(attribute),  # [MeasureAs]
       'dart_type': dart_types.idl_type_to_dart_type(idl_type),
     })
 

@@ -170,28 +170,6 @@ def call_with_arguments(call_with_values):
             if extended_attribute_value_contains(call_with_values, value)]
 
 
-# [Conditional]
-DELIMITER_TO_OPERATOR = {
-    '|': '||',
-    ',': '&&',
-}
-
-
-def conditional_string(definition_or_member):
-    extended_attributes = definition_or_member.extended_attributes
-    if 'Conditional' not in extended_attributes:
-        return None
-    return 'ENABLE(%s)' % extended_attributes['Conditional']
-
-
-# [DeprecateAs]
-def deprecate_as(member):
-    extended_attributes = member.extended_attributes
-    if 'DeprecateAs' not in extended_attributes:
-        return None
-    return extended_attributes['DeprecateAs']
-
-
 # [Exposed]
 EXPOSED_EXECUTION_CONTEXT_METHOD = {
     'Window': 'isDocument',
@@ -231,26 +209,3 @@ def cpp_name(definition_or_member):
     if 'ImplementedAs' not in extended_attributes:
         return definition_or_member.name
     return extended_attributes['ImplementedAs']
-
-
-# [MeasureAs]
-def measure_as(definition_or_member):
-    extended_attributes = definition_or_member.extended_attributes
-    if 'MeasureAs' not in extended_attributes:
-        return None
-    return extended_attributes['MeasureAs']
-
-
-# [RuntimeEnabled]
-def runtime_enabled_function_name(definition_or_member):
-    """Returns the name of the RuntimeEnabledFeatures function.
-
-    The returned function checks if a method/attribute is enabled.
-    Given extended attribute RuntimeEnabled=FeatureName, return:
-        RuntimeEnabledFeatures::{featureName}Enabled
-    """
-    extended_attributes = definition_or_member.extended_attributes
-    if 'RuntimeEnabled' not in extended_attributes:
-        return None
-    feature_name = extended_attributes['RuntimeEnabled']
-    return 'RuntimeEnabledFeatures::%sEnabled' % uncapitalize(feature_name)

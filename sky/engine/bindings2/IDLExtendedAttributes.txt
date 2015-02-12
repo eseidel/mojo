@@ -37,7 +37,6 @@ ActiveDOMObject
 CachedAttribute=*
 CallWith=ExecutionContext|ScriptState|ScriptArguments|ActiveWindow|FirstWindow|ThisValue
 Clamp
-Conditional=*
 Constructor
 # FIXME: remove [ConstructorCallWith=Document], as can instead use
 # [ConstructorCallWith=ExecutionContext] + toDocument(executionContext)
@@ -47,7 +46,6 @@ CustomConstructor
 CustomElementCallbacks
 Default=Undefined
 DependentLifetime
-DeprecateAs=*
 DoNotCheckConstants
 EnforceRange
 EventConstructor
@@ -59,7 +57,6 @@ ImplementedAs=*
 InitializedByEventConstructor
 Iterable
 LegacyTreatAsPartialInterface
-MeasureAs=*
 NamedConstructor=*
 NoImplHeader
 NoInterfaceObject
@@ -75,9 +72,6 @@ ReflectInvalid=*
 ReflectMissing=*
 ReflectOnly=*
 Replaceable
-# Valid values for [RuntimeEnabled] are the Runtime Enabled Features, listed in
-# engine/core/page/RuntimeEnabledFeatures.in
-RuntimeEnabled=*
 SetWrapperReferenceFrom=*
 SetWrapperReferenceTo=*
 SetterCallWith=ExecutionContext|ScriptArguments|ActiveWindow|FirstWindow

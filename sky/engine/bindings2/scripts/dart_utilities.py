@@ -89,26 +89,6 @@ def _call_with_arguments(call_with_values):
             if v8_utilities.extended_attribute_value_contains(call_with_values, value)]
 
 
-# [DeprecateAs]
-def _deprecate_as(member):
-    extended_attributes = member.extended_attributes
-    if 'DeprecateAs' not in extended_attributes:
-        return None
-# TODO(terry): Remove me?
-#    includes.add('core/frame/UseCounter.h')
-    return extended_attributes['DeprecateAs']
-
-
-# [MeasureAs]
-def _measure_as(definition_or_member):
-    extended_attributes = definition_or_member.extended_attributes
-    if 'MeasureAs' not in extended_attributes:
-        return None
-# TODO(terry): Remove Me?
-#    includes.add('core/frame/UseCounter.h')
-    return extended_attributes['MeasureAs']
-
-
 def _generate_native_entry(interface_name, name, kind, is_static, arity):
 
     if kind == 'Getter':
@@ -145,15 +125,11 @@ DartUtilities = dart_utilities_monkey()
 DartUtilities.bool_to_cpp = _bool_to_cpp
 DartUtilities.call_with_arguments = _call_with_arguments
 DartUtilities.capitalize = v8_utilities.capitalize
-DartUtilities.conditional_string = v8_utilities.conditional_string
 DartUtilities.cpp_name = v8_utilities.cpp_name
-DartUtilities.deprecate_as = _deprecate_as
 DartUtilities.extended_attribute_value_contains = v8_utilities.extended_attribute_value_contains
 DartUtilities.generate_native_entry = _generate_native_entry
 DartUtilities.has_extended_attribute = v8_utilities.has_extended_attribute
 DartUtilities.has_extended_attribute_value = v8_utilities.has_extended_attribute_value
-DartUtilities.measure_as = _measure_as
-DartUtilities.runtime_enabled_function_name = v8_utilities.runtime_enabled_function_name
 DartUtilities.scoped_name = _scoped_name
 DartUtilities.strip_suffix = v8_utilities.strip_suffix
 DartUtilities.uncapitalize = v8_utilities.uncapitalize

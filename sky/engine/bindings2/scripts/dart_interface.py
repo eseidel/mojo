@@ -61,72 +61,6 @@ INTERFACE_CPP_INCLUDES = frozenset([
     'sky/engine/wtf/RefPtr.h',
 ])
 
-
-# TODO(terry): Temporary to not generate a method, getter/setter. Format is:
-#
-#               interface_name.method_name
-#               interface_name.get:attribute_name
-#               interface_name.set:attribute_name
-#
-#               Ultimate solution add a special attribute flag to IDL to signal
-#               don't generate IDL entry in Dart (e.g., DartNoGenerate)?
-IGNORE_MEMBERS = frozenset([
-])
-
-
-def _suppress_method(interface_name, name):
-    name_to_find = '%s.%s' % (interface_name, name)
-    wildcard_name_to_find = '%s.*' % interface_name
-    return name_to_find in IGNORE_MEMBERS or wildcard_name_to_find in IGNORE_MEMBERS
-
-
-# Both getter and setter are to be suppressed then the attribute is completely
-# disappear.
-def _suppress_attribute(interface_name, name):
-    return (suppress_getter(interface_name, name) and suppress_setter(interface_name, name))
-
-
-def suppress_getter(interface_name, name):
-    name_to_find = '%s.get:%s' % (interface_name, name)
-    wildcard_getter_to_find = '%s.get:*' % interface_name
-    return (name_to_find in IGNORE_MEMBERS or
-            _suppress_method(interface_name, name) or
-            wildcard_getter_to_find in IGNORE_MEMBERS)
-
-
-def suppress_setter(interface_name, name):
-    name_to_find = '%s.set:%s' % (interface_name, name)
-    wildcard_setter_to_find = '%s.set:*' % interface_name
-    return (name_to_find in IGNORE_MEMBERS or
-            _suppress_method(interface_name, name) or
-            wildcard_setter_to_find in IGNORE_MEMBERS)
-
-
-# To suppress an IDL method or attribute with a particular Extended Attribute
-# w/o a value e.g, DartStrictTypeChecking would be an empty set
-#   'DartStrictTypeChecking': frozenset([]),
-IGNORE_EXTENDED_ATTRIBUTES = {
-#    'RuntimeEnabled': frozenset(['ExperimentalCanvasFeatures']),
-}
-
-
-# Return True if the method / attribute should be suppressed.
-def _suppress_extended_attributes(extended_attributes):
-    if 'DartSuppress' in extended_attributes and extended_attributes.get('DartSuppress') == None:
-        return True
-
-    # TODO(terry): Eliminate this using DartSuppress extended attribute in the
-    #              IDL files instead of the IGNORE_EXTENDED_ATTRIBUTES list.
-    for extended_attribute_name in extended_attributes:
-        ignore_extended_values = IGNORE_EXTENDED_ATTRIBUTES.get(extended_attribute_name)
-        if ignore_extended_values != None:
-            extended_attribute_value = extended_attributes.get(extended_attribute_name)
-            if ((not ignore_extended_values and extended_attribute_value == None) or
-                extended_attribute_value in ignore_extended_values):
-                return True
-    return False
-
-
 # TODO(terry): Rename genenerate_interface to interface_context.
 def interface_context(interface):
     context = v8_interface.interface_context(interface)
@@ -140,12 +74,6 @@ def interface_context(interface):
     if parent_interface:
         header_includes.update(dart_types.includes_for_interface(parent_interface))
     extended_attributes = interface.extended_attributes
-
-    is_document = inherits_interface(interface.name, 'Document')
-    if is_document:
-        # FIXME(vsm): We probably need bindings/dart/DartController and
-        # core/frame/LocalFrame.h here.
-        includes.update(['DartDocument.h'])
 
     if inherits_interface(interface.name, 'EventTarget'):
         includes.update(['bindings2/dart_event_listener.h'])
@@ -164,13 +92,8 @@ def interface_context(interface):
         set_wrapper_reference_to['idl_type'].add_includes_for_type()
 
     context.update({
-        'conditional_string': DartUtilities.conditional_string(interface),  # [Conditional]
         'cpp_class': DartUtilities.cpp_name(interface),
         'header_includes': header_includes,
-        'measure_as': DartUtilities.measure_as(interface),  # [MeasureAs]
-        'pass_cpp_type': dart_types.cpp_template_type('PassRefPtr',
-            DartUtilities.cpp_name(interface)),
-        'runtime_enabled_function': DartUtilities.runtime_enabled_function_name(interface),  # [RuntimeEnabled]
          'set_wrapper_reference_to_list': set_wrapper_reference_to_list,
         'dart_class': dart_types.dart_type(interface.name),
     })
@@ -226,17 +149,13 @@ def interface_context(interface):
     # Attributes
     attributes = [dart_attributes.attribute_context(interface, attribute)
                   for attribute in interface.attributes
-                      # Skip attributes in the IGNORE_MEMBERS list or if an
-                      # extended attribute is in the IGNORE_EXTENDED_ATTRIBUTES.
-                      if (not _suppress_attribute(interface.name, attribute.name) and
-                          not v8_attributes.is_constructor_attribute(attribute))]
+                      if not v8_attributes.is_constructor_attribute(attribute)]
     context.update({
         'attributes': attributes,
         'has_accessors': any(attribute['is_expose_js_accessors'] for attribute in attributes),
         'has_attribute_configuration': any(
              not (attribute['is_expose_js_accessors'] or
-                  attribute['is_static'] or
-                  attribute['runtime_enabled_function'])
+                  attribute['is_static'])
              for attribute in attributes),
         'has_constructor_attributes': any(attribute['constructor_type'] for attribute in attributes),
         'has_replaceable_attributes': any(attribute['is_replaceable'] for attribute in attributes),
@@ -246,15 +165,9 @@ def interface_context(interface):
     methods = [dart_methods.method_context(interface, method)
                for method in interface.operations
                # Skip anonymous special operations (methods name empty).
-               # Skip methods in our IGNORE_MEMBERS list.
-               # Skip methods w/ extended attributes in IGNORE_EXTENDED_ATTRIBUTES list.
                if (method.name and
                    # detect unnamed getters from v8_interface.
-                   method.name != 'anonymousNamedGetter' and
-                   # TODO(terry): Eventual eliminate the IGNORE_MEMBERS in favor of DartSupress.
-                   not _suppress_method(interface.name, method.name) and
-                   not _suppress_extended_attributes(method.extended_attributes) and
-                   not 'DartSuppress' in method.extended_attributes)]
+                   method.name != 'anonymousNamedGetter')]
     compute_method_overloads_context(methods)
     for method in methods:
         method['do_generate_method_configuration'] = (
@@ -400,21 +313,14 @@ def overloads_context(overloads):
     # controlled by the same runtime enabled feature, in which case there would
     # be no function object at all if it is not enabled.
     shortest_overloads = effective_overloads_by_length[0][1]
-    if (all(method.get('runtime_enabled_function')
-            for method, _, _ in shortest_overloads) and
-        not v8_interface.common_value(overloads, 'runtime_enabled_function')):
-        raise ValueError('Function.length of %s depends on runtime enabled features' % name)
 
     return {
-        'deprecate_all_as': v8_interface.common_value(overloads, 'deprecate_as'),  # [DeprecateAs]
         'exposed_test_all': v8_interface.common_value(overloads, 'exposed_test'),  # [Exposed]
         'length_tests_methods': length_tests_methods(effective_overloads_by_length),
         # 1. Let maxarg be the length of the longest type list of the
         # entries in S.
         'maxarg': lengths[-1],
-        'measure_all_as': v8_interface.common_value(overloads, 'measure_as'),  # [MeasureAs]
         'minarg': lengths[0],
-        'runtime_enabled_function_all': v8_interface.common_value(overloads, 'runtime_enabled_function'),  # [RuntimeEnabled]
         'valid_arities': lengths
             # Only need to report valid arities if there is a gap in the
             # sequence of possible lengths, otherwise invalid length means

@@ -131,7 +131,7 @@ void HTMLCanvasElement::setWidth(int value)
     setIntegralAttribute(HTMLNames::widthAttr, value);
 }
 
-CanvasRenderingContext* HTMLCanvasElement::getContext(const String& type, CanvasContextAttributes* attrs)
+CanvasRenderingContext2D* HTMLCanvasElement::getContext(const String& type, CanvasContextAttributes* attrs)
 {
     // A Canvas can either be "2D" or "webgl" but never both. If you request a 2D canvas and the existing
     // context is already 2D, just return that. If the existing context is WebGL, then destroy it
@@ -155,24 +155,24 @@ CanvasRenderingContext* HTMLCanvasElement::getContext(const String& type, Canvas
             blink::Platform::current()->histogramEnumeration("Canvas.ContextType", Context2d, ContextTypeCount);
             m_context = CanvasRenderingContext2D::create(this, static_cast<Canvas2DContextAttributes*>(attrs));
         }
-        return m_context.get();
+        return static_cast<CanvasRenderingContext2D*>(m_context.get());
     }
 
     // Accept the the provisional "experimental-webgl" or official "webgl" context ID.
-    if (type == "webgl" || type == "experimental-webgl") {
-        ContextType contextType = (type == "webgl") ? ContextWebgl : ContextExperimentalWebgl;
-        if (!m_context) {
-            blink::Platform::current()->histogramEnumeration("Canvas.ContextType", contextType, ContextTypeCount);
-            m_context = WebGLRenderingContext::create(this, static_cast<WebGLContextAttributes*>(attrs));
-            updateExternallyAllocatedMemory();
-        } else if (!m_context->is3d()) {
-            dispatchEvent(WebGLContextEvent::create(EventTypeNames::webglcontextcreationerror, false, true, "Canvas has an existing, non-WebGL context"));
-            return 0;
-        }
-        return m_context.get();
-    }
+    // if (type == "webgl" || type == "experimental-webgl") {
+    //     ContextType contextType = (type == "webgl") ? ContextWebgl : ContextExperimentalWebgl;
+    //     if (!m_context) {
+    //         blink::Platform::current()->histogramEnumeration("Canvas.ContextType", contextType, ContextTypeCount);
+    //         m_context = WebGLRenderingContext::create(this, static_cast<WebGLContextAttributes*>(attrs));
+    //         updateExternallyAllocatedMemory();
+    //     } else if (!m_context->is3d()) {
+    //         dispatchEvent(WebGLContextEvent::create(EventTypeNames::webglcontextcreationerror, false, true, "Canvas has an existing, non-WebGL context"));
+    //         return 0;
+    //     }
+    //     return m_context.get();
+    // }
 
-    return 0;
+    return nullptr;
 }
 
 void HTMLCanvasElement::didDraw(const FloatRect& rect)

@@ -61,6 +61,10 @@ enum CanvasFillRule { "nonzero", "evenodd" };
     // FIXME: Use union types when supported: http://crbug.com/372891
     // [Custom] attribute object strokeStyle; // (default black)
     // [Custom] attribute object fillStyle; // (default black)
+
+    attribute DOMString strokeColor; // (default black)
+    attribute DOMString fillColor; // (default black)
+
     CanvasGradient createLinearGradient(float x0, float y0, float x1, float y1);
     [RaisesException] CanvasGradient createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1);
     [RaisesException] CanvasPattern createPattern(HTMLCanvasElement canvas, DOMString? repetitionType);

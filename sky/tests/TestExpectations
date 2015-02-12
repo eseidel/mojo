@@ -26,7 +26,6 @@ https://github.com/domokit/mojo/issues/24 mutation-observer/observe-attributes.s
 # These tests broke during the Dart migration
 crbug.com/2 animation/basic-imperative.sky [ Skip ]
 crbug.com/2 animation/basic-transition.sky [ Skip ]
-crbug.com/2 clipping/canvas-rounded-corners.sky [ Skip ]
 crbug.com/2 custom-elements/document-register-basic.sky [ Skip ]
 crbug.com/2 custom-elements/document-register-reentrant-null-constructor.sky [ Skip ]
 crbug.com/2 custom-elements/document-register-reentrant-returning-fake.sky [ Skip ]

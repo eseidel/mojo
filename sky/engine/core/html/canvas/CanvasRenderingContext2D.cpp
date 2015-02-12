@@ -786,6 +786,11 @@ void CanvasRenderingContext2D::setTransform(float m11, float m12, float m21, flo
     transform(m11, m12, m21, m22, dx, dy);
 }
 
+String CanvasRenderingContext2D::strokeColor()
+{
+    return strokeStyle()->color();
+}
+
 void CanvasRenderingContext2D::setStrokeColor(const String& color)
 {
     if (color == state().m_unparsedStrokeColor)
@@ -826,6 +831,11 @@ void CanvasRenderingContext2D::setStrokeColor(float c, float m, float y, float k
     if (state().m_strokeStyle && state().m_strokeStyle->isEquivalentCMYKA(c, m, y, k, a))
         return;
     setStrokeStyle(CanvasStyle::createFromCMYKAChannels(c, m, y, k, a));
+}
+
+String CanvasRenderingContext2D::fillColor()
+{
+    return fillStyle()->color();
 }
 
 void CanvasRenderingContext2D::setFillColor(const String& color)

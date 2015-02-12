@@ -121,6 +121,7 @@ public:
     void setTransform(float m11, float m12, float m21, float m22, float dx, float dy);
     void resetTransform();
 
+    String strokeColor();
     void setStrokeColor(const String& color);
     void setStrokeColor(float grayLevel);
     void setStrokeColor(const String& color, float alpha);
@@ -128,6 +129,7 @@ public:
     void setStrokeColor(float r, float g, float b, float a);
     void setStrokeColor(float c, float m, float y, float k, float a);
 
+    String fillColor();
     void setFillColor(const String& color);
     void setFillColor(float grayLevel);
     void setFillColor(const String& color, float alpha);

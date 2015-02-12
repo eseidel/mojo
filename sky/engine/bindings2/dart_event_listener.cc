@@ -54,7 +54,8 @@ void DartEventListener::handleEvent(ExecutionContext* context, Event* event) {
 }
 
 void DartEventListener::AcceptDartGCVisitor(DartGCVisitor& visitor) const {
-  visitor.AddToCurrentSet(closure_);
+  CHECK(!Dart_IsError(Dart_AppendValueToWeakReferenceSet(
+      visitor.current_set(), closure_)));
 }
 
 void DartEventListener::Finalize(void* isolate_callback_data,

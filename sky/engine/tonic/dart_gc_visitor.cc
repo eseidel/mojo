@@ -5,7 +5,6 @@
 #include "sky/engine/config.h"
 #include "sky/engine/tonic/dart_gc_visitor.h"
 
-#include "base/logging.h"
 #include "sky/engine/tonic/dart_gc_context.h"
 
 namespace blink {
@@ -22,10 +21,6 @@ void DartGCVisitor::AddToSetForRoot(const void* root,
   Dart_WeakReferenceSet set = context_->AddToSetForRoot(root, handle);
   DCHECK(!current_set_ || current_set_ == set);
   current_set_ = set;
-}
-
-void DartGCVisitor::AddToCurrentSet(Dart_WeakPersistentHandle handle) {
-  DCHECK(current_set_);
 }
 
 }  // namespace blink

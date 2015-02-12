@@ -5,7 +5,7 @@
 #ifndef SKY_ENGINE_TONIC_DART_GC_VISITOR_H_
 #define SKY_ENGINE_TONIC_DART_GC_VISITOR_H_
 
-#include "base/macros.h"
+#include "base/logging.h"
 #include "dart/runtime/include/dart_api.h"
 
 namespace blink {
@@ -20,8 +20,12 @@ class DartGCVisitor {
     return !!current_set_;
   }
 
+  Dart_WeakReferenceSet current_set() const {
+    DCHECK(have_found_set());
+    return current_set_;
+  }
+
   void AddToSetForRoot(const void* root, Dart_WeakPersistentHandle handle);
-  void AddToCurrentSet(Dart_WeakPersistentHandle handle);
 
  private:
   DartGCContext* context_;

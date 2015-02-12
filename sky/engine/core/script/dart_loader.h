@@ -25,9 +25,11 @@ class DartLoader {
   explicit DartLoader(DartState* dart_state);
   ~DartLoader();
 
-  Dart_Handle HandleLibraryTag(Dart_LibraryTag tag,
-                               Dart_Handle library,
-                               Dart_Handle url);
+  // TODO(dart): This can be called both on the main thread from application isolates
+  // or from the handle watcher isolate thread.
+  static Dart_Handle HandleLibraryTag(Dart_LibraryTag tag,
+                                      Dart_Handle library,
+                                      Dart_Handle url);
 
   void WaitForDependencies(const HashSet<DartDependency*>& dependencies,
                            const base::Closure& callback);

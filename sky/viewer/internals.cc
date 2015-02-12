@@ -44,10 +44,15 @@ void NotifyTestComplete(Dart_NativeArguments args) {
   GetInternals()->NotifyTestComplete(StdStringFromDart(test_result));
 }
 
+void PassShellProxyHandle(Dart_NativeArguments args) {
+  Dart_SetIntegerReturnValue(args, GetInternals()->PassShellProxyHandle().value());
+}
+
 const DartBuiltin::Natives kNativeFunctions[] = {
   {"renderTreeAsText", RenderTreeAsText, 0},
   {"contentAsText", ContentAsText, 0},
   {"notifyTestComplete", NotifyTestComplete, 1},
+  {"passShellProxyHandle", PassShellProxyHandle, 0},
 };
 
 const DartBuiltin& GetBuiltin() {
@@ -71,6 +76,7 @@ const char kLibrarySource[] = R"DART(
 String renderTreeAsText() native "renderTreeAsText";
 String contentAsText() native "contentAsText";
 void notifyTestComplete(String test_result) native "notifyTestComplete";
+int passShellProxyHandle() native "passShellProxyHandle";
 )DART";
 
 }  // namespace

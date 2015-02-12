@@ -100,6 +100,13 @@ abstract class Application {
     return applicationConnection;
   }
 
+  // TODO(skydart): This is a temporary fix to allow sky application to consume
+  // mojo services. Do not use for any other purpose.
+  void initializeFromShellProxy(shell_mojom.ShellProxy shellProxy,
+      List<String> args) {
+    _applicationImpl.initialize(shellProxy, args);
+  }
+
   void connectToService(String url, bindings.Proxy proxy) {
     connectToApplication(url).connectToService(proxy);
   }

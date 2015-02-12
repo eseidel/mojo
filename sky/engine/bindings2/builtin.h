@@ -17,6 +17,8 @@ class Builtin {
   enum BuiltinLibraryId {
     kBuiltinLibrary,
     kSkyLibrary,
+    kMojoBindingsLibrary,
+    kMojoCoreLibrary,
     kInvalidLibrary,
   };
 

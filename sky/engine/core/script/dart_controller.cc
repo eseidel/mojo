@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/single_thread_task_runner.h"
 #include "sky/engine/bindings2/builtin.h"
 #include "sky/engine/bindings2/builtin_natives.h"
 #include "sky/engine/bindings2/builtin_sky.h"
@@ -20,6 +21,7 @@
 #include "sky/engine/core/script/dart_dependency_catcher.h"
 #include "sky/engine/core/script/dart_loader.h"
 #include "sky/engine/core/script/dom_dart_state.h"
+#include "sky/engine/public/platform/Platform.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_class_library.h"
 #include "sky/engine/tonic/dart_error.h"
@@ -120,14 +122,94 @@ static void UnhandledExceptionCallback(Dart_Handle error) {
 static Dart_Handle LibraryTagHandler(Dart_LibraryTag tag,
                                      Dart_Handle library,
                                      Dart_Handle url) {
-  DOMDartState* dart_state = DOMDartState::Current();
-  return dart_state->loader().HandleLibraryTag(tag, library, url);
+  return DartLoader::HandleLibraryTag(tag, library, url);
 }
 
 static void IsolateShutdownCallback(void* callback_data) {
-  DartState* dart_state = static_cast<DartState*>(callback_data);
-  DCHECK(dart_state);
   // TODO(dart)
+}
+
+static bool IsServiceIsolateURL(const char* url_name) {
+  return url_name != nullptr &&
+      String(url_name) == DART_VM_SERVICE_ISOLATE_NAME;
+}
+
+// TODO(rafaelw): Right now this only supports the creation of the handle
+// watcher isolate. Presumably, we'll want application isolates to spawn their
+// own isolates.
+static Dart_Isolate IsolateCreateCallback(const char* script_uri,
+                                          const char* main,
+                                          const char* package_root,
+                                          void* callback_data,
+                                          char** error) {
+
+  if (IsServiceIsolateURL(script_uri)) {
+    return Dart_CreateIsolate(script_uri, "main", kDartSnapshotBuffer, nullptr,
+          error);
+  }
+
+  // Create & start the handle watcher isolate
+  CHECK(kDartSnapshotBuffer);
+  DartState* dart_state = new DartState();
+  Dart_Isolate isolate = Dart_CreateIsolate("sky:handle_watcher", "",
+      kDartSnapshotBuffer, dart_state, error);
+  CHECK(isolate) << error;
+  dart_state->set_isolate(isolate);
+
+  CHECK(!LogIfError(Dart_SetLibraryTagHandler(LibraryTagHandler)));
+
+  {
+    DartApiScope apiScope;
+    Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
+    Builtin::SetNativeResolver(Builtin::kMojoCoreLibrary);
+  }
+
+  Dart_ExitIsolate();
+
+  CHECK(Dart_IsolateMakeRunnable(isolate));
+  return isolate;
+}
+
+static void CallHandleMessage(base::WeakPtr<DartState> dart_state) {
+  if (!dart_state)
+    return;
+
+  DartIsolateScope scope(dart_state->isolate());
+  DartApiScope api_scope;
+  LogIfError(Dart_HandleMessage());
+}
+
+static void MessageNotifyCallback(Dart_Isolate dest_isolate) {
+  DCHECK(Platform::current());
+  Platform::current()->mainThreadTaskRunner()->PostTask(FROM_HERE,
+      base::Bind(&CallHandleMessage, DartState::From(dest_isolate)->GetWeakPtr()));
+}
+
+static void EnsureHandleWatcherStarted() {
+  static bool handle_watcher_started = false;
+  if (handle_watcher_started)
+    return;
+
+  // TODO(dart): Call Dart_Cleanup (ensure the handle watcher isolate is closed)
+  // during shutdown.
+  Dart_Handle mojo_core_lib =
+      Builtin::LoadAndCheckLibrary(Builtin::kMojoCoreLibrary);
+  CHECK(!LogIfError((mojo_core_lib)));
+  Dart_Handle handle_watcher_type = Dart_GetType(
+      mojo_core_lib,
+      Dart_NewStringFromCString("MojoHandleWatcher"),
+      0,
+      nullptr);
+  CHECK(!LogIfError(handle_watcher_type));
+  CHECK(!LogIfError(Dart_Invoke(
+      handle_watcher_type,
+      Dart_NewStringFromCString("_start"),
+      0,
+      nullptr)));
+
+  // RunLoop until the handle watcher isolate is spun-up.
+  CHECK(!LogIfError(Dart_RunLoop()));
+  handle_watcher_started = true;
 }
 
 void DartController::CreateIsolateFor(Document* document) {
@@ -138,6 +220,7 @@ void DartController::CreateIsolateFor(Document* document) {
   Dart_Isolate isolate = Dart_CreateIsolate(
       document->url().string().utf8().data(), "main", kDartSnapshotBuffer,
       static_cast<DartState*>(dom_dart_state_.get()), &error);
+  Dart_SetMessageNotifyCallback(MessageNotifyCallback);
   CHECK(isolate) << error;
   dom_dart_state_->set_isolate(isolate);
   Dart_SetGcCallbacks(DartGCPrologue, DartGCEpilogue);
@@ -147,6 +230,7 @@ void DartController::CreateIsolateFor(Document* document) {
     DartApiScope apiScope;
 
     Builtin::SetNativeResolver(Builtin::kBuiltinLibrary);
+    Builtin::SetNativeResolver(Builtin::kMojoCoreLibrary);
     BuiltinNatives::Init();
 
     builtin_sky_ = adoptPtr(new BuiltinSky(dart_state()));
@@ -154,6 +238,8 @@ void DartController::CreateIsolateFor(Document* document) {
     builtin_sky_->InstallWindow(dart_state());
 
     document->frame()->loaderClient()->didCreateIsolate(isolate);
+
+    EnsureHandleWatcherStarted();
   }
   Dart_ExitIsolate();
 }
@@ -174,7 +260,7 @@ void DartController::InitVM() {
 #endif
 
   CHECK(Dart_SetVMFlags(argc, argv));
-  CHECK(Dart_Initialize(nullptr,
+  CHECK(Dart_Initialize(IsolateCreateCallback,
                         nullptr,  // Isolate interrupt callback.
                         UnhandledExceptionCallback, IsolateShutdownCallback,
                         // File IO callbacks.

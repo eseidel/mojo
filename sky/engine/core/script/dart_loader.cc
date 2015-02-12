@@ -8,12 +8,14 @@
 #include "base/callback.h"
 #include "mojo/common/data_pipe_drainer.h"
 #include "sky/engine/core/script/dart_dependency_catcher.h"
+#include "sky/engine/core/script/dom_dart_state.h"
 #include "sky/engine/platform/fetcher/MojoFetcher.h"
 #include "sky/engine/platform/weborigin/KURL.h"
 #include "sky/engine/tonic/dart_api_scope.h"
 #include "sky/engine/tonic/dart_converter.h"
 #include "sky/engine/tonic/dart_error.h"
 #include "sky/engine/tonic/dart_isolate_scope.h"
+#include "sky/engine/wtf/MainThread.h"
 
 using mojo::common::DataPipeDrainer;
 
@@ -26,6 +28,10 @@ Dart_Handle CanonicalizeURL(DartState* state,
   String string = StringFromDart(url);
   if (string.startsWith("dart:"))
     return url;
+  // TODO(dart): Figure out how 'package:' should work in sky.
+  if (string.startsWith("package:")) {
+    string.replace("package:", "/gen/");
+  }
   String library_url_string = StringFromDart(Dart_LibraryUrl(library));
   KURL library_url = KURL(ParsedURLString, library_url_string);
   KURL resolved_url = KURL(library_url, string);
@@ -181,11 +187,15 @@ Dart_Handle DartLoader::HandleLibraryTag(Dart_LibraryTag tag,
   DCHECK(Dart_IsLibrary(library));
   DCHECK(Dart_IsString(url));
   if (tag == Dart_kCanonicalizeUrl)
-    return CanonicalizeURL(dart_state_.get(), library, url);
-  if (tag == Dart_kImportTag)
-    return Import(library, url);
-  if (tag == Dart_kSourceTag)
-    return Source(library, url);
+    return CanonicalizeURL(DartState::Current(), library, url);
+  if (tag == Dart_kImportTag) {
+    CHECK(WTF::isMainThread());
+    return DOMDartState::Current()->loader().Import(library, url);
+  }
+  if (tag == Dart_kSourceTag) {
+    CHECK(WTF::isMainThread());
+    return DOMDartState::Current()->loader().Source(library, url);
+  }
   DCHECK(false);
   return Dart_NewApiError("Unknown library tag.");
 }

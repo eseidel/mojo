@@ -30,12 +30,14 @@
 
 namespace blink {
 
+#if ENABLE(ASSERT)
 static const char* kCheckedModeArgs[] = {
   "--enable_asserts",
   "--enable_type_checks",
   "--error_on_bad_type",
   "--error_on_bad_override",
 };
+#endif
 
 extern const uint8_t* kDartSnapshotBuffer;
 

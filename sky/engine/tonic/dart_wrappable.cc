@@ -49,4 +49,43 @@ void DartWrappable::FinalizeDartWrapper(void* isolate_callback_data,
   info.deref_object(wrappable);  // Balanced in CreateDartWrapper.
 }
 
+DartWrappable* DartConverterWrappable::FromDart(Dart_Handle handle) {
+  intptr_t* peer = 0;
+  Dart_Handle result =
+      Dart_GetNativeInstanceField(handle, DartWrappable::kPeerIndex, peer);
+  if (Dart_IsError(result))
+    return nullptr;
+  return reinterpret_cast<DartWrappable*>(peer);
+}
+
+DartWrappable* DartConverterWrappable::FromArguments(Dart_NativeArguments args,
+                                                     int index,
+                                                     Dart_Handle& exception) {
+  intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
+  Dart_Handle result = Dart_GetNativeFieldsOfArgument(
+      args, index, DartWrappable::kNumberOfNativeFields, native_fields);
+  if (Dart_IsError(result)) {
+    exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
+    return nullptr;
+  }
+  return reinterpret_cast<DartWrappable*>(
+      native_fields[DartWrappable::kPeerIndex]);
+}
+
+DartWrappable* DartConverterWrappable::FromArgumentsWithNullCheck(
+    Dart_NativeArguments args, int index, Dart_Handle& exception) {
+    Dart_Handle handle = Dart_GetNativeArgument(args, index);
+  if (Dart_IsNull(handle))
+    return nullptr;
+  intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
+  Dart_Handle result = Dart_GetNativeFieldsOfArgument(
+      args, index, DartWrappable::kNumberOfNativeFields, native_fields);
+  if (Dart_IsError(result)) {
+    exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
+    return nullptr;
+  }
+  return reinterpret_cast<DartWrappable*>(
+      native_fields[DartWrappable::kPeerIndex]);
+}
+
 }  // namespace blink

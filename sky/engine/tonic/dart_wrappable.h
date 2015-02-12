@@ -63,6 +63,16 @@ class DartWrappable {
  private:                                                                      \
   static const DartWrapperInfo& dart_wrapper_info_
 
+struct DartConverterWrappable {
+  static DartWrappable* FromDart(Dart_Handle handle);
+  static DartWrappable* FromArguments(Dart_NativeArguments args,
+                                      int index,
+                                      Dart_Handle& exception);
+  static DartWrappable* FromArgumentsWithNullCheck(Dart_NativeArguments args,
+                                                   int index,
+                                                   Dart_Handle& exception);
+};
+
 template<typename T>
 struct DartConverter<
     T*,
@@ -88,45 +98,26 @@ struct DartConverter<
   }
 
   static T* FromDart(Dart_Handle handle) {
-    intptr_t* peer = 0;
-    Dart_Handle result =
-        Dart_GetNativeInstanceField(handle, DartWrappable::kPeerIndex, peer);
-    if (Dart_IsError(result))
-      return nullptr;
-    return static_cast<T*>(reinterpret_cast<DartWrappable*>(peer));
+    // TODO(abarth): We're missing a type check.
+    return static_cast<T*>(DartConverterWrappable::FromDart(handle));
   }
 
   static T* FromArguments(Dart_NativeArguments args,
                           int index,
                           Dart_Handle& exception,
                           bool auto_scope = true) {
-    intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
-    Dart_Handle result = Dart_GetNativeFieldsOfArgument(
-        args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    if (Dart_IsError(result)) {
-      exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
-      return nullptr;
-    }
-    return static_cast<T*>(reinterpret_cast<DartWrappable*>(
-        native_fields[DartWrappable::kPeerIndex]));
+    // TODO(abarth): We're missing a type check.
+    return static_cast<T*>(DartConverterWrappable::FromArguments(
+        args, index, exception));
   }
 
   static T* FromArgumentsWithNullCheck(Dart_NativeArguments args,
                                        int index,
                                        Dart_Handle& exception,
                                        bool auto_scope = true) {
-    Dart_Handle handle = Dart_GetNativeArgument(args, index);
-    if (Dart_IsNull(handle))
-      return nullptr;
-    intptr_t native_fields[DartWrappable::kNumberOfNativeFields];
-    Dart_Handle result = Dart_GetNativeFieldsOfArgument(
-        args, index, DartWrappable::kNumberOfNativeFields, native_fields);
-    if (Dart_IsError(result)) {
-      exception = Dart_NewStringFromCString(DartError::kInvalidArgument);
-      return nullptr;
-    }
-    return static_cast<T*>(reinterpret_cast<DartWrappable*>(
-        native_fields[DartWrappable::kPeerIndex]));
+    // TODO(abarth): We're missing a type check.
+    return static_cast<T*>(DartConverterWrappable::FromArgumentsWithNullCheck(
+        args, index, exception));
   }
 };
 

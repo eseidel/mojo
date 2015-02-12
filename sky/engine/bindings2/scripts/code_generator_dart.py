@@ -47,7 +47,7 @@ import os
 import cPickle as pickle
 import re
 import sys
-
+import logging
 
 # Path handling for libraries and templates
 # Paths have to be normalized because Jinja uses the exact template path to
@@ -193,16 +193,20 @@ class CodeGeneratorDart(object):
                 interface_name = idl_filename_to_interface_name(idl_filename)
                 idl_pickle_filename = interface_name + "_globals.pickle"
                 idl_pickle_filename = os.path.join(directory, idl_pickle_filename)
+                if not os.path.exists(idl_pickle_filename):
+                    logging.warn("Missing %s" % idl_pickle_filename)
+                    continue
                 with open(idl_pickle_filename) as idl_pickle_file:
                     idl_world = pickle.load(idl_pickle_file)
                     if 'interface' in idl_world:
                         # FIXME: Why are some of these None?
                         if idl_world['interface']:
                             world['interfaces'].append(idl_world['interface'])
-                    if 'callbacks' in idl_world:
+                    if 'callback' in idl_world:
                         # FIXME: Why are some of these None?
-                        if idl_world['callbacks']:
+                        if idl_world['callback']:
                             world['callbacks'].append(idl_world['callback'])
+
         world['interfaces'] = sorted(world['interfaces'], key=lambda (x): x['name'])
         world['callbacks'] = sorted(world['callbacks'], key=lambda (x): x['name'])
         return world

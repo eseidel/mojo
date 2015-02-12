@@ -2,7 +2,7 @@
 import "resources/lib.dart" as lib;
 import "dart:sky.internals" as internals;
 
-function main() {
+void main() {
   internals.notifyTestComplete(lib.kResult);
 }
 </script>>

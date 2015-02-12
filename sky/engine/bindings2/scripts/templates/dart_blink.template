@@ -11,5 +11,11 @@ import "dart:nativewrappers";
 part '{{interface.name}}.dart';
 {% endfor %}
 
+{% for callback in callbacks %}
+part '{{callback.name}}.dart';
+{% endfor %}
+
 Window window;
 Document get document => window.document;
+
+typedef EventListener(Event event);

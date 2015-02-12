@@ -42,9 +42,9 @@ class _Timer implements Timer {
 }
 
 void _scheduleMicrotask(void callback()) native "ScheduleMicrotask";
-void _createTimer(int milliseconds,
-                  void callback(Timer timer),
-                  bool repeating) {
+Timer _createTimer(int milliseconds,
+                   void callback(Timer timer),
+                   bool repeating) {
   return new _Timer(milliseconds, callback, repeating);
 }
 

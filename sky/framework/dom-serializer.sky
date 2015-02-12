@@ -13,7 +13,7 @@ final RegExp kTextEscapePattern = new RegExp(r'&|<|>|"|\u00a0');
 final RegExp kAttributeEscapePattern = new RegExp(r'&|>|"|\u00a0');
 const kIndent = '  ';
 
-void escapeText(String value, RegExp pattern) {
+String escapeText(String value, RegExp pattern) {
   if (value == null)
     value = '';
   return value.replaceAllMapped(pattern, (Match match) {
@@ -21,7 +21,7 @@ void escapeText(String value, RegExp pattern) {
   });
 }
 
-void serializeAttributes(Element element) {
+String serializeAttributes(Element element) {
   String buffer = '';
   var attributes = element.getAttributes();
 
@@ -37,19 +37,19 @@ void serializeAttributes(Element element) {
   return buffer;
 }
 
-void getFirstChild(Node node) {
+Node getFirstChild(Node node) {
   if (node is HTMLTemplateElement)
     return node.content.firstChild;
   return node.firstChild;
 }
 
-void getLastChild(Node node) {
+Node getLastChild(Node node) {
   if (node is HTMLTemplateElement)
     return node.content.lastChild;
   return node.lastChild;
 }
 
-void serializeChildren(Node node, int depth) {
+String serializeChildren(Node node, int depth) {
   String buffer = '';
   Node firstChild = getFirstChild(node);
   Node lastChild = getLastChild(node);
@@ -68,21 +68,21 @@ void serializeChildren(Node node, int depth) {
   return buffer;
 }
 
-void serializeElement(Element element, int depth) {
+String serializeElement(Element element, int depth) {
   String buffer = '<' + element.tagName + serializeAttributes(element) + '>';
   buffer += serializeChildren(element, depth + 1);
   buffer += '</' + element.tagName + '>';
   return buffer;
 }
 
-void serializeText(Node node) {
+String serializeText(Node node) {
   Node parent = node.parentNode;
   if (parent != null && (parent is HTMLScriptElement || parent is HTMLStyleElement))
     return node.data;
   return escapeText(node.data, kTextEscapePattern);
 }
 
-void serializeNode(Node node, [int depth = 0]) {
+String serializeNode(Node node, [int depth = 0]) {
   if (node is Text)
     return serializeText(node);
   if (node is Element)

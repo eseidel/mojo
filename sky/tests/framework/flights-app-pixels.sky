@@ -305,10 +305,11 @@
   <script>
   import "dart:sky";
   import "dart:sky.internals" as internals;
+  import "dart:async";
 
   var app;
 
-  void imagesLoaded() {
+  bool imagesLoaded() {
     var images = window.document.querySelectorAll('img');
     for (var i = 0; i < images.length; i++) {
       if (!images.item(i).complete)

@@ -30,6 +30,13 @@
 
 namespace blink {
 
+static const char* kCheckedModeArgs[] = {
+  "--enable_asserts",
+  "--enable_type_checks",
+  "--error_on_bad_type",
+  "--error_on_bad_override",
+};
+
 extern const uint8_t* kDartSnapshotBuffer;
 
 DartController::DartController() : weak_factory_(this) {
@@ -154,7 +161,15 @@ void DartController::ClearForClose() {
 }
 
 void DartController::InitVM() {
-  CHECK(Dart_SetVMFlags(0, NULL));
+  int argc = 0;
+  const char** argv = nullptr;
+
+#if ENABLE(ASSERT)
+  argc = arraysize(kCheckedModeArgs);
+  argv = kCheckedModeArgs;
+#endif
+
+  CHECK(Dart_SetVMFlags(argc, argv));
   CHECK(Dart_Initialize(nullptr,
                         nullptr,  // Isolate interrupt callback.
                         UnhandledExceptionCallback, IsolateShutdownCallback,
